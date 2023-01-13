@@ -1,14 +1,11 @@
-import './style.css'
+import "./style.css"
 
 import * as THREE from "three"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 
 /**
  * Base
  */
 // Debug
-
-
 
 // Scene
 const scene = new THREE.Scene()
@@ -16,70 +13,61 @@ const scene = new THREE.Scene()
 const parameters = {
 	count: 100000,
 	size: 0.01,
-	baseColor: 0xff00ff,
-	radius: 5,
-	branches: 3,
+	radius: 8,
+	branches: 5,
 	spin: 1,
-	randomness: 1,
+	randomness: 0.5,
+	insideColor: "hsl(0, 100%, 76%)",
+	outsideColor: "#141133",
 }
 
+const pointsGeometry = new THREE.BufferGeometry()
 
+const positions = new Float32Array(parameters.count * 3)
+const colors = new Float32Array(parameters.count * 3)
 
-	const pointsGeometry = new THREE.BufferGeometry()
+for (let i = 0; i < parameters.count; i++) {
+	const i3 = i * 3
 
-	const positions = new Float32Array(parameters.count * 3)
-	const colors = new Float32Array(parameters.count * 3)
+	const radius = Math.random() * parameters.radius
 
-	for (let i = 0; i < parameters.count; i++) {
-		const i3 = i * 3 // 0x3=0, 1x3=3, 6, 9 etc. cheaper than looping with 3x more iterations
+	const spinAngle = parameters.spin * radius
+	const branchAngle = (i / parameters.branches) * Math.PI * 2
 
-		// this is actually random position along the radius, actual radius is parameters.radius
-		const radius = Math.random() * parameters.radius
+	const randomX = (Math.random() - 0.5) * parameters.randomness
+	const randomY = (Math.random() - 0.5) * parameters.randomness
+	const randomZ = (Math.random() - 0.5) * parameters.randomness
 
-		// this will be
-		const spinAngle = parameters.spin * radius
-		const branchAngle = (i / parameters.branches) * Math.PI * 2 // WAS i % parameters.branches, testing this
-		// i3 = x | i3 + 1 = y | i3 + 2 = 3
+	positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX
+	positions[i3 + 1] = Math.random() * 0.1 + randomY //
+	positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ
 
-		const randomX = (Math.random() - 0.5) * parameters.randomness
-		const randomY = (Math.random() - 0.5) * parameters.randomness
-		const randomZ = (Math.random() - 0.5) * parameters.randomness
+	const insideColor = new THREE.Color(parameters.insideColor)
+	const outsideColor = new THREE.Color(parameters.outsideColor)
 
-		positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX // + 0 just for formatting obv
-		positions[i3 + 1] = Math.random() * 0.1 + randomY //
-		positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ
-		/* 	if (i < 30) {
-			console.log({
-				radius,
-				branchAngle,
-				positions: [positions[i], positions[i + 1], positions[i + 2]],
-			})
-		} */
-		colors[i3 + 0] = Math.random()
-		colors[i3 + 1] = Math.random()
-		colors[i3 + 2] = Math.random()
-	}
+	const mixedColor = insideColor
+		.clone()
+		.lerp(outsideColor, radius / parameters.radius)
 
-	// don't confuse with setting uv2 attribute for ambient occlusion maps
-	// we have an empty geometry, we're setting the positions of the points here
-	pointsGeometry.setAttribute(
-		"position",
-		new THREE.BufferAttribute(positions, 3)
-	)
-	pointsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
+	colors[i3 + 0] = mixedColor.r
+	colors[i3 + 1] = mixedColor.g
+	colors[i3 + 2] = mixedColor.b
+}
 
-	const pointsMaterial = new THREE.PointsMaterial({
-		color: parameters.baseColor,
-		size: parameters.size,
-		vertexColors: true,
-		blending: THREE.AdditiveBlending,
-	})
+pointsGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
+pointsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
 
-	const points = new THREE.Points(pointsGeometry, pointsMaterial)
+const pointsMaterial = new THREE.PointsMaterial({
+	size: parameters.size,
+	sizeAttenuation: true,
+	depthWrite: false,
+	vertexColors: true,
+	blending: THREE.AdditiveBlending,
+})
 
-	scene.add(points)
+const points = new THREE.Points(pointsGeometry, pointsMaterial)
 
-
+scene.add(points)
 
 /**
  * Sizes
@@ -106,16 +94,17 @@ window.addEventListener("resize", () => {
 /**
  * Camera
  */
-// Base camera
+
 const camera = new THREE.PerspectiveCamera(
 	75,
 	sizes.width / sizes.height,
 	0.1,
 	100
 )
-camera.position.x = 3
+camera.position.x = 0
 camera.position.y = 3
 camera.position.z = 3
+camera.lookAt(points.position)
 scene.add(camera)
 
 // Canvas
@@ -131,17 +120,15 @@ document.body.append(renderer.domElement)
 /**
  * Animate
  */
-// const clock = new THREE.Clock()
+const clock = new THREE.Clock()
 
 const tick = () => {
-	// const elapsedTime = clock.getElapsedTime()
+	const elapsedTime = clock.getElapsedTime()
+	points.rotation.z = Math.sin(elapsedTime) / 200
+	points.rotation.y += 1 / 5000
 
-	// Update controls
-
-	// Render
 	renderer.render(scene, camera)
 
-	// Call tick again on the next frame
 	window.requestAnimationFrame(tick)
 }
 
