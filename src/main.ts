@@ -1,5 +1,6 @@
 import "./style.css"
 import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import fragmentShader from "./shaders/fragment.glsl?raw"
 import vertexShader from "./shaders/vertex.glsl?raw"
 
@@ -54,7 +55,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 document.body.append(renderer.domElement)
 
 const parameters = {
-	count: 500000,
+	count: 200000,
 	size: 0.005,
 	radius: 8,
 	branches: 5,
@@ -102,6 +103,8 @@ for (let i = 0; i < parameters.count; i++) {
 	scales[i] = Math.random()
 }
 
+console.log(scales)
+
 pointsGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
 pointsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
 pointsGeometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1))
@@ -117,7 +120,7 @@ const pointsShader = new THREE.ShaderMaterial({
 	vertexShader: vertexShader,
 	fragmentShader: fragmentShader,
 	uniforms: {
-		uSize: { value: 8 * renderer.getPixelRatio() },
+		uSize: { value: 8 },
 	},
 })
 
@@ -129,12 +132,17 @@ scene.add(points)
 /**
  * Animate
  */
-const clock = new THREE.Clock()
+
+const controls = new OrbitControls(camera, renderer.domElement)
+
+// const clock = new THREE.Clock()
 
 const tick = () => {
-	const elapsedTime = clock.getElapsedTime()
-	points.rotation.z = Math.sin(elapsedTime) / 200
-	points.rotation.y += 1 / 5000
+	// const elapsedTime = clock.getElapsedTime()
+	// points.rotation.z = Math.sin(elapsedTime) / 200
+	// points.rotation.y += 1 / 5000
+
+	controls.update()
 
 	renderer.render(scene, camera)
 
