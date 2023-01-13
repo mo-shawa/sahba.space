@@ -1,6 +1,7 @@
 import "./style.css"
-
 import * as THREE from "three"
+import fragmentShader from "./shaders/fragment.glsl?raw"
+import vertexShader from "./shaders/vertex.glsl?raw"
 
 /**
  * Base
@@ -25,8 +26,8 @@ window.addEventListener("resize", () => {
 	renderer.setSize(sizes.width, sizes.height)
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
-
 /**
+
  * Camera
  */
 
@@ -77,16 +78,15 @@ for (let i = 0; i < parameters.count; i++) {
 
 	const radius = Math.random() * parameters.radius
 
-	const spinAngle = parameters.spin * radius
 	const branchAngle = (i / parameters.branches) * Math.PI * 2
 
 	const randomX = (Math.random() - 0.5) * parameters.randomness
 	const randomY = (Math.random() - 0.5) * parameters.randomness
 	const randomZ = (Math.random() - 0.5) * parameters.randomness
 
-	positions[i3 + 0] = Math.cos(branchAngle + spinAngle) * radius + randomX
+	positions[i3 + 0] = Math.cos(branchAngle) * radius + randomX
 	positions[i3 + 1] = Math.random() * 0.1 + randomY //
-	positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ
+	positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ
 
 	const insideColor = new THREE.Color(parameters.insideColor)
 	const outsideColor = new THREE.Color(parameters.outsideColor)
@@ -106,44 +106,16 @@ pointsGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
 pointsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
 pointsGeometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1))
 
-// const pointsMaterial = new THREE.PointsMaterial({
-// 	size: parameters.size,
-// 	sizeAttenuation: true,
-// 	depthWrite: false,
-// 	vertexColors: true,
-// 	blending: THREE.AdditiveBlending,
-// })
-
-// const points = new THREE.Points(pointsGeometry, pointsMaterial)
 /**
- * Shader
+ * Shader Material
  */
 
 const pointsShader = new THREE.ShaderMaterial({
 	depthWrite: false,
 	blending: THREE.AdditiveBlending,
 	vertexColors: true,
-	vertexShader: `
-    uniform float uSize;
-    attribute float aScale;
-	  void main(){
-	    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-	    vec4 viewPosition = viewMatrix * modelPosition;
-	    vec4 projectedPosition = projectionMatrix * viewPosition;
-	    gl_Position = projectedPosition;
-
-	    /**
-	     * Size
-	     */
-	    gl_PointSize = uSize * aScale;
-	  }
-	`,
-	fragmentShader: `
-            void main()
-            {
-                gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-            }
-        `,
+	vertexShader: vertexShader,
+	fragmentShader: fragmentShader,
 	uniforms: {
 		uSize: { value: 8 * renderer.getPixelRatio() },
 	},
