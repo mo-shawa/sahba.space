@@ -35,7 +35,7 @@ window.addEventListener("resize", () => {
 const camera = new THREE.PerspectiveCamera(
 	75,
 	sizes.width / sizes.height,
-	0.1,
+	0.0001,
 	100
 )
 
@@ -57,11 +57,11 @@ document.body.append(renderer.domElement)
 const parameters = {
 	count: 200000,
 	size: 0.005,
-	radius: 8,
+	radius: 5,
 	branches: 5,
 	spin: 1,
 	randomness: 0.5,
-	insideColor: "hsl(0, 100%, 76%)",
+	insideColor: "#ff8585",
 	outsideColor: "#141133",
 }
 
@@ -73,6 +73,9 @@ const pointsGeometry = new THREE.BufferGeometry()
 const positions = new Float32Array(parameters.count * 3)
 const colors = new Float32Array(parameters.count * 3)
 const scales = new Float32Array(parameters.count * 1)
+
+const insideColor = new THREE.Color(parameters.insideColor)
+const outsideColor = new THREE.Color(parameters.outsideColor)
 
 for (let i = 0; i < parameters.count; i++) {
 	const i3 = i * 3
@@ -89,12 +92,9 @@ for (let i = 0; i < parameters.count; i++) {
 	positions[i3 + 1] = Math.random() * 0.1 + randomY //
 	positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ
 
-	const insideColor = new THREE.Color(parameters.insideColor)
-	const outsideColor = new THREE.Color(parameters.outsideColor)
+	const mixedColor = insideColor.clone()
 
-	const mixedColor = insideColor
-		.clone()
-		.lerp(outsideColor, radius / parameters.radius)
+	mixedColor.lerp(outsideColor, radius / parameters.radius)
 
 	colors[i3 + 0] = mixedColor.r
 	colors[i3 + 1] = mixedColor.g
@@ -103,7 +103,7 @@ for (let i = 0; i < parameters.count; i++) {
 	scales[i] = Math.random()
 }
 
-console.log(scales)
+// console.log(colors)
 
 pointsGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
 pointsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
@@ -120,7 +120,7 @@ const pointsShader = new THREE.ShaderMaterial({
 	vertexShader: vertexShader,
 	fragmentShader: fragmentShader,
 	uniforms: {
-		uSize: { value: 8 },
+		uSize: { value: 8 * renderer.getPixelRatio() },
 	},
 })
 
@@ -134,6 +134,7 @@ scene.add(points)
  */
 
 const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
 
 // const clock = new THREE.Clock()
 
