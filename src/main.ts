@@ -1,6 +1,8 @@
 import "./style.css"
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import fragmentShader from "./shaders/fragment.glsl?raw"
 import vertexShader from "./shaders/vertex.glsl?raw"
 
@@ -142,10 +144,10 @@ const clock = new THREE.Clock()
 
 const tick = () => {
 	const elapsedTime = clock.getElapsedTime()
-	// points.rotation.z = Math.sin(elapsedTime) / 200
-	// points.rotation.y += 1 / 5000
 
 	pointsMaterial.uniforms.uTime.value = (400 + elapsedTime) / 50
+
+	camera.lookAt(points.position)
 
 	controls.update()
 
@@ -155,3 +157,21 @@ const tick = () => {
 }
 
 tick()
+
+gsap.registerPlugin(ScrollTrigger)
+
+ScrollTrigger.defaults({
+	immediateRender: false,
+})
+
+const galaxyTimeline = gsap.timeline({
+	scrollTrigger: {
+		trigger: ".section-one",
+		start: "top top",
+		endTrigger: ".section-three",
+		end: "bottom bottom",
+		scrub: 1,
+	},
+})
+
+galaxyTimeline.to(points.rotation, { z: 1 })
