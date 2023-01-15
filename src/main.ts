@@ -40,8 +40,8 @@ const camera = new THREE.PerspectiveCamera(
 )
 
 camera.position.x = 0
-camera.position.y = 1.5
-camera.position.z = 3
+camera.position.y = 0.4
+camera.position.z = 0
 scene.add(camera)
 
 // Canvas
@@ -52,17 +52,18 @@ scene.add(camera)
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-document.body.append(renderer.domElement)
+renderer.domElement.classList.add("webgl")
+document.getElementById("app")?.prepend(renderer.domElement)
 
 const parameters = {
-	count: 200000,
+	count: 100000,
 	size: 0.005,
-	radius: 5,
-	branches: 5,
+	radius: 2,
+	branches: 6,
 	spin: 1,
-	randomness: 0.5,
-	insideColor: "#ff8585",
-	outsideColor: "#141133",
+	randomness: 0.6,
+	insideColor: "#fffaaf",
+	outsideColor: "#000000",
 }
 
 /**
@@ -144,7 +145,7 @@ const tick = () => {
 	// points.rotation.z = Math.sin(elapsedTime) / 200
 	// points.rotation.y += 1 / 5000
 
-	pointsMaterial.uniforms.uTime.value = elapsedTime
+	pointsMaterial.uniforms.uTime.value = (400 + elapsedTime) / 50
 
 	controls.update()
 
