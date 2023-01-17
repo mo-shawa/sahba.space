@@ -5,6 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import fragmentShader from "./shaders/fragment.glsl?raw"
 import vertexShader from "./shaders/vertex.glsl?raw"
 
+const isMobile = "ontouchstart" in document.documentElement
+
 /**
  * Base
  */
@@ -15,19 +17,22 @@ const scene = new THREE.Scene()
  */
 const sizes = {
 	width: window.innerWidth,
-	height: window.innerHeight,
+	height: isMobile ? window.outerHeight : window.innerHeight,
 }
 
-window.addEventListener("resize", () => {
-	sizes.width = window.innerWidth
-	sizes.height = window.innerHeight
+if (!isMobile) {
+	window.addEventListener("resize", () => {
+		sizes.width = window.innerWidth
+		sizes.height = window.innerHeight
 
-	camera.aspect = sizes.width / sizes.height
-	camera.updateProjectionMatrix()
+		camera.aspect = sizes.width / sizes.height
+		camera.updateProjectionMatrix()
 
-	renderer.setSize(sizes.width, sizes.height)
-	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-})
+		renderer.setSize(sizes.width, sizes.height)
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+	})
+}
+
 /**
 
  * Camera
@@ -218,8 +223,12 @@ function mobileAnimation() {
 		.to(camera.position, { y: 2, x: -1 }, 0)
 }
 
-if ("ontouchstart" in document.documentElement) {
+if (isMobile) {
 	mobileAnimation()
 } else {
 	desktopAnimation()
 }
+
+document.getElementById("copyright-year")!.textContent = new Date()
+	.getFullYear()
+	.toString()

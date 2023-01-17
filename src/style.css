@@ -26,20 +26,26 @@ body {
 	height: 100%;
 }
 
-nav {
+nav{
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: 100%;
 	background: black;
+
+}
+
+nav, footer {
+	
+	width: 100%;
 	color: white;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
   	align-items: center;
+	z-index: 2;
 }
 
-.nav-item{
+.nav-item, .footer-item{
   padding: 1rem;
   display: flex;
   justify-content: center;
