@@ -2,6 +2,7 @@ import "./style.css"
 import * as THREE from "three"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { Flip } from "gsap/Flip"
 import fragmentShader from "./shaders/fragment.glsl?raw"
 import vertexShader from "./shaders/vertex.glsl?raw"
 
@@ -152,7 +153,7 @@ const tick = () => {
 
 tick()
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, Flip)
 
 ScrollTrigger.defaults({
 	immediateRender: false,
@@ -168,7 +169,21 @@ const galaxyTimeline = gsap.timeline({
 	},
 })
 
+const navEl = document.querySelector("nav")
+const navHeight = navEl?.offsetHeight
+
+const moreAboutEl = document.querySelector(".more-about")
+
 function desktopAnimation() {
+	gsap.from(navEl, {
+		y: -navHeight!,
+		opacity: 0,
+		scrollTrigger: {
+			end: "10%",
+			scrub: true,
+		},
+	})
+
 	galaxyTimeline
 		.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
 		.from(
@@ -197,3 +212,16 @@ if ("ontouchstart" in document.documentElement) {
 } else {
 	desktopAnimation()
 }
+
+document.querySelector("button")?.addEventListener("click", () => {
+	const state = Flip.getState(".intro-container, .intro-content")
+
+	moreAboutEl?.classList.toggle("active")
+
+	Flip.from(state, {
+		absolute: true,
+		duration: 1,
+		height: "100%",
+		autoAlpha: 1,
+	})
+})
