@@ -36,11 +36,15 @@ nav {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-  align-items: center;
+  	align-items: center;
 }
 
 .nav-item{
   padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem
 }
 
 section {
