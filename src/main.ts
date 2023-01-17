@@ -1,6 +1,5 @@
 import "./style.css"
 import * as THREE from "three"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import fragmentShader from "./shaders/fragment.glsl?raw"
@@ -37,7 +36,7 @@ window.addEventListener("resize", () => {
 const camera = new THREE.PerspectiveCamera(
 	75,
 	sizes.width / sizes.height,
-	0.0001,
+	0.1,
 	100
 )
 
@@ -58,14 +57,15 @@ renderer.domElement.classList.add("webgl")
 document.getElementById("app")?.prepend(renderer.domElement)
 
 const parameters = {
-	count: 100000,
+	count: 180000,
 	size: 0.005,
-	radius: 2,
+	radius: 1.5,
 	branches: 6,
 	spin: 1,
-	randomness: 0.6,
-	insideColor: "#fffaaf",
-	outsideColor: "#000000",
+	randomness: 0.9,
+	insideColor: "#ffffff",
+	outsideColor: "#35ffee",
+	swirlRatio: 800,
 }
 
 /**
@@ -137,19 +137,13 @@ scene.add(points)
  * Animate
  */
 
-const controls = new OrbitControls(camera, renderer.domElement)
-controls.enableDamping = true
-
 const clock = new THREE.Clock()
 
 const tick = () => {
 	const elapsedTime = clock.getElapsedTime()
 
-	pointsMaterial.uniforms.uTime.value = (400 + elapsedTime) / 50
-
-	camera.lookAt(points.position)
-
-	controls.update()
+	pointsMaterial.uniforms.uTime.value =
+		(400 + elapsedTime) / parameters.swirlRatio
 
 	renderer.render(scene, camera)
 
@@ -169,9 +163,37 @@ const galaxyTimeline = gsap.timeline({
 		trigger: ".section-one",
 		start: "top top",
 		endTrigger: ".section-three",
-		end: "bottom bottom",
+		end: "bottom 0%",
 		scrub: 1,
 	},
 })
 
-galaxyTimeline.to(points.rotation, { z: 1 })
+function desktopAnimation() {
+	galaxyTimeline
+		.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
+		.from(
+			pointsMaterial.uniforms.uSize,
+			{ value: 0 * renderer.getPixelRatio() },
+			0
+		)
+		.to(parameters, { swirlRatio: 2, ease: "expo" }, 0)
+		.to(camera.position, { y: 2, x: -1 }, 0)
+}
+
+function mobileAnimation() {
+	galaxyTimeline
+		.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
+		.from(
+			pointsMaterial.uniforms.uSize,
+			{ value: 1 * renderer.getPixelRatio() },
+			0
+		)
+		.to(parameters, { swirlRatio: 2, ease: "expo" }, 0)
+		.to(camera.position, { y: 2, x: -1 }, 0)
+}
+
+if ("ontouchstart" in document.documentElement) {
+	mobileAnimation()
+} else {
+	desktopAnimation()
+}
