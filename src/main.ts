@@ -190,44 +190,24 @@ aboutTimeline.from(".intro-container", {
 const navEl = document.querySelector("nav")
 const navHeight = navEl?.offsetHeight
 
-function desktopAnimation() {
-	gsap.from(navEl, {
-		y: -navHeight!,
-		opacity: 0,
-		scrollTrigger: {
-			end: "10%",
-			scrub: true,
-		},
-	})
+gsap.from(navEl, {
+	y: -navHeight!,
+	opacity: 0,
+	scrollTrigger: {
+		end: "10%",
+		scrub: true,
+	},
+})
 
-	galaxyTimeline
-		.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
-		.from(
-			pointsMaterial.uniforms.uSize,
-			{ value: 0 * renderer.getPixelRatio() },
-			0
-		)
-		.to(parameters, { swirlRatio: 2, ease: "expo" }, 0)
-		.to(camera.position, { y: 2, x: -1 }, 0)
-}
-
-function mobileAnimation() {
-	galaxyTimeline
-		.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
-		.from(
-			pointsMaterial.uniforms.uSize,
-			{ value: 1 * renderer.getPixelRatio() },
-			0
-		)
-		.to(parameters, { swirlRatio: 2, ease: "expo" }, 0)
-		.to(camera.position, { y: 2, x: -1 }, 0)
-}
-
-if (isMobile) {
-	mobileAnimation()
-} else {
-	desktopAnimation()
-}
+galaxyTimeline
+	.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
+	.from(
+		pointsMaterial.uniforms.uSize,
+		{ value: (isMobile ? 2 : 0) * renderer.getPixelRatio() },
+		0
+	)
+	.to(parameters, { swirlRatio: 2, ease: "expo" }, 0)
+	.to(camera.position, { y: 2, x: -1 }, 0)
 
 document.getElementById("copyright-year")!.textContent = new Date()
 	.getFullYear()
