@@ -2,6 +2,7 @@ import "./style.css"
 import * as THREE from "three"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import fragmentShader from "./shaders/fragment.glsl?raw"
 import vertexShader from "./shaders/vertex.glsl?raw"
 
@@ -157,20 +158,10 @@ const tick = () => {
 
 tick()
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
 ScrollTrigger.defaults({
 	immediateRender: false,
-})
-
-const galaxyTimeline = gsap.timeline({
-	scrollTrigger: {
-		trigger: ".section-one",
-		start: "top top",
-		endTrigger: ".section-three",
-		end: "bottom 0%",
-		scrub: 1,
-	},
 })
 
 const aboutTimeline = gsap.timeline({
@@ -199,6 +190,16 @@ gsap.from(navEl, {
 	},
 })
 
+const galaxyTimeline = gsap.timeline({
+	scrollTrigger: {
+		trigger: ".section-one",
+		start: "top top",
+		endTrigger: ".section-three",
+		end: "bottom 0%",
+		scrub: 1,
+	},
+})
+
 galaxyTimeline
 	.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
 	.from(
@@ -208,6 +209,18 @@ galaxyTimeline
 	)
 	.to(parameters, { swirlRatio: 2, ease: "expo" }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
+
+const navLinks = document.querySelectorAll(".nav-link")
+
+navLinks.forEach((link) => {
+	link.addEventListener("click", (evt) => {
+		evt.preventDefault()
+		gsap.to(window, {
+			duration: 0.6,
+			scrollTo: link.getAttribute("href")!,
+		})
+	})
+})
 
 document.getElementById("copyright-year")!.textContent = new Date()
 	.getFullYear()

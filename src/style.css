@@ -4,7 +4,9 @@
 	--spacing-s: 1.25rem;
 	--spacing-m: 2.5rem;
 	--border-radius: 100px;
-  color: white;
+	--primary-color: #35ffee;
+	--secondary-color: #46ff35;
+ 	color: white;
 }
 
 * {
@@ -32,6 +34,24 @@ nav{
 	left: 0;
 	background: black;
 
+}
+
+.nav-links{
+	display: flex;
+	flex-direction: row;
+	list-style: none;
+	
+}
+
+.nav-link{
+	color: white;
+	text-decoration: none;
+	margin: 0 1rem;
+	transition: color 300ms;
+}
+
+.nav-link:hover{
+	color: var(--primary-color)
 }
 
 nav, footer {
@@ -67,6 +87,16 @@ section {
 	color: white;
 	padding: 2.5rem;
 	border-radius: var(--border-radius);
+}
+
+a{
+	color: var(--primary-color);
+	text-decoration: none;
+	transition: color 300ms;
+}
+
+a:hover{
+	color: var(--secondary-color)
 }
 
 /* prettier-ignore */
