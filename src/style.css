@@ -6,7 +6,31 @@
 	--border-radius: 100px;
 	--primary-color: #35ffee;
 	--secondary-color: #46ff35;
- 	color: white;
+	--darken-background: rgba(0, 0, 0, 0.8);
+	--max-width: 1200px;
+	--border-radius: 1rem;
+}
+html {
+	font-size: 18px;
+	color: white;
+}
+
+h1 {
+	font-size: 2.5rem;
+}
+
+h2 {
+	font-size: 2rem;
+}
+
+h3 {
+	font-size: 1.5rem;
+}
+
+p,
+a,
+li {
+	font-size: 1rem;
 }
 
 * {
@@ -28,76 +52,83 @@ body {
 	height: 100%;
 }
 
-nav{
+nav {
 	position: fixed;
 	top: 0;
 	left: 0;
 	background: black;
-
 }
 
-.nav-links{
+.nav-links {
 	display: flex;
 	flex-direction: row;
 	list-style: none;
-	
 }
 
-.nav-link{
+.nav-link {
 	color: white;
 	text-decoration: none;
 	margin: 0 1rem;
 	transition: color 300ms;
 }
 
-.nav-link:hover{
-	color: var(--primary-color)
+.nav-link:hover {
+	color: var(--primary-color);
 }
 
-nav, footer {
-	
+nav,
+footer {
 	width: 100%;
-	color: white;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-  	align-items: center;
+	align-items: center;
 	z-index: 2;
 }
 
-.nav-item, .footer-item{
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem
+.nav-item,
+.footer-item {
+	padding: 1rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
 }
 
 section {
 	min-height: 100vh;
-	width: 100vw;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	position: relative;
 }
 
 .title {
-	font-size: 2.5rem;
-	background: rgb(0, 0, 0);
-	color: white;
-	padding: 2.5rem;
-	border-radius: var(--border-radius);
+	background-color: #ffdee9;
+	background-image: linear-gradient(90deg, #ffdee9 0%, #b5fffc 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
 }
 
-a{
+#pointer {
+	position: absolute;
+	bottom: 1.5rem;
+	left: 50%;
+	font-size: 1.5rem;
+	font-family: sans-serif;
+}
+
+a {
 	color: var(--primary-color);
 	text-decoration: none;
 	transition: color 300ms;
 }
 
-a:hover{
-	color: var(--secondary-color)
+a:hover {
+	color: var(--secondary-color);
 }
 
 /* prettier-ignore */
@@ -106,48 +137,92 @@ a:hover{
   padding: 0 20px 20px 0;
   padding: 2rem;
   width: 95%;
-  max-width: 1200px;  
-  background: rgba(0, 0, 0, 0.806);
+  max-width: var(--max-width);  
+  background: var(--darken-background)
 }
 
-.intro-content{
-  display: inline;
+.sahba-img {
+	display: inline;
+	width: 100%;
+	max-width: 20rem;
+	margin: 0 2rem 2rem 0;
+	object-fit: cover;
+	float: inherit;
 }
 
-.sahba-img{
-  display: inline;
-  width: 100%;
-  max-width: 20rem;
-  margin: 0 2rem 2rem 0;
-  object-fit: cover;
-  float: inherit;
+.section-title {
+	margin: 4rem;
+	max-width: var(--max-width);
+	background: var(--darken-background);
+	padding: 0 1rem;
+	border-radius: var(--border-radius) var(--border-radius) 0 0;
+	border-bottom: 1px solid var(--primary-color);
 }
 
-.section-title{
-	position:absolute;
-	top: 2rem;
-	left: 2rem;
+.card-container {
+	display: grid;
+	/* grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); */
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 3rem;
+	justify-content: center;
+	align-items: center;
+	width: 95%;
+	max-width: var(--max-width);
 }
 
-.card{
-  background: rgba(0, 0, 0, 0.806);
+.card {
+	background: black;
+	padding: 1rem;
+	border-radius: var(--border-radius);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
+.card-top {
+	border-bottom: 1px solid var(--primary-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 7rem;
+}
 
-@media screen and (max-width: 600px) {
-	.intro-content{
+.card-body {
+	margin-top: auto;
+}
+
+@media only screen and (max-width: 1240px) {
+	html {
+		font-size: 16px;
+	}
+	.card-container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media only screen and (max-width: 960px) {
+	html {
+		font-size: 14px;
+	}
+	.card-container {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media only screen and (max-width: 720px) {
+	.intro-content {
 		display: block;
 		margin: auto;
 	}
 
-	.sahba-img{
+	.sahba-img {
 		display: block;
 		margin: auto;
 		padding-bottom: 2rem;
 	}
-	.intro-container{
+	.intro-container {
 		float: none;
 		margin: 0 auto;
 	}
-	
 }

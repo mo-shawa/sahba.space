@@ -163,6 +163,19 @@ ScrollTrigger.defaults({
 	immediateRender: false,
 })
 
+gsap.to("#pointer", {
+	duration: 1.5,
+	y: 15,
+	repeat: -1,
+	yoyo: true,
+	ease: "sine.inOut",
+	scrollTrigger: {
+		trigger: "#pointer",
+		start: "top bottom",
+		toggleActions: "play pause play pause",
+	},
+})
+
 const aboutTimeline = gsap.timeline({
 	scrollTrigger: {
 		trigger: ".section-two",
