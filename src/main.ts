@@ -198,7 +198,7 @@ gsap.from(navEl, {
 	opacity: 0,
 	scrollTrigger: {
 		end: "5%",
-		scrub: true,
+		// scrub: true,
 	},
 })
 
@@ -229,7 +229,7 @@ navLinks.forEach((link) => {
 		evt.preventDefault()
 		gsap.to(window, {
 			duration: 0.6,
-			scrollTo: { y: link.getAttribute("href")!, offsetY: 50 },
+			scrollTo: { y: link.getAttribute("href")!, offsetY: 20 },
 		})
 	})
 })
