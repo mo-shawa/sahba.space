@@ -90,9 +90,10 @@ footer {
 .footer-item {
 	padding: 1rem;
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
+	flex-wrap: wrap;
 	align-items: center;
-	gap: 1rem;
+	gap: 0.5rem;
 }
 
 section {
