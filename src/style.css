@@ -79,6 +79,7 @@ section {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	position: relative;
 }
 
 .title {
@@ -122,7 +123,15 @@ a:hover{
   float: inherit;
 }
 
+.section-title{
+	position:absolute;
+	top: 2rem;
+	left: 2rem;
+}
 
+.card{
+  background: rgba(0, 0, 0, 0.806);
+}
 
 
 @media screen and (max-width: 600px) {

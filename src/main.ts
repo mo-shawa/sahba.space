@@ -138,7 +138,6 @@ const points = new THREE.Points(pointsGeometry, pointsMaterial)
 camera.lookAt(points.position)
 
 scene.add(points)
-
 /**
  * Animate
  */
@@ -185,16 +184,16 @@ gsap.from(navEl, {
 	y: -navHeight!,
 	opacity: 0,
 	scrollTrigger: {
-		end: "10%",
+		end: "5%",
 		scrub: true,
 	},
 })
 
 const galaxyTimeline = gsap.timeline({
 	scrollTrigger: {
-		trigger: ".section-one",
+		trigger: "#app",
 		start: "top top",
-		endTrigger: ".section-three",
+		// endTrigger: "#interviews",
 		end: "bottom 0%",
 		scrub: 1,
 	},
@@ -207,7 +206,7 @@ galaxyTimeline
 		{ value: (isMobile ? 2 : 0) * renderer.getPixelRatio() },
 		0
 	)
-	.to(parameters, { swirlRatio: 2, ease: "expo" }, 0)
+	.to(parameters, { swirlRatio: 5, ease: "expo" }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
 
 const navLinks = document.querySelectorAll(".nav-link")
@@ -217,7 +216,7 @@ navLinks.forEach((link) => {
 		evt.preventDefault()
 		gsap.to(window, {
 			duration: 0.6,
-			scrollTo: link.getAttribute("href")!,
+			scrollTo: { y: link.getAttribute("href")!, offsetY: 50 },
 		})
 	})
 })
