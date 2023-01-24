@@ -145,6 +145,8 @@ scene.add(points)
 const clock = new THREE.Clock()
 
 const tick = () => {
+	if (clock.getElapsedTime() > 600) clock.start() // reset time after 10 min
+
 	const elapsedTime = clock.getElapsedTime()
 
 	pointsMaterial.uniforms.uTime.value =
@@ -178,7 +180,7 @@ gsap.to("#pointer", {
 
 const aboutTimeline = gsap.timeline({
 	scrollTrigger: {
-		trigger: ".section-two",
+		trigger: "#about",
 		start: "-30%",
 		end: "-10%",
 		scrub: 1,
@@ -191,14 +193,13 @@ aboutTimeline.from(".intro-container", {
 })
 
 const navEl = document.querySelector("nav")
-const navHeight = navEl?.offsetHeight
+const navHeight = navEl!.offsetHeight
 
 gsap.from(navEl, {
 	y: -navHeight!,
 	opacity: 0,
 	scrollTrigger: {
 		end: "5%",
-		// scrub: true,
 	},
 })
 
@@ -206,7 +207,6 @@ const galaxyTimeline = gsap.timeline({
 	scrollTrigger: {
 		trigger: "#app",
 		start: "top top",
-		// endTrigger: "#interviews",
 		end: "bottom 0%",
 		scrub: 1,
 	},

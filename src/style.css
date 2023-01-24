@@ -106,8 +106,12 @@ section {
 }
 
 .title {
-	background-color: #ffdee9;
-	background-image: linear-gradient(90deg, #ffdee9 0%, #b5fffc 100%);
+	background-color: var(--primary-color);
+	background-image: linear-gradient(
+		90deg,
+		var(--primary-color) 0%,
+		#b5fffc 100%
+	);
 	-webkit-background-clip: text;
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -132,14 +136,13 @@ a:hover {
 	color: var(--secondary-color);
 }
 
-/* prettier-ignore */
-.intro-container{
-  float: left; 
-  padding: 0 20px 20px 0;
-  padding: 2rem;
-  width: 95%;
-  max-width: var(--max-width);  
-  background: var(--darken-background)
+.intro-container {
+	float: left;
+	padding: 0 20px 20px 0;
+	padding: 2rem;
+	width: 95%;
+	max-width: var(--max-width);
+	background: var(--darken-background);
 }
 
 .sahba-img {
@@ -162,7 +165,6 @@ a:hover {
 
 .card-container {
 	display: grid;
-	/* grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); */
 	grid-template-columns: repeat(3, 1fr);
 	grid-gap: 3rem;
 	justify-content: center;
