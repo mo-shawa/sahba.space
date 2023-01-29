@@ -115,7 +115,7 @@ section {
 	flex-wrap: wrap;
 	gap: var(--spacing-s);
 	height: 100%;
-	width: 95%;
+	width: calc(100% - 1rem);
 	max-width: var(--max-width);
 	border-radius: var(--border-radius);
 	padding: var(--spacing-s);
@@ -155,9 +155,8 @@ a:hover {
 
 .intro-container {
 	float: left;
-	padding: 0 20px 20px 0;
 	padding: 2rem;
-	width: 95%;
+	width: calc(95% - 3rem);
 	max-width: var(--max-width);
 	background: var(--darken-background);
 }
@@ -214,8 +213,23 @@ a:hover {
 
 .research-item > small {
 	display: block;
-	/* max-width: 200px; */
 	margin-top: var(--spacing-xs);
+}
+
+.rg-btn {
+	width: 100%;
+	padding: var(--spacing-s);
+	font-family: inherit;
+	background: var(--primary-color);
+	border-radius: var(--border-radius);
+	text-align: center;
+	color: black;
+	transition: all 300ms;
+}
+
+.rg-btn:hover {
+	background: white;
+	color: black;
 }
 
 @media only screen and (max-width: 1240px) {
@@ -224,6 +238,10 @@ a:hover {
 	}
 	.card-container {
 		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.nav-links {
+		display: none;
 	}
 }
 
