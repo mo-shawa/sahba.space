@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
 :root {
 	--spacing-xs: 0.5rem;
@@ -44,7 +44,7 @@ small {
 }
 
 body {
-	font-family: "Space Mono", monospace;
+	font-family: 'Space Mono', monospace;
 	overflow-x: hidden;
 }
 
@@ -89,6 +89,7 @@ footer {
 	justify-content: space-between;
 	align-items: center;
 	z-index: 2;
+	margin-top: auto;
 }
 
 .nav-item,
@@ -106,8 +107,12 @@ section {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	position: relative;
+}
+
+#hero {
+	justify-content: center;
 }
 
 .section-container {
