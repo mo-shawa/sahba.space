@@ -115,6 +115,10 @@ section {
 	justify-content: center;
 }
 
+#leadership {
+	background: black;
+}
+
 .section-container {
 	display: flex;
 	flex-wrap: wrap;
