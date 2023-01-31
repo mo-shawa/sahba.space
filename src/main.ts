@@ -270,11 +270,10 @@ navLinks.forEach((link) => {
 const iconWrappers = document.querySelectorAll('.icon-wrapper')
 const iconsOptions = {
 	delay: 1,
-	xPercent: -100,
-	// opacity: 0,
+	xPercent: -150,
 	ease: 'power3.out',
 	duration: 1,
-	stagger: 0.2,
+	stagger: 0.1,
 }
 
 gsap.from(iconWrappers, {

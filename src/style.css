@@ -154,6 +154,10 @@ section {
 	padding-bottom: var(--spacing-m);
 }
 
+.darken {
+	background-color: var(--darken-background);
+}
+
 .section-container {
 	display: flex;
 	flex-wrap: wrap;
@@ -163,7 +167,6 @@ section {
 	max-width: var(--max-width);
 	border-radius: var(--border-radius);
 	padding: var(--spacing-s);
-	background: var(--darken-background);
 }
 
 .title {
@@ -247,7 +250,6 @@ a:hover {
 }
 
 .card {
-	/* background: var(--darken-background); */
 	padding: 1rem;
 	border-radius: var(--border-radius);
 	height: 100%;
@@ -375,6 +377,11 @@ div.card-top:has(img.int-img) {
 	padding: 1rem;
 	background-color: #23a99e;
 	border-radius: var(--border-radius);
+	transition: background-color 300ms;
+}
+
+.icon-wrapper:hover {
+	background-color: #adea93;
 }
 
 .svg-icon {
@@ -386,27 +393,6 @@ div.card-top:has(img.int-img) {
 	-ms-user-select: none;
 	user-select: none;
 }
-
-/* .linkedin {
-	background: #0072b1;
-	border-top-right-radius: var(--border-radius);
-}
-
-.instagram {
-	background: radial-gradient(
-		circle at 33% 100%,
-		#fed373 4%,
-		#f15245 30%,
-		#d92e7f 62%,
-		#9b36b7 85%,
-		#515ecf
-	);
-}
-
-.gmail {
-	background: whitesmoke;
-	border-bottom-right-radius: var(--border-radius);
-} */
 
 @media only screen and (max-width: 1240px) {
 	html {
