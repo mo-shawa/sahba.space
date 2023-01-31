@@ -190,7 +190,8 @@ a:hover {
 
 .intro-container {
 	float: left;
-	padding: 2rem;
+	padding: var(--spacing-m);
+	margin-bottom: var(--spacing-m);
 	width: calc(95% - 3rem);
 	max-width: var(--max-width);
 	background: var(--darken-background);
@@ -373,6 +374,7 @@ div.card-top:has(img.int-img) {
 	.intro-container {
 		float: none;
 		margin: 0 auto;
+		margin-bottom: var(--spacing-m);
 	}
 	/* .lecture {
 		min-width: calc(95% - var(--spacing-s));
