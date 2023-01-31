@@ -150,7 +150,7 @@ section {
 }
 
 #leadership {
-	background: black;
+	/* background: var(--darken-background); */
 	padding-bottom: var(--spacing-m);
 }
 
@@ -169,7 +169,8 @@ section {
 .title {
 	background: var(--darken-background);
 	padding: var(--spacing-s);
-	border-radius: 4rem;
+	border-radius: var(--border-radius);
+
 	color: white;
 }
 
@@ -200,6 +201,10 @@ a:hover {
 	background: var(--darken-background);
 }
 
+.intro-content {
+	text-align: justify;
+}
+
 .sahba-img {
 	display: inline;
 	width: 100%;
@@ -228,6 +233,7 @@ a:hover {
 	align-items: center;
 	width: 95%;
 	max-width: var(--max-width);
+	background: var(--darken-background);
 }
 
 .interview-card-container {
@@ -241,7 +247,7 @@ a:hover {
 }
 
 .card {
-	background: var(--darken-background);
+	/* background: var(--darken-background); */
 	padding: 1rem;
 	border-radius: var(--border-radius);
 	height: 100%;
@@ -251,8 +257,9 @@ a:hover {
 }
 
 .card.interview {
-	max-width: 20rem;
+	max-width: 25rem;
 	margin: 0 auto;
+	background: var(--darken-background);
 }
 
 .card-top {
@@ -356,18 +363,22 @@ div.card-top:has(img.int-img) {
 	justify-content: space-evenly;
 	width: 10rem;
 	height: 60%;
+	border-top-right-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
+	/* background: #35ffee; */
 }
 
 .icon-wrapper {
 	display: flex;
 	justify-items: center;
 	align-items: center;
-	height: 100%;
-	width: 100%;
+	padding: 1rem;
+	background-color: #23a99e;
+	border-radius: var(--border-radius);
 }
 
 .svg-icon {
-	height: 6rem;
+	height: 4rem;
 	margin: auto;
 	cursor: pointer;
 	-webkit-user-select: none;
@@ -376,7 +387,7 @@ div.card-top:has(img.int-img) {
 	user-select: none;
 }
 
-.linkedin {
+/* .linkedin {
 	background: #0072b1;
 	border-top-right-radius: var(--border-radius);
 }
@@ -395,7 +406,7 @@ div.card-top:has(img.int-img) {
 .gmail {
 	background: whitesmoke;
 	border-bottom-right-radius: var(--border-radius);
-}
+} */
 
 @media only screen and (max-width: 1240px) {
 	html {
