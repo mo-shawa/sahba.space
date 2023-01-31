@@ -40,18 +40,18 @@ const sizes = {
 	height: isMobile ? window.outerHeight : window.innerHeight,
 }
 
-if (!isMobile) {
-	window.addEventListener('resize', () => {
-		sizes.width = window.innerWidth
-		sizes.height = window.innerHeight
+window.addEventListener('resize', () => {
+	if (isMobile && sizes.height < window.innerHeight) return
 
-		camera.aspect = sizes.width / sizes.height
-		camera.updateProjectionMatrix()
+	sizes.width = window.innerWidth
+	sizes.height = window.innerHeight
 
-		renderer.setSize(sizes.width, sizes.height)
-		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-	})
-}
+	camera.aspect = sizes.width / sizes.height
+	camera.updateProjectionMatrix()
+
+	renderer.setSize(sizes.width, sizes.height)
+	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
 
 /**
 
