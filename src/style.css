@@ -45,6 +45,7 @@ small {
 body {
 	font-family: "Space Mono", monospace;
 	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 .webgl {
@@ -293,7 +294,8 @@ div.card-top:has(img.int-img) {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	max-width: min-content;
+	width: calc(95% - var(--spacing-s));
+	max-width: var(--max-width);
 	margin: 0 auto;
 	align-items: center;
 	backdrop-filter: blur(10px);
@@ -302,6 +304,21 @@ div.card-top:has(img.int-img) {
 	gap: var(--spacing-m);
 	padding: var(--spacing-s);
 	border-radius: var(--border-radius);
+}
+
+.slides-container {
+	position: relative;
+	width: 100%;
+	padding-top: 60%;
+	overflow: hidden;
+}
+
+.slides-container iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
 
 .testimonial {
@@ -359,11 +376,10 @@ div.card-top:has(img.int-img) {
 		float: none;
 		margin: 0 auto;
 	}
-	.lecture {
-		/* margin: 0; */
+	/* .lecture {
 		min-width: calc(95% - var(--spacing-s));
 	}
 	.lecture > iframe {
 		display: none;
-	}
+	} */
 }
