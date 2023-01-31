@@ -16,9 +16,22 @@ loader.load("/models/astronaut/scene.gltf", (gltf) => {
 	astronaut = gltf.scene
 	astronaut.scale.set(0.4, 0.4, 0.4)
 	astronaut.rotateOnAxis(new THREE.Vector3(1, 0, 0), 5)
-	astronaut.position.set(-2, 0, 0)
+	astronaut.position.set(-10, 0, 0)
 	scene.add(astronaut)
-	scene.add(new THREE.AmbientLight("white", 1))
+	const light = new THREE.DirectionalLight("white", 4)
+	light.position.set(3, -2, 0)
+	scene.add(light)
+
+	gsap.to(astronaut.position, {
+		x: 1,
+		ease: "expo.out",
+		scrollTrigger: {
+			trigger: "#contact",
+			start: "0%",
+			end: "50%",
+			scrub: true,
+		},
+	})
 })
 
 /**
@@ -239,15 +252,6 @@ galaxyTimeline
 	)
 	.to(parameters, { swirlRatio: 5, ease: "expo" }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
-
-gsap.to(astronaut!.position, {
-	x: 0,
-	scrollTrigger: {
-		trigger: "#contact",
-		start: "top top",
-		end: "bottom bottom",
-	},
-})
 
 const navLinks = document.querySelectorAll(".nav-link")
 
