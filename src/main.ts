@@ -8,19 +8,19 @@ import vertexShader from "./shaders/vertex.glsl?raw"
 
 const isMobile = "ontouchstart" in document.documentElement
 
-// window.addEventListener("load", () => {
-// 	const overlay = document.getElementById("overlay")
-// 	gsap.to(overlay, {
-// 		yPercent: 110,
-// 		opacity: 0,
-// 		ease: "expo.inOut",
-// 		duration: 1,
+window.addEventListener("DOMContentLoaded", () => {
+	const overlay = document.getElementById("overlay")
+	gsap.to(overlay, {
+		yPercent: 40,
+		opacity: 0,
+		ease: "expo.inOut",
+		duration: 1,
 
-// 		onComplete: () => {
-// 			overlay!.remove()
-// 		},
-// 	})
-// })
+		onComplete: () => {
+			overlay!.remove()
+		},
+	})
+})
 
 /**
  * Base
