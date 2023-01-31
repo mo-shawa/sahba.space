@@ -10,18 +10,21 @@ const isMobile = "ontouchstart" in document.documentElement
 
 window.addEventListener("DOMContentLoaded", () => {
 	const overlay = document.getElementById("overlay")
-	gsap.to(overlay, {
-		yPercent: 40,
-		opacity: 0,
-		ease: "expo.inOut",
-		duration: 1,
-		onStart: () => {
-			document.body.style.overflowY = "auto"
-		},
-		onComplete: () => {
-			overlay!.remove()
-		},
-	})
+
+	setTimeout(() => {
+		gsap.to(overlay, {
+			yPercent: 40,
+			opacity: 0,
+			ease: "expo.inOut",
+			duration: 1,
+			onStart: () => {
+				document.body.style.overflowY = "auto"
+			},
+			onComplete: () => {
+				overlay!.remove()
+			},
+		})
+	}, 1500)
 })
 
 /**
