@@ -1,5 +1,6 @@
 import "./style.css"
 import * as THREE from "three"
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ScrollToPlugin } from "gsap/ScrollToPlugin"
@@ -7,6 +8,18 @@ import fragmentShader from "./shaders/fragment.glsl?raw"
 import vertexShader from "./shaders/vertex.glsl?raw"
 
 const isMobile = "ontouchstart" in document.documentElement
+
+const loader = new GLTFLoader()
+let astronaut: THREE.Group
+loader.load("/models/astronaut/scene.gltf", (gltf) => {
+	console.log(gltf)
+	astronaut = gltf.scene
+	astronaut.scale.set(0.4, 0.4, 0.4)
+	astronaut.rotateOnAxis(new THREE.Vector3(1, 0, 0), 5)
+	astronaut.position.set(-2, 0, 0)
+	scene.add(astronaut)
+	scene.add(new THREE.AmbientLight("white", 1))
+})
 
 /**
  * Base
@@ -149,6 +162,11 @@ const tick = () => {
 
 	const elapsedTime = clock.getElapsedTime()
 
+	if (astronaut !== undefined) {
+		astronaut.position.z = Math.sin(elapsedTime / 2) * 0.04
+		astronaut.rotation.y = Math.sin(elapsedTime / 5) * 0.3
+	}
+
 	pointsMaterial.uniforms.uTime.value =
 		(400 + elapsedTime) / parameters.swirlRatio
 
@@ -162,7 +180,7 @@ tick()
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
 ScrollTrigger.defaults({
-	immediateRender: false,
+	// immediateRender: false,
 })
 
 gsap.to("#pointer", {
@@ -221,6 +239,15 @@ galaxyTimeline
 	)
 	.to(parameters, { swirlRatio: 5, ease: "expo" }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
+
+gsap.to(astronaut!.position, {
+	x: 0,
+	scrollTrigger: {
+		trigger: "#contact",
+		start: "top top",
+		end: "bottom bottom",
+	},
+})
 
 const navLinks = document.querySelectorAll(".nav-link")
 
