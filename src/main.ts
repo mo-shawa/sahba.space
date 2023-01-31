@@ -1,24 +1,24 @@
-import "./style.css"
-import * as THREE from "three"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { ScrollToPlugin } from "gsap/ScrollToPlugin"
-import fragmentShader from "./shaders/fragment.glsl?raw"
-import vertexShader from "./shaders/vertex.glsl?raw"
+import './style.css'
+import * as THREE from 'three'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+import fragmentShader from './shaders/fragment.glsl?raw'
+import vertexShader from './shaders/vertex.glsl?raw'
 
-const isMobile = "ontouchstart" in document.documentElement
+const isMobile = 'ontouchstart' in document.documentElement
 
-window.addEventListener("DOMContentLoaded", () => {
-	const overlay = document.getElementById("overlay")
+window.addEventListener('DOMContentLoaded', () => {
+	const overlay = document.getElementById('overlay')
 
 	setTimeout(() => {
 		gsap.to(overlay, {
 			yPercent: 40,
 			opacity: 0,
-			ease: "expo.inOut",
+			ease: 'expo.inOut',
 			duration: 1,
 			onStart: () => {
-				document.body.style.overflowY = "auto"
+				document.body.style.overflowY = 'auto'
 			},
 			onComplete: () => {
 				overlay!.remove()
@@ -41,7 +41,7 @@ const sizes = {
 }
 
 if (!isMobile) {
-	window.addEventListener("resize", () => {
+	window.addEventListener('resize', () => {
 		sizes.width = window.innerWidth
 		sizes.height = window.innerHeight
 
@@ -78,8 +78,8 @@ scene.add(camera)
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-renderer.domElement.classList.add("webgl")
-document.getElementById("app")?.prepend(renderer.domElement)
+renderer.domElement.classList.add('webgl')
+document.getElementById('app')?.prepend(renderer.domElement)
 
 const parameters = {
 	count: 180000,
@@ -88,8 +88,8 @@ const parameters = {
 	branches: 6,
 	spin: 1,
 	randomness: 0.9,
-	insideColor: "#ffffff",
-	outsideColor: "#35ffee",
+	insideColor: '#ffffff',
+	outsideColor: '#35ffee',
 	swirlRatio: 800,
 }
 
@@ -133,9 +133,9 @@ for (let i = 0; i < parameters.count; i++) {
 
 // console.log(colors)
 
-pointsGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
-pointsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
-pointsGeometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1))
+pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+pointsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+pointsGeometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1))
 
 /**
  * Shader Material
@@ -184,89 +184,106 @@ ScrollTrigger.defaults({
 	immediateRender: false,
 })
 
-const navEl = document.querySelector("nav")
+const navEl = document.querySelector('nav')
 const navHeight = navEl!.offsetHeight
 
 gsap.from(navEl, {
 	y: -navHeight!,
 	opacity: 0,
 	scrollTrigger: {
-		end: "5%",
+		end: '5%',
 	},
 })
 
-gsap.to("#pointer", {
+gsap.to('#pointer', {
 	duration: 1.5,
 	y: 15,
 	repeat: -1,
 	yoyo: true,
-	ease: "sine.inOut",
+	ease: 'sine.inOut',
 	scrollTrigger: {
-		trigger: "#pointer",
-		start: "top bottom",
-		toggleActions: "play pause play pause",
+		trigger: '#pointer',
+		start: 'top bottom',
+		toggleActions: 'play pause play pause',
 	},
 })
 
 const aboutTimeline = gsap.timeline({
 	scrollTrigger: {
-		trigger: "#about",
-		start: "-30%",
-		end: "-10%",
+		trigger: '#about',
+		start: '-30%',
+		end: '-10%',
 		// scrub: 1,
 	},
 })
 
 document
-	.querySelectorAll(".card, .section-title, .section-container, .lecture")
+	.querySelectorAll('.card, .section-title, .section-container, .lecture')
 	.forEach((element) => {
 		gsap.from(element, {
 			xPercent: -10,
 			opacity: 0,
-			ease: "expo.out",
+			ease: 'expo.out',
 			scrollTrigger: {
 				trigger: element,
-				start: " 50%",
+				start: ' 50%',
 			},
 		})
 	})
 
-aboutTimeline.from(".intro-container", {
+aboutTimeline.from('.intro-container', {
 	opacity: 0,
 	xPercent: -20,
 })
 
 const galaxyTimeline = gsap.timeline({
 	scrollTrigger: {
-		trigger: "#app",
-		start: "top top",
-		end: "bottom 0%",
+		trigger: '#app',
+		start: 'top top',
+		end: 'bottom 0%',
 		scrub: 1,
 	},
 })
 
 galaxyTimeline
-	.to(points.rotation, { z: 0.3, ease: "expo.out" }, 0)
+	.to(points.rotation, { z: 0.3, ease: 'expo.out' }, 0)
 	.from(
 		pointsMaterial.uniforms.uSize,
 		{ value: (isMobile ? 2 : 0) * renderer.getPixelRatio() },
 		0
 	)
-	.to(parameters, { swirlRatio: 5, ease: "expo" }, 0)
+	.to(parameters, { swirlRatio: 5, ease: 'expo' }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
 
-const navLinks = document.querySelectorAll(".nav-link")
+const navLinks = document.querySelectorAll('.nav-link')
 
 navLinks.forEach((link) => {
-	link.addEventListener("click", (evt) => {
+	link.addEventListener('click', (evt) => {
 		evt.preventDefault()
 		gsap.to(window, {
 			duration: 0.6,
-			scrollTo: { y: link.getAttribute("href")!, offsetY: 20 },
+			scrollTo: { y: link.getAttribute('href')!, offsetY: 20 },
 		})
 	})
 })
 
-document.getElementById("copyright-year")!.textContent = new Date()
+const iconWrappers = document.querySelectorAll('.icon-wrapper')
+const iconsOptions = {
+	xPercent: -100,
+	// opacity: 0,
+	ease: 'power3.out',
+	duration: 1,
+	stagger: 0.2,
+}
+
+gsap.from(iconWrappers, {
+	...iconsOptions,
+	scrollTrigger: {
+		trigger: iconWrappers,
+		end: 'bottom bottom',
+	},
+})
+
+document.getElementById('copyright-year')!.textContent = new Date()
 	.getFullYear()
 	.toString()

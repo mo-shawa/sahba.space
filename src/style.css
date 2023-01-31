@@ -329,6 +329,10 @@ div.card-top:has(img.int-img) {
 	height: 100%;
 }
 
+#testimonials {
+	margin-bottom: var(--spacing-m);
+}
+
 .testimonial {
 	background-color: transparent;
 	background: var(--darken-background);
@@ -349,7 +353,6 @@ div.card-top:has(img.int-img) {
 	align-items: center;
 	justify-content: space-evenly;
 	width: 10rem;
-	background: var(--darken-background);
 	height: 100%;
 }
 
@@ -357,16 +360,39 @@ div.card-top:has(img.int-img) {
 	display: flex;
 	justify-items: center;
 	align-items: center;
-	border-bottom: 1px solid var(--primary-color);
+	border-bottom: 1px solid black;
 	height: 100%;
 	width: 100%;
-	object-fit: contain;
 }
 
 .svg-icon {
-	/* height: 4rem; */
-	/* width: 100%; */
-	padding: 2rem;
+	height: 6rem;
+	margin: auto;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.linkedin {
+	background: #0072b1;
+	border-top-right-radius: var(--border-radius);
+}
+
+.instagram {
+	background: radial-gradient(
+		circle at 33% 100%,
+		#fed373 4%,
+		#f15245 30%,
+		#d92e7f 62%,
+		#9b36b7 85%,
+		#515ecf
+	);
+}
+
+.gmail {
+	background: whitesmoke;
 }
 
 @media only screen and (max-width: 1240px) {
