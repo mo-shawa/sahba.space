@@ -269,6 +269,7 @@ navLinks.forEach((link) => {
 
 const iconWrappers = document.querySelectorAll('.icon-wrapper')
 const iconsOptions = {
+	delay: 1,
 	xPercent: -100,
 	// opacity: 0,
 	ease: 'power3.out',
