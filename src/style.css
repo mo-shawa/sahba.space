@@ -132,6 +132,7 @@ section {
 
 .title {
 	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 	padding: var(--spacing-s);
 	border-radius: 4rem;
 	color: white;
@@ -265,14 +266,13 @@ div.card-top:has(img.int-img) {
 	justify-content: center;
 	max-width: min-content;
 	margin: 0 auto;
-	border: 1px solid var(--primary-color);
-	border-top: none;
-	border-bottom: none;
 	align-items: center;
 	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 	margin-bottom: var(--spacing-m);
 	gap: var(--spacing-m);
 	padding: var(--spacing-s);
+	border-radius: var(--border-radius);
 }
 
 .testimonial {
@@ -329,6 +329,10 @@ div.card-top:has(img.int-img) {
 	.intro-container {
 		float: none;
 		margin: 0 auto;
+	}
+	.lecture {
+		/* margin: 0; */
+		min-width: calc(95% - var(--spacing-s));
 	}
 	.lecture > iframe {
 		display: none;

@@ -208,7 +208,6 @@ document
 			scrollTrigger: {
 				trigger: element,
 				start: " 50%",
-				// scrub: true,
 			},
 		})
 	})
