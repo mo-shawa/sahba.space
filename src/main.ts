@@ -162,7 +162,18 @@ tick()
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
 ScrollTrigger.defaults({
-	// immediateRender: false,
+	immediateRender: false,
+})
+
+const navEl = document.querySelector("nav")
+const navHeight = navEl!.offsetHeight
+
+gsap.from(navEl, {
+	y: -navHeight!,
+	opacity: 0,
+	scrollTrigger: {
+		end: "5%",
+	},
 })
 
 gsap.to("#pointer", {
@@ -187,20 +198,24 @@ const aboutTimeline = gsap.timeline({
 	},
 })
 
+document
+	.querySelectorAll(".card, .section-title, .section-container")
+	.forEach((element) => {
+		gsap.from(element, {
+			xPercent: -10,
+			opacity: 0,
+			ease: "expo.out",
+			scrollTrigger: {
+				trigger: element,
+				start: " 50%",
+				// scrub: true,
+			},
+		})
+	})
+
 aboutTimeline.from(".intro-container", {
 	opacity: 0,
 	xPercent: -20,
-})
-
-const navEl = document.querySelector("nav")
-const navHeight = navEl!.offsetHeight
-
-gsap.from(navEl, {
-	y: -navHeight!,
-	opacity: 0,
-	scrollTrigger: {
-		end: "5%",
-	},
 })
 
 const galaxyTimeline = gsap.timeline({
@@ -221,15 +236,6 @@ galaxyTimeline
 	)
 	.to(parameters, { swirlRatio: 5, ease: "expo" }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
-
-gsap.to(astronaut!.position, {
-	x: 0,
-	scrollTrigger: {
-		trigger: "#contact",
-		start: "top top",
-		end: "bottom bottom",
-	},
-})
 
 const navLinks = document.querySelectorAll(".nav-link")
 
