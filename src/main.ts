@@ -15,7 +15,9 @@ window.addEventListener("DOMContentLoaded", () => {
 		opacity: 0,
 		ease: "expo.inOut",
 		duration: 1,
-
+		onStart: () => {
+			document.body.style.overflowY = "auto"
+		},
 		onComplete: () => {
 			overlay!.remove()
 		},
