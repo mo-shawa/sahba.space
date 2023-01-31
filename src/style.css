@@ -1,9 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
 :root {
 	--spacing-xs: 0.5rem;
 	--spacing-s: 1rem;
 	--spacing-m: 2rem;
+	--spacing-l: 4rem;
 	--border-radius: 100px;
 	--primary-color: #35ffee;
 	--secondary-color: #adea93;
@@ -43,7 +44,7 @@ small {
 }
 
 body {
-	font-family: "Space Mono", monospace;
+	font-family: 'Space Mono', monospace;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
@@ -146,6 +147,7 @@ section {
 
 #leadership {
 	background: black;
+	padding-bottom: var(--spacing-m);
 }
 
 .section-container {
@@ -204,7 +206,7 @@ a:hover {
 }
 
 .section-title {
-	margin: 4rem;
+	margin: var(--spacing-l);
 	max-width: var(--max-width);
 	background: var(--darken-background);
 	padding: 0 1rem;
@@ -213,9 +215,11 @@ a:hover {
 }
 
 .card-container {
+	height: 100%;
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
 	grid-gap: 3rem;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(2, 1fr);
 	justify-content: center;
 	align-items: center;
 	width: 95%;
@@ -345,10 +349,6 @@ div.card-top:has(img.int-img) {
 
 	.nav-links {
 		display: none;
-	}
-
-	#leadership {
-		padding-bottom: var(--spacing-m);
 	}
 }
 
