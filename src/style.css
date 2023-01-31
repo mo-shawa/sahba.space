@@ -206,7 +206,7 @@ a:hover {
 	max-width: 20rem;
 	margin: 0 2rem 2rem 0;
 	object-fit: cover;
-	float: inherit;
+	float: left;
 }
 
 .section-title {
@@ -374,16 +374,11 @@ div.card-top:has(img.int-img) {
 		display: block;
 		margin: auto;
 		padding-bottom: 2rem;
+		float: none;
 	}
 	.intro-container {
 		float: none;
 		margin: 0 auto;
 		margin-bottom: var(--spacing-m);
 	}
-	/* .lecture {
-		min-width: calc(95% - var(--spacing-s));
-	}
-	.lecture > iframe {
-		display: none;
-	} */
 }
