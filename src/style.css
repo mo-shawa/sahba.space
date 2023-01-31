@@ -120,6 +120,9 @@ footer {
 	align-items: center;
 	z-index: 2;
 	margin-top: auto;
+}
+
+footer {
 	background: var(--darken-background);
 }
 
@@ -258,6 +261,7 @@ a:hover {
 	justify-content: center;
 	align-items: center;
 	min-height: 7rem;
+	margin-bottom: var(--spacing-s);
 }
 
 div.card-top:has(img.int-img) {
@@ -271,7 +275,7 @@ div.card-top:has(img.int-img) {
 }
 
 .card-body {
-	margin-top: auto;
+	margin-bottom: auto;
 }
 
 .research-item > small {
