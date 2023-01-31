@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
 
 :root {
 	--spacing-xs: 0.5rem;
-	--spacing-s: 1.25rem;
+	--spacing-s: 1rem;
 	--spacing-m: 2rem;
 	--border-radius: 100px;
 	--primary-color: #35ffee;
@@ -43,7 +43,7 @@ small {
 }
 
 body {
-	font-family: 'Space Mono', monospace;
+	font-family: "Space Mono", monospace;
 	overflow-x: hidden;
 }
 
@@ -131,16 +131,9 @@ section {
 }
 
 .title {
-	/* background-color: var(--primary-color);
-	background-image: linear-gradient(
-		90deg,
-		var(--primary-color) 0%,
-		#b5fffc 100%
-	);
-	-webkit-background-clip: text;
-	background-clip: text;
-	-webkit-text-fill-color: transparent;
-	color: transparent; */
+	backdrop-filter: blur(10px);
+	padding: var(--spacing-s);
+	border-radius: 4rem;
 	color: white;
 }
 
@@ -268,6 +261,17 @@ div.card-top:has(img.int-img) {
 
 .lecture {
 	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	max-width: min-content;
+	margin: 0 auto;
+	border: 1px solid var(--primary-color);
+	border-top: none;
+	border-bottom: none;
+	align-items: center;
+	backdrop-filter: blur(10px);
+	margin-bottom: var(--spacing-m);
+	gap: var(--spacing-m);
 	padding: var(--spacing-s);
 }
 
@@ -296,6 +300,10 @@ div.card-top:has(img.int-img) {
 	.nav-links {
 		display: none;
 	}
+
+	#leadership {
+		padding-bottom: var(--spacing-m);
+	}
 }
 
 @media only screen and (max-width: 960px) {
@@ -321,5 +329,8 @@ div.card-top:has(img.int-img) {
 	.intro-container {
 		float: none;
 		margin: 0 auto;
+	}
+	.lecture > iframe {
+		display: none;
 	}
 }

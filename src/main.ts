@@ -194,12 +194,12 @@ const aboutTimeline = gsap.timeline({
 		trigger: "#about",
 		start: "-30%",
 		end: "-10%",
-		scrub: 1,
+		// scrub: 1,
 	},
 })
 
 document
-	.querySelectorAll(".card, .section-title, .section-container")
+	.querySelectorAll(".card, .section-title, .section-container, .lecture")
 	.forEach((element) => {
 		gsap.from(element, {
 			xPercent: -10,
