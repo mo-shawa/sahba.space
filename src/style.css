@@ -210,7 +210,7 @@ a:hover {
 }
 
 .section-title {
-	margin: var(--spacing-l);
+	margin: var(--spacing-l) 0;
 	max-width: var(--max-width);
 	background: var(--darken-background);
 	padding: 0 1rem;
@@ -340,6 +340,33 @@ div.card-top:has(img.int-img) {
 
 .quote:nth-of-type(even) {
 	margin-left: auto;
+}
+#contact-links {
+	position: absolute;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-evenly;
+	width: 10rem;
+	background: var(--darken-background);
+	height: 100%;
+}
+
+.icon-wrapper {
+	display: flex;
+	justify-items: center;
+	align-items: center;
+	border-bottom: 1px solid var(--primary-color);
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
+
+.svg-icon {
+	/* height: 4rem; */
+	/* width: 100%; */
+	padding: 2rem;
 }
 
 @media only screen and (max-width: 1240px) {
