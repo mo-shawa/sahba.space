@@ -41,10 +41,10 @@ const sizes = {
 }
 
 window.addEventListener('resize', () => {
-	if (isMobile && sizes.height < window.innerHeight) return
+	if (isMobile && sizes.height > window.outerHeight) return
 
 	sizes.width = window.innerWidth
-	sizes.height = window.innerHeight
+	sizes.height = isMobile ? window.outerHeight : window.innerHeight
 
 	camera.aspect = sizes.width / sizes.height
 	camera.updateProjectionMatrix()
