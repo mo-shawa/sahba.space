@@ -120,6 +120,7 @@ footer {
 	align-items: center;
 	z-index: 2;
 	margin-top: auto;
+	background: var(--darken-background);
 }
 
 .nav-item,
@@ -163,8 +164,7 @@ section {
 }
 
 .title {
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
+	background: var(--darken-background);
 	padding: var(--spacing-s);
 	border-radius: 4rem;
 	color: white;
@@ -302,8 +302,7 @@ div.card-top:has(img.int-img) {
 	max-width: var(--max-width);
 	margin: 0 auto;
 	align-items: center;
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
+	background: var(--darken-background);
 	margin-bottom: var(--spacing-m);
 	gap: var(--spacing-m);
 	padding: var(--spacing-s);
@@ -327,8 +326,7 @@ div.card-top:has(img.int-img) {
 
 .testimonial {
 	background-color: transparent;
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
+	background: var(--darken-background);
 }
 
 .quote {
