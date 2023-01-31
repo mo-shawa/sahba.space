@@ -274,6 +274,7 @@ div.card-top:has(img.int-img) {
 .testimonial {
 	background-color: transparent;
 	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 }
 
 .quote {
