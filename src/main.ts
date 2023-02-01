@@ -7,6 +7,9 @@ import fragmentShader from './shaders/fragment.glsl?raw'
 import vertexShader from './shaders/vertex.glsl?raw'
 
 const isMobile = 'ontouchstart' in document.documentElement
+const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)
+
+console.log(isSafari)
 
 window.addEventListener('DOMContentLoaded', () => {
 	const overlay = document.getElementById('overlay')
@@ -41,11 +44,14 @@ const sizes = {
 }
 
 window.addEventListener('resize', () => {
-	if (
-		isMobile &&
-		(sizes.height > window.outerHeight || sizes.width > window.innerWidth)
-	)
-		return
+	if (isMobile && sizes.height > window.outerHeight) return
+	handleCanvasResize()
+})
+
+window.addEventListener('orientationchange', handleCanvasResize)
+
+function handleCanvasResize() {
+	console.log('triggered')
 
 	sizes.width = window.innerWidth
 	sizes.height = isMobile ? window.outerHeight : window.innerHeight
@@ -55,7 +61,7 @@ window.addEventListener('resize', () => {
 
 	renderer.setSize(sizes.width, sizes.height)
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-})
+}
 
 /**
 
@@ -285,7 +291,7 @@ galaxyTimeline
 	.to(points.rotation, { z: 0.3, ease: 'expo.out' }, 0)
 	.from(
 		pointsMaterial.uniforms.uSize,
-		{ value: (isMobile ? 2 : 0) * renderer.getPixelRatio() },
+		{ value: (isMobile || isSafari ? 1 : 0) * renderer.getPixelRatio() },
 		0
 	)
 	.to(parameters, { swirlRatio: 5, ease: 'expo' }, 0)
@@ -293,7 +299,7 @@ galaxyTimeline
 
 const iconWrappers = document.querySelectorAll('.icon-wrapper')
 const iconsOptions = {
-	delay: 1,
+	delay: 0.5,
 	scale: 0,
 	opacity: 0,
 	xPercent: -150,
