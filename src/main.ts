@@ -199,6 +199,28 @@ gsap.from(navEl, {
 	},
 })
 
+const hamburger = document.getElementById('hamburger')
+const mobileNav = document.getElementById('mobile-nav')
+const navOptions = { right: 0, ease: 'expo.inOut' }
+
+hamburger!.addEventListener('click', () => {
+	gsap.to(mobileNav, navOptions)
+})
+
+const navLinks = document.querySelectorAll('.nav-link')
+
+navLinks.forEach((link) => {
+	link.addEventListener('click', (evt) => {
+		evt.preventDefault()
+		gsap.to(mobileNav, { right: '-150%' })
+		gsap.to(window, {
+			duration: 1,
+			ease: 'expo.inOut',
+			scrollTo: { y: link.getAttribute('href')!, offsetY: 20 },
+		})
+	})
+})
+
 gsap.to('#pointer', {
 	duration: 1.5,
 	y: 15,
@@ -258,19 +280,6 @@ galaxyTimeline
 	)
 	.to(parameters, { swirlRatio: 5, ease: 'expo' }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
-
-const navLinks = document.querySelectorAll('.nav-link')
-
-navLinks.forEach((link) => {
-	link.addEventListener('click', (evt) => {
-		evt.preventDefault()
-		gsap.to(window, {
-			duration: 1,
-			ease: 'expo.inOut',
-			scrollTo: { y: link.getAttribute('href')!, offsetY: 20 },
-		})
-	})
-})
 
 const iconWrappers = document.querySelectorAll('.icon-wrapper')
 const iconsOptions = {
