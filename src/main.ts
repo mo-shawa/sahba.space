@@ -240,7 +240,7 @@ const galaxyTimeline = gsap.timeline({
 	scrollTrigger: {
 		trigger: '#app',
 		start: 'top top',
-		end: 'bottom 0%',
+		end: 'bottom -10%',
 		scrub: 1,
 	},
 })

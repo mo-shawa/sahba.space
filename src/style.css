@@ -281,6 +281,8 @@ div.card-top:has(img.int-img) {
 .card-top > img {
 	width: 100%;
 	object-fit: cover;
+	border-top-left-radius: var(--border-radius);
+	border-top-right-radius: var(--border-radius);
 }
 
 .card-body {
