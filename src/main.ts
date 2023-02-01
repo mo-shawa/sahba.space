@@ -201,15 +201,25 @@ gsap.from(navEl, {
 
 const hamburger = document.getElementById('hamburger')
 const mobileNav = document.getElementById('mobile-nav')
+const navLinks = document.querySelectorAll('.nav-link')
+const mobileLinks = document.querySelectorAll('.mobile-link')
 const navOptions = { right: 0, ease: 'expo.inOut' }
 
 hamburger!.addEventListener('click', () => {
 	gsap.to(mobileNav, navOptions)
 })
 
-const navLinks = document.querySelectorAll('.nav-link')
-
 navLinks.forEach((link) => {
+	link.addEventListener('click', (evt) => {
+		evt.preventDefault()
+		gsap.to(window, {
+			duration: 1,
+			ease: 'expo.inOut',
+			scrollTo: { y: link.getAttribute('href')!, offsetY: 20 },
+		})
+	})
+})
+mobileLinks.forEach((link) => {
 	link.addEventListener('click', (evt) => {
 		evt.preventDefault()
 		gsap.to(mobileNav, { right: '-150%' })

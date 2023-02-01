@@ -121,14 +121,24 @@ nav {
 	right: -100%;
 	top: 4rem;
 	z-index: 50;
-	height: 100%;
+	height: calc(100% - 4rem);
 	border: 1px solid var(--primary-color);
 	border-bottom-left-radius: var(--border-radius);
 }
 
-.mobile-link {
-	font-size: 9rem;
-	background-color: red;
+.mobile-links {
+	display: flex;
+	list-style: none;
+	flex-direction: column;
+	justify-content: space-evenly;
+	gap: 1rem;
+	height: 100%;
+}
+
+.mobile-link > li {
+	font-size: 2rem;
+	color: white;
+	/* background-color: red; */
 }
 
 #hamburger {
@@ -437,11 +447,6 @@ div.card-top:has(img.int-img) {
 	#mobile-nav,
 	#hamburger {
 		display: block;
-	}
-
-	.nav-links {
-		flex-direction: column;
-		gap: 1rem;
 	}
 }
 
