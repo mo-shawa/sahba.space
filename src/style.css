@@ -103,7 +103,7 @@ nav {
 	list-style: none;
 }
 
-.nav-link {
+.nav-link:not(:first-of-type) {
 	color: white;
 	text-decoration: none;
 	margin: 0 1rem;
@@ -304,6 +304,11 @@ a:hover {
 	background: var(--darken-background);
 }
 
+.card.lecture {
+	width: 640px;
+	max-width: calc(95% - var(--spacing-xs));
+}
+
 .card-top {
 	border-bottom: 1px solid var(--primary-color);
 	display: flex;
@@ -318,7 +323,7 @@ div.card-top:has(img.int-img) {
 	height: auto;
 	overflow: hidden;
 }
-.card-top > img {
+.card-top img {
 	width: 100%;
 	object-fit: cover;
 	border-top-left-radius: var(--border-radius);

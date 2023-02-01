@@ -51,8 +51,6 @@ window.addEventListener('resize', () => {
 window.addEventListener('orientationchange', handleCanvasResize)
 
 function handleCanvasResize() {
-	console.log('triggered')
-
 	sizes.width = window.innerWidth
 	sizes.height = isMobile ? window.outerHeight : window.innerHeight
 
