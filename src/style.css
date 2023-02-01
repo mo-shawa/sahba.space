@@ -163,7 +163,7 @@ section {
 	flex-wrap: wrap;
 	gap: var(--spacing-s);
 	height: 100%;
-	width: calc(95% - 3rem);
+	width: calc(95% - var(--spacing-m));
 	max-width: var(--max-width);
 	border-radius: var(--border-radius);
 	padding: var(--spacing-s);
@@ -199,7 +199,7 @@ a:hover {
 	float: left;
 	padding: var(--spacing-m);
 	margin-bottom: var(--spacing-m);
-	width: calc(95% - 3rem);
+	width: calc(95% - var(--spacing-l));
 	max-width: var(--max-width);
 	background: var(--darken-background);
 }
@@ -229,7 +229,7 @@ a:hover {
 .card-container {
 	height: 100%;
 	display: grid;
-	grid-gap: 3rem;
+	/* grid-gap: 3rem; */
 	grid-template-columns: repeat(3, 1fr);
 	grid-template-rows: repeat(2, 1fr);
 	justify-content: center;
@@ -237,12 +237,15 @@ a:hover {
 	width: 95%;
 	max-width: var(--max-width);
 	background: var(--darken-background);
+	border-radius: var(--border-radius);
 }
 
-.interview-card-container {
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-gap: 3rem;
+.flex-card-container {
+	display: flex;
+	flex-direction: column;
+	gap: 3rem;
+	/* grid-template-columns: 1fr; */
+	/* grid-gap: 3rem; */
 	justify-content: center;
 	align-items: center;
 	width: 95%;
@@ -259,7 +262,8 @@ a:hover {
 }
 
 .card.interview {
-	max-width: 25rem;
+	width: calc(100% - var(--spacing-m));
+	max-width: 30rem;
 	margin: 0 auto;
 	background: var(--darken-background);
 }
@@ -314,7 +318,7 @@ div.card-top:has(img.int-img) {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	width: calc(95% - var(--spacing-s));
+	width: calc(95% - var(--spacing-m));
 	max-width: var(--max-width);
 	margin: 0 auto;
 	align-items: center;
@@ -342,11 +346,6 @@ div.card-top:has(img.int-img) {
 
 #testimonials {
 	margin-bottom: var(--spacing-m);
-}
-
-.testimonial {
-	background-color: transparent;
-	background: var(--darken-background);
 }
 
 .quote {

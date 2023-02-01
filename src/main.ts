@@ -41,7 +41,11 @@ const sizes = {
 }
 
 window.addEventListener('resize', () => {
-	if (isMobile && sizes.height > window.outerHeight) return
+	if (
+		isMobile &&
+		(sizes.height > window.outerHeight || sizes.width > window.innerWidth)
+	)
+		return
 
 	sizes.width = window.innerWidth
 	sizes.height = isMobile ? window.outerHeight : window.innerHeight
@@ -270,8 +274,10 @@ navLinks.forEach((link) => {
 const iconWrappers = document.querySelectorAll('.icon-wrapper')
 const iconsOptions = {
 	delay: 1,
+	scale: 0,
+	opacity: 0,
 	xPercent: -150,
-	ease: 'power3.out',
+	ease: 'expo.inOut',
 	duration: 1,
 	stagger: 0.1,
 }
