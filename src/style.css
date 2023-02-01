@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
 
 :root {
 	--spacing-xs: 0.5rem;
@@ -45,7 +45,7 @@ small {
 }
 
 body {
-	font-family: 'Space Mono', monospace;
+	font-family: "Space Mono", monospace;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
@@ -103,7 +103,7 @@ nav {
 	list-style: none;
 }
 
-.nav-link:not(:first-of-type) {
+.nav-link {
 	color: white;
 	text-decoration: none;
 	margin: 0 1rem;
@@ -112,6 +112,14 @@ nav {
 
 .nav-link:hover {
 	color: var(--primary-color);
+}
+
+#moon-icon {
+	transition: scale 300ms;
+}
+
+#moon-icon:hover {
+	scale: 1.2;
 }
 
 #mobile-nav {
@@ -280,8 +288,6 @@ a:hover {
 	display: flex;
 	flex-direction: column;
 	gap: 3rem;
-	/* grid-template-columns: 1fr; */
-	/* grid-gap: 3rem; */
 	justify-content: center;
 	align-items: center;
 	width: 95%;
@@ -379,7 +385,6 @@ div.card-top:has(img.int-img) {
 	height: 60%;
 	border-top-right-radius: var(--border-radius);
 	border-bottom-right-radius: var(--border-radius);
-	/* background: #35ffee; */
 }
 
 .icon-wrapper {
