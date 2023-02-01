@@ -265,7 +265,8 @@ navLinks.forEach((link) => {
 	link.addEventListener('click', (evt) => {
 		evt.preventDefault()
 		gsap.to(window, {
-			duration: 0.6,
+			duration: 1,
+			ease: 'expo.inOut',
 			scrollTo: { y: link.getAttribute('href')!, offsetY: 20 },
 		})
 	})
