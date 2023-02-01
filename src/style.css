@@ -202,6 +202,7 @@ a:hover {
 	width: calc(95% - var(--spacing-l));
 	max-width: var(--max-width);
 	background: var(--darken-background);
+	border-radius: var(--border-radius);
 }
 
 .intro-content {
@@ -229,12 +230,12 @@ a:hover {
 .card-container {
 	height: 100%;
 	display: grid;
-	/* grid-gap: 3rem; */
+	padding: var(--spacing-s);
 	grid-template-columns: repeat(3, 1fr);
 	grid-template-rows: repeat(2, 1fr);
 	justify-content: center;
 	align-items: center;
-	width: 95%;
+	width: calc(95% - var(--spacing-m));
 	max-width: var(--max-width);
 	background: var(--darken-background);
 	border-radius: var(--border-radius);
