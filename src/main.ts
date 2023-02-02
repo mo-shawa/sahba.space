@@ -10,7 +10,7 @@ import {
 	AdditiveBlending,
 	Points,
 	Clock,
-} from 'three'
+} from 'three/src/Three'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
@@ -21,25 +21,24 @@ const isMobile = 'ontouchstart' in document.documentElement
 const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)
 
 const overlay = document.getElementById('overlay')
+const overlayOptions: GSAPTweenVars = {
+	opacity: 0,
+	ease: 'expo.inOut',
+	duration: 1,
+	delay: 1.5,
+	onStart: () => {
+		document.body.style.overflowY = 'auto'
+	},
+	onComplete: () => {
+		overlay!.remove()
+	},
+}
 
 if (window.scrollY > 0) {
-	overlay!.remove()
-	document.body.style.overflowY = 'auto'
+	gsap.to(overlay, { ...overlayOptions, delay: 0 })
 } else {
 	window.addEventListener('DOMContentLoaded', () => {
-		setTimeout(() => {
-			gsap.to(overlay, {
-				opacity: 0,
-				ease: 'expo.inOut',
-				duration: 1,
-				onStart: () => {
-					document.body.style.overflowY = 'auto'
-				},
-				onComplete: () => {
-					overlay!.remove()
-				},
-			})
-		}, 1500)
+		gsap.to(overlay, overlayOptions)
 	})
 }
 
