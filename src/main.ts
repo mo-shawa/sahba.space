@@ -141,8 +141,6 @@ for (let i = 0; i < parameters.count; i++) {
 	scales[i] = Math.random()
 }
 
-// console.log(colors)
-
 pointsGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3))
 pointsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3))
 pointsGeometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1))
@@ -213,7 +211,8 @@ const navLinks = document.querySelectorAll(".nav-link")
 const mobileLinks = document.querySelectorAll(".mobile-link")
 
 let isNavVisible = false
-const navIn = {
+
+const navIn: GSAPTweenVars = {
 	right: 0,
 	ease: "expo.inOut",
 	onComplete: () => {
@@ -221,7 +220,7 @@ const navIn = {
 		isNavVisible = !isNavVisible
 	},
 }
-const navOut = {
+const navOut: GSAPTweenVars = {
 	...navIn,
 	right: "-100%",
 }
@@ -318,8 +317,9 @@ galaxyTimeline
 	.to(parameters, { swirlRatio: 5, ease: "expo" }, 0)
 	.to(camera.position, { y: 2, x: -1 }, 0)
 
-const iconWrappers = document.querySelectorAll(".icon-wrapper")
-const iconsOptions = {
+const iconWrappers: NodeListOf<HTMLAnchorElement> =
+	document.querySelectorAll(".icon-wrapper")
+const iconsOptions: GSAPTweenVars = {
 	delay: 0.5,
 	scale: 0,
 	opacity: 0,
