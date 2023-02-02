@@ -9,26 +9,28 @@ import vertexShader from "./shaders/vertex.glsl?raw"
 const isMobile = "ontouchstart" in document.documentElement
 const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)
 
-console.log(isSafari)
+const overlay = document.getElementById("overlay")
 
-window.addEventListener("DOMContentLoaded", () => {
-	const overlay = document.getElementById("overlay")
-
-	setTimeout(() => {
-		gsap.to(overlay, {
-			// yPercent: 40,
-			opacity: 0,
-			ease: "expo.inOut",
-			duration: 1,
-			onStart: () => {
-				document.body.style.overflowY = "auto"
-			},
-			onComplete: () => {
-				overlay!.remove()
-			},
-		})
-	}, 1500)
-})
+if (window.scrollY > 0) {
+	overlay!.remove()
+	document.body.style.overflowY = "auto"
+} else {
+	window.addEventListener("DOMContentLoaded", () => {
+		setTimeout(() => {
+			gsap.to(overlay, {
+				opacity: 0,
+				ease: "expo.inOut",
+				duration: 1,
+				onStart: () => {
+					document.body.style.overflowY = "auto"
+				},
+				onComplete: () => {
+					overlay!.remove()
+				},
+			})
+		}, 1500)
+	})
+}
 
 /**
  * Base
@@ -165,6 +167,7 @@ const points = new THREE.Points(pointsGeometry, pointsMaterial)
 camera.lookAt(points.position)
 
 scene.add(points)
+
 /**
  * Animate
  */
@@ -208,33 +211,52 @@ const hamburger = document.getElementById("hamburger")
 const mobileNav = document.getElementById("mobile-nav")
 const navLinks = document.querySelectorAll(".nav-link")
 const mobileLinks = document.querySelectorAll(".mobile-link")
-const navOptions = { right: 0, ease: "expo.inOut" }
+
+let isNavVisible = false
+const navIn = {
+	right: 0,
+	ease: "expo.inOut",
+	onComplete: () => {
+		hamburger!.classList.remove("disabled")
+		isNavVisible = !isNavVisible
+	},
+}
+const navOut = {
+	...navIn,
+	right: "-100%",
+}
 
 hamburger!.addEventListener("click", () => {
-	gsap.to(mobileNav, navOptions)
+	if (hamburger!.classList.contains("disabled")) return
+
+	hamburger!.classList.add("disabled")
+	if (isNavVisible) gsap.to(mobileNav, navOut)
+	else gsap.to(mobileNav, navIn)
 })
 
 navLinks.forEach((link) => {
 	link.addEventListener("click", (evt) => {
 		evt.preventDefault()
-		gsap.to(window, {
-			duration: 1,
-			ease: "expo.inOut",
-			scrollTo: { y: link.getAttribute("href")!, offsetY: 20 },
-		})
+		const href = link.getAttribute("href")!
+		gsap.to(window, scrollToOptions(href))
 	})
 })
 mobileLinks.forEach((link) => {
 	link.addEventListener("click", (evt) => {
 		evt.preventDefault()
-		gsap.to(mobileNav, { right: "-100%" })
-		gsap.to(window, {
-			duration: 1,
-			ease: "expo.inOut",
-			scrollTo: { y: link.getAttribute("href")!, offsetY: 20 },
-		})
+		const href = link.getAttribute("href")!
+		gsap.to(mobileNav, navOut)
+		gsap.to(window, scrollToOptions(href))
 	})
 })
+
+function scrollToOptions(href: string): GSAPTweenVars {
+	return {
+		duration: 1,
+		ease: "expo.inOut",
+		scrollTo: { y: href!, offsetY: href === "#contact" ? 0 : 20 },
+	}
+}
 
 gsap.to("#pointer", {
 	duration: 1.5,
