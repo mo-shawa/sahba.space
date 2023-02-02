@@ -9,8 +9,41 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="theme-color" content="#000000" />
 		<meta name="description" content="Sahba El-Shawa's Personal Website" />
-
 		<title>Sahba El-Shawa's Website</title>
+		<style>
+			body {
+				overflow-x: hidden;
+				overflow-y: hidden;
+			}
+			#overlay {
+				position: absolute;
+				height: 100vh;
+				width: 100vw;
+				background: black;
+				z-index: 50;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.loader {
+				width: 48px;
+				height: 48px;
+				border-radius: 50%;
+				display: inline-block;
+				box-sizing: border-box;
+				animation: animloader 2s linear infinite;
+			}
+
+			@keyframes animloader {
+				0% {
+					box-shadow: -72px 0 #fff inset;
+				}
+				100% {
+					box-shadow: 48px 0 #fff inset;
+				}
+			}
+		</style>
 	</head>
 	<body>
 		<div id="app">
@@ -32,13 +65,13 @@
 
 				<div id="desktop-nav" class="nav-item">
 					<ul class="nav-links">
-						<a class="nav-link" href="#about"><li>About</li></a>
-						<a class="nav-link" href="#leadership"><li>Leadership</li></a>
-						<a class="nav-link" href="#research"><li>Research</li></a>
-						<a class="nav-link" href="#lectures"><li>Lectures</li></a>
-						<a class="nav-link" href="#interviews"><li>Interviews</li></a>
-						<a class="nav-link" href="#testimonials"><li>Testimonials</li></a>
-						<a class="nav-link" href="#contact"><li>Contact</li></a>
+						<li><a class="nav-link" href="#about">About</a></li>
+						<li><a class="nav-link" href="#leadership">Leadership</a></li>
+						<li><a class="nav-link" href="#research">Research</a></li>
+						<li><a class="nav-link" href="#lectures">Lectures</a></li>
+						<li><a class="nav-link" href="#interviews">Interviews</a></li>
+						<li><a class="nav-link" href="#testimonials">Testimonials</a></li>
+						<li><a class="nav-link" href="#contact">Contact</a></li>
 					</ul>
 				</div>
 				<img
@@ -50,13 +83,13 @@
 			</nav>
 			<div id="mobile-nav" class="nav-item">
 				<ul class="mobile-links">
-					<a class="mobile-link" href="#about"><li>About</li></a>
-					<a class="mobile-link" href="#leadership"><li>Leadership</li></a>
-					<a class="mobile-link" href="#research"><li>Research</li></a>
-					<a class="mobile-link" href="#lectures"><li>Lectures</li></a>
-					<a class="mobile-link" href="#interviews"><li>Interviews</li></a>
-					<a class="mobile-link" href="#testimonials"><li>Testimonials</li></a>
-					<a class="mobile-link" href="#contact"><li>Contact</li></a>
+					<li><a class="mobile-link" href="#about">About</a></li>
+					<li><a class="mobile-link" href="#leadership">Leadership</a></li>
+					<li><a class="mobile-link" href="#research">Research</a></li>
+					<li><a class="mobile-link" href="#lectures">Lectures</a></li>
+					<li><a class="mobile-link" href="#interviews">Interviews</a></li>
+					<li><a class="mobile-link" href="#testimonials">Testimonials</a></li>
+					<li><a class="mobile-link" href="#contact">Contact</a></li>
 				</ul>
 			</div>
 			<section id="hero">

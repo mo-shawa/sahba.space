@@ -46,8 +46,6 @@ small {
 
 body {
 	font-family: "Space Mono", monospace;
-	overflow-x: hidden;
-	overflow-y: hidden;
 }
 
 .webgl {
@@ -57,35 +55,6 @@ body {
 	bottom: 0;
 	z-index: -5;
 	height: 100%;
-}
-
-#overlay {
-	position: absolute;
-	height: 100vh;
-	width: 100vw;
-	background: black;
-	z-index: 50;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.loader {
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	display: inline-block;
-	box-sizing: border-box;
-	animation: animloader 2s linear infinite;
-}
-
-@keyframes animloader {
-	0% {
-		box-shadow: -72px 0 #fff inset;
-	}
-	100% {
-		box-shadow: 48px 0 #fff inset;
-	}
 }
 
 nav {
@@ -110,16 +79,17 @@ nav {
 	transition: color 300ms;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.mobile-link:hover {
 	color: var(--primary-color);
 }
 
 #moon-icon {
-	transition: scale 300ms;
+	transition: transform 300ms;
 }
 
 #moon-icon:hover {
-	scale: 1.2;
+	transform: scale(1.1);
 }
 
 #mobile-nav {
@@ -128,7 +98,7 @@ nav {
 	position: fixed;
 	right: -100%;
 	top: 4rem;
-	z-index: 50;
+	z-index: 40;
 	height: calc(100% - 4rem);
 	border: 1px solid var(--primary-color);
 	border-bottom-left-radius: var(--border-radius);
@@ -143,7 +113,7 @@ nav {
 	height: 100%;
 }
 
-.mobile-link > li {
+.mobile-link {
 	font-size: 2rem;
 	color: white;
 }
@@ -259,6 +229,7 @@ a:hover {
 	margin: 0 2rem 2rem 0;
 	object-fit: cover;
 	float: left;
+	border-radius: var(--border-radius);
 }
 
 .section-title {
