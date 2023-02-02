@@ -120,7 +120,7 @@ nav {
 #hamburger {
 	display: none;
 	height: 3rem;
-	padding-right: var(--spacing-xs);
+	margin-right: var(--spacing-xs);
 	cursor: pointer;
 }
 
