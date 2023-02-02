@@ -373,6 +373,7 @@ div.card-top:has(img.int-img) {
 
 .svg-icon {
 	height: 4rem;
+	width: 4rem;
 	margin: auto;
 	cursor: pointer;
 	-webkit-user-select: none;
