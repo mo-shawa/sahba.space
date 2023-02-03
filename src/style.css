@@ -98,7 +98,6 @@ nav {
 	right: -100%;
 	top: 4rem;
 	z-index: 40;
-	height: 50%;
 	border: 1px solid var(--primary-color);
 	border-bottom-left-radius: var(--border-radius);
 }
@@ -182,10 +181,11 @@ section {
 }
 
 .title {
-	background: var(--darken-background);
-	padding: var(--spacing-s);
-	border-radius: var(--border-radius);
-	color: white;
+	background: linear-gradient(90deg, var(--primary-color), white);
+	color: transparent;
+	background-clip: text;
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
 }
 
 #pointer {
