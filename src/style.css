@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
 :root {
 	--spacing-xs: 0.5rem;
@@ -44,7 +44,7 @@ small {
 }
 
 body {
-	font-family: "Space Mono", monospace;
+	font-family: 'Space Mono', monospace;
 }
 
 .webgl {
@@ -98,7 +98,7 @@ nav {
 	right: -100%;
 	top: 4rem;
 	z-index: 40;
-	height: calc(100% - 4rem);
+	height: 50%;
 	border: 1px solid var(--primary-color);
 	border-bottom-left-radius: var(--border-radius);
 }
@@ -113,7 +113,7 @@ nav {
 }
 
 .mobile-link {
-	font-size: 2rem;
+	font-size: 1.5rem;
 	color: white;
 }
 
@@ -185,7 +185,6 @@ section {
 	background: var(--darken-background);
 	padding: var(--spacing-s);
 	border-radius: var(--border-radius);
-
 	color: white;
 }
 
