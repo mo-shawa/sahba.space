@@ -181,7 +181,7 @@ section {
 }
 
 .title {
-	background: linear-gradient(90deg, var(--primary-color), white);
+	background: linear-gradient(90deg, var(--primary-color), #affaf4);
 	color: transparent;
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -293,12 +293,8 @@ a:hover {
 	margin-bottom: var(--spacing-s);
 }
 
-div.card-top:has(img.int-img) {
-	min-height: 0;
-	height: auto;
-	overflow: hidden;
-}
 .card-top img {
+	height: auto;
 	width: 100%;
 	object-fit: cover;
 	border-top-left-radius: var(--border-radius);
