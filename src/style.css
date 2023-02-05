@@ -357,13 +357,18 @@ a:hover {
 	justify-items: center;
 	align-items: center;
 	padding: 1rem;
-	background-color: #23a99e;
+	background-color: transparent;
+	backdrop-filter: blur(15px) saturate(500%);
+	-webkit-backdrop-filter: blur(15px) saturate(500%);
 	border-radius: var(--border-radius);
-	transition: background-color 300ms;
+	transition: background-color 300ms, border-color 300ms;
+	border: 1px solid;
+	border-color: var(--primary-color);
 }
 
 .icon-wrapper:hover {
-	background-color: #adea93;
+	background-color: black;
+	border-color: white;
 }
 
 .svg-icon {
