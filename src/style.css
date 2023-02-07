@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
 :root {
 	--spacing-xs: 0.5rem;
@@ -44,7 +44,7 @@ small {
 }
 
 body {
-	font-family: "Space Mono", monospace;
+	font-family: 'Space Mono', monospace;
 }
 
 .webgl {
@@ -98,7 +98,6 @@ nav {
 	right: -100%;
 	top: 4rem;
 	z-index: 40;
-	height: calc(100% - 4rem);
 	border: 1px solid var(--primary-color);
 	border-bottom-left-radius: var(--border-radius);
 }
@@ -113,7 +112,7 @@ nav {
 }
 
 .mobile-link {
-	font-size: 2rem;
+	font-size: 1.5rem;
 	color: white;
 }
 
@@ -182,11 +181,11 @@ section {
 }
 
 .title {
-	background: var(--darken-background);
-	padding: var(--spacing-s);
-	border-radius: var(--border-radius);
-
-	color: white;
+	background: linear-gradient(90deg, #bffffa, #9afff7);
+	color: transparent;
+	background-clip: text;
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
 }
 
 #pointer {
@@ -294,12 +293,8 @@ a:hover {
 	margin-bottom: var(--spacing-s);
 }
 
-div.card-top:has(img.int-img) {
-	min-height: 0;
-	height: auto;
-	overflow: hidden;
-}
 .card-top img {
+	height: auto;
 	width: 100%;
 	object-fit: cover;
 	border-top-left-radius: var(--border-radius);
@@ -362,13 +357,18 @@ div.card-top:has(img.int-img) {
 	justify-items: center;
 	align-items: center;
 	padding: 1rem;
-	background-color: #23a99e;
+	background-color: transparent;
+	backdrop-filter: blur(15px) saturate(500%);
+	-webkit-backdrop-filter: blur(15px) saturate(500%);
 	border-radius: var(--border-radius);
-	transition: background-color 300ms;
+	transition: background-color 300ms, border-color 300ms;
+	border: 1px solid;
+	border-color: var(--primary-color);
 }
 
 .icon-wrapper:hover {
-	background-color: #adea93;
+	background-color: black;
+	border-color: white;
 }
 
 .svg-icon {
