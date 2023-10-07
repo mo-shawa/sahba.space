@@ -1,5 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap'); */
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
 	--spacing-xs: 0.5rem;
 	--spacing-s: 1rem;
@@ -44,7 +47,7 @@ small {
 }
 
 body {
-	font-family: 'Space Mono', monospace;
+	font-family: "Space Mono", monospace;
 }
 
 .webgl {
