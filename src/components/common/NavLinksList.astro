@@ -1,0 +1,26 @@
+---
+import type { NavItem } from '../../data/siteContent'
+
+interface Props {
+	items: NavItem[]
+	listClass: string
+	linkClass: string
+}
+
+const { items, listClass, linkClass } = Astro.props
+---
+
+<ul class={listClass}>
+	{
+		items.map((item) => (
+			<li>
+				<a
+					class={linkClass}
+					href={item.href}
+				>
+					{item.label}
+				</a>
+			</li>
+		))
+	}
+</ul>

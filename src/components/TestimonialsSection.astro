@@ -1,0 +1,16 @@
+---
+import SectionTitle from './common/SectionTitle.astro'
+import TestimonialCard from './common/TestimonialCard.astro'
+import { testimonials } from '../data/siteContent'
+---
+
+<section id="testimonials">
+	<SectionTitle title="Testimonials" />
+	<div class="flex-card-container">
+		{
+			testimonials.map((testimonial) => (
+				<TestimonialCard testimonial={testimonial} />
+			))
+		}
+	</div>
+</section>

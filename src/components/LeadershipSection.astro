@@ -1,0 +1,16 @@
+---
+import LeadershipCard from './common/LeadershipCard.astro'
+import SectionTitle from './common/SectionTitle.astro'
+import { leadershipItems } from '../data/siteContent'
+---
+
+<section id="leadership">
+	<SectionTitle title="Leadership" />
+	<div class="card-container">
+		{
+			leadershipItems.map((item) => (
+				<LeadershipCard item={item} />
+			))
+		}
+	</div>
+</section>

@@ -1,0 +1,13 @@
+---
+import { heroContent } from '../data/siteContent'
+---
+
+<section id="hero">
+	<h1 class="title">{heroContent.title}</h1>
+	<a
+		class="nav-link"
+		href={heroContent.ctaHref}
+	>
+		<span id="pointer">{heroContent.ctaLabel}</span>
+	</a>
+</section>

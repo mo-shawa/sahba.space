@@ -1,0 +1,11 @@
+:root {
+	--spacing-xs: 0.5rem;
+	--spacing-s: 1rem;
+	--spacing-m: 2rem;
+	--spacing-l: 4rem;
+	--primary-color: #35ffee;
+	--secondary-color: #adea93;
+	--darken-background: rgba(0, 0, 0, 0.8);
+	--max-width: 1200px;
+	--border-radius: 1rem;
+}

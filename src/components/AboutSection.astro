@@ -1,0 +1,27 @@
+---
+import RichTextInline from './common/RichTextInline.astro'
+import SectionTitle from './common/SectionTitle.astro'
+import { aboutContent } from '../data/siteContent'
+---
+
+<section id="about">
+	<SectionTitle title={aboutContent.title} />
+	<div class="intro-container">
+		<img
+			class={aboutContent.image.className}
+			src={aboutContent.image.src}
+			alt={aboutContent.image.alt}
+			width={aboutContent.image.width}
+			height={aboutContent.image.height}
+		/>
+		<div class="intro-copy">
+			{
+				aboutContent.paragraphs.map((paragraph) => (
+					<p class="intro-content">
+						<RichTextInline parts={paragraph} />
+					</p>
+				))
+			}
+		</div>
+	</div>
+</section>

@@ -1,0 +1,25 @@
+---
+import type { SocialLink as SocialLinkContent } from '../../data/siteContent'
+
+interface Props {
+	link: SocialLinkContent
+}
+
+const { link } = Astro.props
+const className = ['icon-wrapper', link.className].filter(Boolean).join(' ')
+---
+
+<a
+	target={link.target}
+	rel={link.rel}
+	class={className}
+	href={link.href}
+>
+	<img
+		class="svg-icon"
+		src={link.icon.src}
+		alt={link.icon.alt}
+		width={link.icon.width}
+		height={link.icon.height}
+	/>
+</a>

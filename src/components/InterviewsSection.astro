@@ -1,0 +1,16 @@
+---
+import MediaCard from './common/MediaCard.astro'
+import SectionTitle from './common/SectionTitle.astro'
+import { interviews } from '../data/siteContent'
+---
+
+<section id="interviews">
+	<SectionTitle title="Interviews" />
+	<div class="flex-card-container">
+		{
+			interviews.map((entry) => (
+				<MediaCard entry={entry} />
+			))
+		}
+	</div>
+</section>

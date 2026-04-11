@@ -1,0 +1,24 @@
+---
+import ResearchGroup from './common/ResearchGroup.astro'
+import SectionTitle from './common/SectionTitle.astro'
+import { researchGroups, researchProfileLink } from '../data/siteContent'
+---
+
+<section id="research">
+	<SectionTitle title="Research" />
+	<div class="section-container darken">
+		{
+			researchGroups.map((group) => (
+				<ResearchGroup group={group} />
+			))
+		}
+		<a
+			target={researchProfileLink.target}
+			rel={researchProfileLink.rel}
+			class="rg-btn"
+			href={researchProfileLink.href}
+		>
+			{researchProfileLink.label}
+		</a>
+	</div>
+</section>

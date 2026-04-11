@@ -1,0 +1,56 @@
+---
+import NavLinksList from './common/NavLinksList.astro'
+import { brand, navigationItems } from '../data/siteContent'
+---
+
+<nav>
+	<div class="nav-item">
+		<a
+			id="moon-icon"
+			href={brand.href}
+			class="nav-link nav-brand-icon"
+		>
+			<img
+				width={brand.icon.width}
+				height={brand.icon.height}
+				src={brand.icon.src}
+				alt={brand.icon.alt}
+			/>
+		</a>
+		<a
+			href={brand.href}
+			class="nav-link nav-brand-link"
+		>
+			{brand.label}
+		</a>
+	</div>
+
+	<div
+		id="desktop-nav"
+		class="nav-item"
+	>
+		<NavLinksList
+			items={navigationItems}
+			listClass="nav-links"
+			linkClass="nav-link"
+		/>
+	</div>
+	<img
+		src="/svg/hamburger.svg"
+		alt="hamburger icon"
+		class="svg"
+		id="hamburger"
+		width="32"
+		height="32"
+	/>
+</nav>
+<div
+	id="mobile-nav"
+	class="nav-item"
+>
+	<NavLinksList
+		items={navigationItems}
+		listClass="mobile-links"
+		linkClass="mobile-link"
+	/>
+</div>

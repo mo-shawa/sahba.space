@@ -1,0 +1,26 @@
+---
+import SocialLink from './common/SocialLink.astro'
+import { footerContent, socialLinks } from '../data/siteContent'
+---
+
+<section id="contact">
+	<div id="contact-links">
+		{
+			socialLinks.map((link) => (
+				<SocialLink link={link} />
+			))
+		}
+	</div>
+	<footer>
+		<small class="footer-item">
+			Copyright © <span id="copyright-year"></span> {footerContent.owner} - Website by
+			<a
+				target="_blank"
+				rel="noreferrer"
+				href={footerContent.creditHref}
+			>
+				{footerContent.creditLabel}
+			</a>
+		</small>
+	</footer>
+</section>

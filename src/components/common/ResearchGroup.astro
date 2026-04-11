@@ -1,0 +1,21 @@
+---
+import RichTextInline from './RichTextInline.astro'
+import type { ResearchGroup as ResearchGroupContent } from '../../data/siteContent'
+
+interface Props {
+	group: ResearchGroupContent
+}
+
+const { group } = Astro.props
+---
+
+<article class="research-item">
+	<h3>{group.title}</h3>
+	{
+		group.entries.map((entry) => (
+			<small>
+				<RichTextInline parts={entry} />
+			</small>
+		))
+	}
+</article>

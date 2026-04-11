@@ -1,0 +1,42 @@
+---
+import type { MediaEntry } from '../../data/siteContent'
+
+interface Props {
+	entry: MediaEntry
+}
+
+const { entry } = Astro.props
+const cardClassName = ['card', entry.variant, entry.emphasis]
+	.filter(Boolean)
+	.join(' ')
+---
+
+<article class={cardClassName}>
+	<div class="card-top">
+		<a
+			target="_blank"
+			rel="noreferrer"
+			href={entry.href}
+		>
+			<img
+				class={entry.image.className}
+				src={entry.image.src}
+				alt={entry.image.alt}
+				width={entry.image.width}
+				height={entry.image.height}
+			/>
+		</a>
+	</div>
+	<div class="card-body">
+		<h3>{entry.title}</h3>
+		{entry.date && <small>{entry.date}</small>}
+		{entry.date && <br />}
+		<a
+			target="_blank"
+			rel="noreferrer"
+			href={entry.href}
+		>
+			{entry.linkLabel}
+		</a>
+	</div>
+</article>

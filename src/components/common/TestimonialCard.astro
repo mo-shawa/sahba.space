@@ -1,0 +1,27 @@
+---
+import RichTextInline from './RichTextInline.astro'
+import type { Testimonial } from '../../data/siteContent'
+
+interface Props {
+	testimonial: Testimonial
+}
+
+const { testimonial } = Astro.props
+---
+
+<article class="card darken">
+	<h1 class="quote">"</h1>
+	<div class="testimonial-copy">
+		{
+			testimonial.quote.map((paragraph) => (
+				<p>
+					<RichTextInline parts={paragraph} />
+				</p>
+			))
+		}
+	</div>
+	<h1 class="quote">"</h1>
+	<small>
+		<RichTextInline parts={testimonial.attribution} />
+	</small>
+</article>

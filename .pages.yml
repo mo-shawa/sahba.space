@@ -1,0 +1,11 @@
+# Placeholder Pages CMS configuration.
+#
+# The first Astro pass keeps content inside Astro components to verify
+# pixel-level parity with the current site. Replace this stub with real
+# collection and file schemas once content is moved out of components.
+
+media:
+  input: public/uploads
+  output: /uploads
+
+content: []

@@ -1,0 +1,25 @@
+---
+import type { RichTextPart } from '../../data/siteContent'
+
+interface Props {
+	parts: RichTextPart[]
+}
+
+const { parts } = Astro.props
+---
+
+{
+	parts.map((part) =>
+		part.type === 'link' ? (
+			<a
+				href={part.href}
+				target={part.target}
+				rel={part.rel}
+			>
+				{part.value}
+			</a>
+		) : (
+			part.value
+		)
+	)
+}
