@@ -1,0 +1,11 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "sahba-space",
+	"account_id": "d60b3ce1204a382c2c431f74ea5a4c86",
+	"compatibility_date": "2026-04-11",
+	"workers_dev": true,
+	"preview_urls": true,
+	"assets": {
+		"directory": "./dist"
+	}
+}
