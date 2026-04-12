@@ -23,6 +23,10 @@ function initializeHomePage() {
 
 	const isMobile = 'ontouchstart' in document.documentElement
 	const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)
+	const searchParams = new URLSearchParams(window.location.search)
+	let skipIntroAnimation = ['1', 'true'].includes(
+		searchParams.get('skipIntro')?.toLowerCase() ?? 'false'
+	)
 
 	const overlay = document.getElementById('overlay')
 	const overlayOptions: GSAPTweenVars = {
@@ -38,7 +42,10 @@ function initializeHomePage() {
 		},
 	}
 
-	if (window.scrollY > 0) {
+	if (skipIntroAnimation) {
+		document.body.style.overflowY = 'auto'
+		overlay?.remove()
+	} else if (window.scrollY > 0) {
 		gsap.to(overlay, { ...overlayOptions, delay: 0 })
 	} else {
 		window.addEventListener('DOMContentLoaded', () => {
