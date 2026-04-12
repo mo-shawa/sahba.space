@@ -1,5 +1,6 @@
 ---
 import AboutSection from '../components/AboutSection.astro'
+import HeroSection from '../components/HeroSection.astro'
 import SiteLayout from '../layouts/SiteLayout.astro'
 import { pageHeadings } from '../data/siteContent'
 ---
@@ -7,7 +8,9 @@ import { pageHeadings } from '../data/siteContent'
 <SiteLayout
 	title={pageHeadings.home.title}
 	description={pageHeadings.home.description}
+	pageKey="home"
 	showOverlay={true}
 >
+	<HeroSection />
 	<AboutSection />
 </SiteLayout>

@@ -4,12 +4,14 @@ import type { Testimonial } from '../../data/siteContent'
 
 interface Props {
 	testimonial: Testimonial
+	index?: number
 }
 
-const { testimonial } = Astro.props
+const { testimonial, index = 0 } = Astro.props
 ---
 
 <article class="card testimonial-card">
+	<div class="card-kicker">{String(index + 1).padStart(2, '0')}</div>
 	<blockquote class="testimonial-copy">
 		{
 			testimonial.quote.map((paragraph) => (

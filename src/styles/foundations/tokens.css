@@ -1,14 +1,82 @@
 :root {
-	--spacing-xs: 0.5rem;
+	--spacing-2xs: 0.35rem;
+	--spacing-xs: 0.65rem;
 	--spacing-s: 1rem;
-	--spacing-m: 2rem;
-	--spacing-l: 4rem;
+	--spacing-m: 1.5rem;
+	--spacing-l: 3rem;
+	--spacing-xl: 5rem;
 	--nav-height: 4.5rem;
-	--primary-color: #35ffee;
-	--secondary-color: #adea93;
-	--darken-background: rgba(0, 0, 0, 0.8);
-	--surface-color: rgba(0, 0, 0, 0.74);
-	--surface-strong: rgba(0, 0, 0, 0.9);
-	--max-width: 1200px;
-	--border-radius: 1rem;
+
+	/* Cosmic Warm palette */
+	--color-void: #04081a;
+	--color-stardust: #c9a96e;
+	--color-stardust-bright: #e4cf94;
+	--color-nebula: #7b8ec2;
+	--color-rose: #c27d97;
+
+	--primary-color: var(--color-stardust);
+	--secondary-color: var(--color-stardust-bright);
+	--darken-background: rgba(4, 8, 26, 0.86);
+	--surface-color: rgba(8, 14, 32, 0.78);
+	--surface-strong: rgba(4, 8, 22, 0.94);
+	--surface-soft: rgba(12, 20, 40, 0.55);
+	--border-color: rgba(201, 169, 110, 0.08);
+	--border-color-strong: rgba(201, 169, 110, 0.18);
+	--text-primary: #ede6d6;
+	--text-secondary: #a09889;
+	--shadow-color: rgba(0, 4, 16, 0.5);
+	--page-glow: rgba(201, 169, 110, 0.1);
+
+	--max-width: 1220px;
+	--content-width: 1380px;
+	--border-radius: 1.2rem;
+	--border-radius-sm: 0.7rem;
+}
+
+body[data-page='leadership'] {
+	--primary-color: #7bbfaa;
+	--secondary-color: #b8ead8;
+	--page-glow: rgba(123, 191, 170, 0.12);
+	--border-color: rgba(123, 191, 170, 0.08);
+	--border-color-strong: rgba(123, 191, 170, 0.18);
+}
+
+body[data-page='research'] {
+	--primary-color: #7b8ec2;
+	--secondary-color: #b5c4e8;
+	--page-glow: rgba(123, 142, 194, 0.12);
+	--border-color: rgba(123, 142, 194, 0.08);
+	--border-color-strong: rgba(123, 142, 194, 0.18);
+}
+
+body[data-page='lectures'] {
+	--primary-color: #d4a05a;
+	--secondary-color: #eac88c;
+	--page-glow: rgba(212, 160, 90, 0.12);
+	--border-color: rgba(212, 160, 90, 0.08);
+	--border-color-strong: rgba(212, 160, 90, 0.18);
+}
+
+body[data-page='interviews'] {
+	--primary-color: #c98a6e;
+	--secondary-color: #e8b8a0;
+	--page-glow: rgba(201, 138, 110, 0.12);
+	--border-color: rgba(201, 138, 110, 0.08);
+	--border-color-strong: rgba(201, 138, 110, 0.18);
+}
+
+body[data-page='testimonials'] {
+	--primary-color: #8bc2a0;
+	--secondary-color: #c4e8d4;
+	--page-glow: rgba(139, 194, 160, 0.12);
+	--border-color: rgba(139, 194, 160, 0.08);
+	--border-color-strong: rgba(139, 194, 160, 0.18);
+}
+
+body[data-page='contact'] {
+	--primary-color: #a0c28b;
+	--secondary-color: #d0e8c4;
+	--page-glow: rgba(160, 194, 139, 0.12);
+	--border-color: rgba(160, 194, 139, 0.08);
+	--border-color-strong: rgba(160, 194, 139, 0.18);
 }

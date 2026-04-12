@@ -11,11 +11,17 @@ import { pageHeadings, testimonials } from '../data/siteContent'
 	<SectionTitle
 		title={pageHeadings.testimonials.title}
 		arabicTitle={pageHeadings.testimonials.arabicTitle}
+		eyebrow={pageHeadings.testimonials.eyebrow}
+		description={pageHeadings.testimonials.summary}
+		stats={pageHeadings.testimonials.stats}
 	/>
-	<div class="flex-card-container">
+	<div class="testimonial-list">
 		{
-			testimonials.map((testimonial) => (
-				<TestimonialCard testimonial={testimonial} />
+			testimonials.map((testimonial, index) => (
+				<TestimonialCard
+					testimonial={testimonial}
+					index={index}
+				/>
 			))
 		}
 	</div>

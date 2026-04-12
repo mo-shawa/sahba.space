@@ -3,22 +3,28 @@ import BaseLayout from './BaseLayout.astro'
 import LoadingOverlay from '../components/LoadingOverlay.astro'
 import Navigation from '../components/Navigation.astro'
 import PageFooter from '../components/PageFooter.astro'
+import type { PageKey } from '../data/siteContent'
 
 interface Props {
 	title: string
 	description: string
+	pageKey: PageKey
 	showOverlay?: boolean
 }
 
-const { title, description, showOverlay = false } = Astro.props
+const { title, description, pageKey, showOverlay = false } = Astro.props
 ---
 
 <BaseLayout
 	title={title}
 	description={description}
+	pageKey={pageKey}
 >
 	{showOverlay && <LoadingOverlay />}
-	<div id="app">
+	<div
+		id="app"
+		data-page={pageKey}
+	>
 		<Navigation />
 		<main class="site-main">
 			<slot />

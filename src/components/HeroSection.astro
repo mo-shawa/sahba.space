@@ -1,2 +1,35 @@
 ---
+import { pageHeadings } from '../data/siteContent'
+
+const { title, arabicTitle, eyebrow, summary, stats } = pageHeadings.home
+const [firstName, ...lastParts] = title.split(' ')
+const lastName = lastParts.join(' ')
 ---
+
+<section class="hero">
+	<div class="hero-orbit hero-orbit--outer" aria-hidden="true"></div>
+	<div class="hero-content">
+		<p class="hero-eyebrow">{eyebrow}</p>
+		<h1 class="hero-title">
+			<span class="hero-title-line">{firstName}</span>
+			<span class="hero-title-line hero-title-line--accent">{lastName}</span>
+		</h1>
+		<p class="hero-arabic" lang="ar" dir="rtl">{arabicTitle}</p>
+		<p class="hero-summary">{summary}</p>
+	</div>
+	{
+		stats.length > 0 && (
+			<div class="hero-stats">
+				{stats.map((stat) => (
+					<div class="hero-stat">
+						<span class="hero-stat-value">{stat.value}</span>
+						<span class="hero-stat-label">{stat.label}</span>
+					</div>
+				))}
+			</div>
+		)
+	}
+	<div class="hero-scroll" aria-hidden="true">
+		<span class="hero-scroll-line"></span>
+	</div>
+</section>

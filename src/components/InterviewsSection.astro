@@ -11,11 +11,17 @@ import { interviews, pageHeadings } from '../data/siteContent'
 	<SectionTitle
 		title={pageHeadings.interviews.title}
 		arabicTitle={pageHeadings.interviews.arabicTitle}
+		eyebrow={pageHeadings.interviews.eyebrow}
+		description={pageHeadings.interviews.summary}
+		stats={pageHeadings.interviews.stats}
 	/>
-	<div class="flex-card-container">
+	<div class="media-list media-list--interviews">
 		{
-			interviews.map((entry) => (
-				<MediaCard entry={entry} />
+			interviews.map((entry, index) => (
+				<MediaCard
+					entry={entry}
+					index={index}
+				/>
 			))
 		}
 	</div>

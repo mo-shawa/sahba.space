@@ -14,7 +14,7 @@ function isActivePath(href?: string) {
 ---
 
 <nav>
-	<div class="nav-item">
+	<div class="nav-item nav-brand">
 		<a
 			id="moon-icon"
 			href={brand.href}
@@ -27,12 +27,15 @@ function isActivePath(href?: string) {
 				alt={brand.icon.alt}
 			/>
 		</a>
-		<a
-			href={brand.href}
-			class="nav-link nav-brand-link"
-		>
-			{brand.label}
-		</a>
+		<div class="nav-brand-copy">
+			<a
+				href={brand.href}
+				class="nav-link nav-brand-link"
+			>
+				{brand.label}
+			</a>
+			<p class="nav-brand-tagline">{brand.tagline}</p>
+		</div>
 	</div>
 
 	<div

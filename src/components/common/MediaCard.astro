@@ -3,37 +3,50 @@ import type { MediaEntry } from '../../data/siteContent'
 
 interface Props {
 	entry: MediaEntry
+	index?: number
 }
 
-const { entry } = Astro.props
-const cardClassName = ['card', entry.variant, entry.emphasis]
+const { entry, index = 0 } = Astro.props
+const cardClassName = [
+	'card',
+	'media-card',
+	index === 0 && 'media-card--featured',
+	entry.image && 'media-card--with-image',
+	entry.variant,
+	entry.emphasis,
+]
 	.filter(Boolean)
 	.join(' ')
 ---
 <article class={cardClassName}>
-	{
-		entry.image && (
-			<div class="card-top">
-				<a
-					target="_blank"
-					rel="noreferrer"
-					href={entry.href}
-				>
-					<img
-						class={entry.image.className}
-						src={entry.image.src}
-						alt={entry.image.alt}
-						width={entry.image.width}
-						height={entry.image.height}
-					/>
-				</a>
-			</div>
-		)
-	}
-	<div class="card-body card-copy-group">
-		<h3 class="card-title">{entry.title}</h3>
-		{entry.summary && <p class="card-summary">{entry.summary}</p>}
+	<div class="media-card-rail">
+		<div class="card-kicker">{String(index + 1).padStart(2, '0')}</div>
 		{entry.date && <small class="card-date">{entry.date}</small>}
+	</div>
+	<div class="media-card-main">
+		{
+			entry.image && (
+				<div class="card-top">
+					<a
+						target="_blank"
+						rel="noreferrer"
+						href={entry.href}
+					>
+						<img
+							class={entry.image.className}
+							src={entry.image.src}
+							alt={entry.image.alt}
+							width={entry.image.width}
+							height={entry.image.height}
+						/>
+					</a>
+				</div>
+			)
+		}
+		<div class="card-body card-copy-group">
+			<h3 class="card-title">{entry.title}</h3>
+			{entry.summary && <p class="card-summary">{entry.summary}</p>}
+		</div>
 	</div>
 	<a
 		class="card-link"

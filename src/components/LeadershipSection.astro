@@ -11,11 +11,17 @@ import { leadershipItems, pageHeadings } from '../data/siteContent'
 	<SectionTitle
 		title={pageHeadings.leadership.title}
 		arabicTitle={pageHeadings.leadership.arabicTitle}
+		eyebrow={pageHeadings.leadership.eyebrow}
+		description={pageHeadings.leadership.summary}
+		stats={pageHeadings.leadership.stats}
 	/>
-	<div class="card-container">
+	<div class="leadership-list">
 		{
-			leadershipItems.map((item) => (
-				<LeadershipCard item={item} />
+			leadershipItems.map((item, index) => (
+				<LeadershipCard
+					item={item}
+					index={index}
+				/>
 			))
 		}
 	</div>

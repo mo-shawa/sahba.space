@@ -3,6 +3,7 @@
 @import './layout.css';
 @import './components/loading.css';
 @import './components/navigation.css';
+@import './components/hero.css';
 @import './components/sections.css';
 @import './components/cards.css';
 @import './components/contact.css';

@@ -4,11 +4,13 @@ import '../styles/site.css'
 interface Props {
 	title?: string
 	description?: string
+	pageKey?: string
 }
 
 const {
 	title = "Sahba El-Shawa's Website",
 	description = "Sahba El-Shawa's Personal Website",
+	pageKey = 'home',
 } = Astro.props
 ---
 
@@ -50,7 +52,7 @@ const {
 		/>
 		<title>{title}</title>
 	</head>
-	<body>
+	<body data-page={pageKey}>
 		<slot />
 	</body>
 </html>

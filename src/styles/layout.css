@@ -1,11 +1,46 @@
 .webgl {
 	position: fixed;
-	left: 0;
-	top: 0;
-	bottom: 0;
+	inset: 0;
 	z-index: -5;
 	height: 100%;
+	width: 100%;
 	pointer-events: none;
+	opacity: 0.5;
+	filter: saturate(0.85) contrast(1.05) brightness(1.1);
+	-webkit-mask-image: radial-gradient(
+		ellipse at center,
+		rgba(255, 255, 255, 0.12) 0%,
+		rgba(255, 255, 255, 0.2) 20%,
+		rgba(255, 255, 255, 0.6) 50%,
+		rgba(255, 255, 255, 1) 100%
+	);
+	mask-image: radial-gradient(
+		ellipse at center,
+		rgba(255, 255, 255, 0.12) 0%,
+		rgba(255, 255, 255, 0.2) 20%,
+		rgba(255, 255, 255, 0.6) 50%,
+		rgba(255, 255, 255, 1) 100%
+	);
+}
+
+/* On home page, make the galaxy much more prominent */
+body[data-page='home'] .webgl {
+	opacity: 0.65;
+	filter: saturate(1.1) contrast(1.08) brightness(1.1);
+	-webkit-mask-image: radial-gradient(
+		ellipse at center,
+		rgba(255, 255, 255, 0.08) 0%,
+		rgba(255, 255, 255, 0.25) 30%,
+		rgba(255, 255, 255, 0.8) 60%,
+		rgba(255, 255, 255, 1) 100%
+	);
+	mask-image: radial-gradient(
+		ellipse at center,
+		rgba(255, 255, 255, 0.08) 0%,
+		rgba(255, 255, 255, 0.25) 30%,
+		rgba(255, 255, 255, 0.8) 60%,
+		rgba(255, 255, 255, 1) 100%
+	);
 }
 
 #app {
@@ -13,15 +48,30 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
+	padding-inline: clamp(1rem, 2vw, 2rem);
+}
+
+#app::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	background: radial-gradient(circle at center, rgba(4, 8, 26, 0.04) 0%, rgba(4, 8, 26, 0.2) 50%, rgba(4, 8, 26, 0.5) 100%);
+	pointer-events: none;
+	z-index: -1;
 }
 
 .site-main {
+	width: min(100%, var(--content-width));
+	margin: 0 auto;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	gap: var(--spacing-l);
-	padding: calc(var(--nav-height) + var(--spacing-m)) var(--spacing-s)
-		var(--spacing-l);
+	gap: var(--spacing-xl);
+	padding: 0 0 var(--spacing-xl);
+}
+
+body:not([data-page='home']) .site-main {
+	padding-top: calc(var(--nav-height) + 2rem);
 }
 
 section {
@@ -31,11 +81,11 @@ section {
 	justify-content: flex-start;
 	position: relative;
 	width: 100%;
-	padding-inline: var(--spacing-s);
 }
 
 .page-section {
-	gap: var(--spacing-m);
+	gap: clamp(1.4rem, 2vw, 2rem);
+	padding-bottom: 0.5rem;
 }
 
 .darken {
@@ -47,11 +97,14 @@ section {
 	gap: var(--spacing-s);
 	width: min(100%, var(--max-width));
 	border-radius: var(--border-radius);
-	padding: clamp(1rem, 2vw, 1.5rem);
+	padding: clamp(1rem, 2vw, 1.6rem);
+	background: linear-gradient(180deg, rgba(10, 17, 34, 0.78), rgba(6, 11, 24, 0.68));
+	border: 1px solid var(--border-color);
+	box-shadow: 0 1.2rem 3rem var(--shadow-color);
 }
 
 .title {
-	background: linear-gradient(90deg, #bffffa, #9afff7);
+	background: linear-gradient(90deg, var(--color-stardust-bright), var(--color-stardust));
 	color: transparent;
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -60,12 +113,15 @@ section {
 
 @media only screen and (max-width: 960px) {
 	.site-main {
-		padding-top: calc(var(--nav-height) + var(--spacing-s));
 		padding-bottom: var(--spacing-m);
 		gap: var(--spacing-m);
 	}
 
-	section {
-		padding-inline: 0;
+	body:not([data-page='home']) .site-main {
+		padding-top: calc(var(--nav-height) + 1.5rem);
+	}
+
+	#app {
+		padding-inline: 0.8rem;
 	}
 }

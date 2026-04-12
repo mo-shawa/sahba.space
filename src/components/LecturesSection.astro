@@ -11,11 +11,17 @@ import { lectures, pageHeadings } from '../data/siteContent'
 	<SectionTitle
 		title={pageHeadings.lectures.title}
 		arabicTitle={pageHeadings.lectures.arabicTitle}
+		eyebrow={pageHeadings.lectures.eyebrow}
+		description={pageHeadings.lectures.summary}
+		stats={pageHeadings.lectures.stats}
 	/>
-	<div class="flex-card-container">
+	<div class="media-list media-list--lectures">
 		{
-			lectures.map((entry) => (
-				<MediaCard entry={entry} />
+			lectures.map((entry, index) => (
+				<MediaCard
+					entry={entry}
+					index={index}
+				/>
 			))
 		}
 	</div>

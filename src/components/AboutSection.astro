@@ -1,25 +1,37 @@
 ---
 import RichTextInline from './common/RichTextInline.astro'
 import SocialLink from './common/SocialLink.astro'
-import SectionTitle from './common/SectionTitle.astro'
-import { aboutContent, socialLinks } from '../data/siteContent'
+import { aboutContent, homeFocusAreas, socialLinks } from '../data/siteContent'
 ---
 
 <section
-	id="home"
-	class="page-section page-section--home"
+	id="about"
+	class="page-section page-section--about"
 >
-	<SectionTitle
-		title={aboutContent.title}
-		arabicTitle={aboutContent.arabicTitle}
-	/>
+	<div class="about-label">
+		<span class="about-label-line"></span>
+		<span class="about-label-text">About</span>
+		<span class="about-label-line"></span>
+	</div>
 	<div class="intro-container home-intro-container">
-		<div class="social-links-panel social-links-panel--home darken">
-			{
-				socialLinks.map((link) => (
-					<SocialLink link={link} />
-				))
-			}
+		<div class="intro-aside">
+			<div class="social-links-panel social-links-panel--home">
+				{
+					socialLinks.map((link) => (
+						<SocialLink link={link} />
+					))
+				}
+			</div>
+			<div class="focus-panel">
+				<p class="focus-panel-label">Focus areas</p>
+				<ul class="focus-list">
+					{
+						homeFocusAreas.map((item) => (
+							<li class="focus-item">{item}</li>
+						))
+					}
+				</ul>
+			</div>
 		</div>
 		<div class="intro-copy">
 			{

@@ -12,26 +12,41 @@ import {
 } from 'three/src/Three'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { galaxyViews, type PageKey } from '../data/siteContent'
 import fragmentShader from '../shaders/fragment.glsl?raw'
 import vertexShader from '../shaders/vertex.glsl?raw'
 
-function initializeHomePage() {
+gsap.registerPlugin(ScrollTrigger)
+
+function initializeSite() {
 	const app = document.getElementById('app')
 
 	if (!app) return
 
-	const prefersReducedMotion = window.matchMedia(
+	ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+
+	const pageKey = (document.body.dataset.page as PageKey | undefined) ?? 'home'
+	const pageView = galaxyViews[pageKey] ?? galaxyViews.home
+	const searchParams = new URLSearchParams(window.location.search)
+
+	const prefersReducedMotionSetting = window.matchMedia(
 		'(prefers-reduced-motion: reduce)'
 	).matches
+	const motionPreference = searchParams.get('motion')?.toLowerCase()
+	const disableMotion = ['off', '0', 'false'].includes(motionPreference ?? '')
+	const forceMotion = ['on', '1', 'true', 'full'].includes(
+		motionPreference ?? ''
+	)
+	const prefersReducedMotion = prefersReducedMotionSetting && !forceMotion
+	const motionIntensity = disableMotion ? 0 : prefersReducedMotion ? 0.35 : 1
 	const isMobile =
 		'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0
-	const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)
-	const searchParams = new URLSearchParams(window.location.search)
 	const skipIntroAnimation = ['1', 'true'].includes(
 		searchParams.get('skipIntro')?.toLowerCase() ?? 'false'
 	)
 
 	const overlay = document.getElementById('overlay')
+	const existingCanvas = app.querySelector('canvas.webgl')
 	const revealPage = () => {
 		document.body.style.overflowY = 'auto'
 	}
@@ -61,7 +76,7 @@ function initializeHomePage() {
 		gsap.to(overlay, overlayOptions)
 	}
 
-	app.querySelector('canvas.webgl')?.remove()
+	existingCanvas?.remove()
 
 	const scene = new Scene()
 	const sizes = {
@@ -77,12 +92,13 @@ function initializeHomePage() {
 	window.addEventListener('orientationchange', handleCanvasResize)
 
 	const camera = new PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-	camera.position.x = 0
-	camera.position.y = 0.4
-	camera.position.z = 0
+	camera.position.x = pageView.camera.x
+	camera.position.y = pageView.camera.y
+	camera.position.z = pageView.camera.z
 	scene.add(camera)
 
-	const renderer = new WebGLRenderer()
+	const renderer = new WebGLRenderer({ alpha: true, antialias: !isMobile })
+	renderer.setClearColor(0x000000, 0)
 	renderer.setSize(sizes.width, sizes.height)
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 	renderer.domElement.classList.add('webgl')
@@ -97,18 +113,26 @@ function initializeHomePage() {
 
 		renderer.setSize(sizes.width, sizes.height)
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+		pointsMaterial.uniforms.uSize.value =
+			pageView.pointSize * renderer.getPixelRatio()
 	}
 
 	const parameters = {
-		count: prefersReducedMotion ? 48000 : 180000,
+		count: disableMotion
+			? 18000
+			: prefersReducedMotion
+				? 28000
+				: isMobile
+					? 76000
+					: 126000,
 		size: 0.005,
-		radius: 1.5,
+		radius: 1.75,
 		branches: 6,
 		spin: 1,
-		randomness: 0.9,
+		randomness: 0.78,
 		insideColor: '#ffffff',
-		outsideColor: '#35ffee',
-		swirlRatio: 800,
+		outsideColor: pageView.outsideColor,
+		swirlRatio: pageView.swirlRatio,
 	}
 
 	const pointsGeometry = new BufferGeometry()
@@ -152,11 +176,16 @@ function initializeHomePage() {
 		fragmentShader,
 		uniforms: {
 			uTime: { value: 0 },
-			uSize: { value: 8 * renderer.getPixelRatio() },
+			uSize: { value: pageView.pointSize * renderer.getPixelRatio() },
 		},
 	})
 
 	const points = new Points(pointsGeometry, pointsMaterial)
+	points.rotation.set(
+		pageView.rotation.x,
+		pageView.rotation.y,
+		pageView.rotation.z
+	)
 	camera.lookAt(points.position)
 	scene.add(points)
 
@@ -167,19 +196,17 @@ function initializeHomePage() {
 
 		const elapsedTime = clock.getElapsedTime()
 		pointsMaterial.uniforms.uTime.value =
-			(400 + elapsedTime) / parameters.swirlRatio
+			(400 + elapsedTime * Math.max(motionIntensity, 0.16)) / parameters.swirlRatio
 
 		renderer.render(scene, camera)
 		window.requestAnimationFrame(tick)
 	}
 
-	if (prefersReducedMotion) {
+	if (disableMotion) {
 		renderer.render(scene, camera)
 	} else {
 		tick()
 	}
-
-	gsap.registerPlugin(ScrollTrigger)
 
 	ScrollTrigger.defaults({
 		immediateRender: false,
@@ -187,7 +214,7 @@ function initializeHomePage() {
 
 	const navEl = document.querySelector('nav')
 
-	if (navEl && !prefersReducedMotion) {
+	if (navEl && !prefersReducedMotion && !disableMotion) {
 		gsap.from(navEl, {
 			y: -navEl.offsetHeight,
 			opacity: 0,
@@ -204,7 +231,7 @@ function initializeHomePage() {
 
 		hamburger.setAttribute('aria-expanded', String(open))
 
-		if (prefersReducedMotion) {
+		if (prefersReducedMotion || disableMotion) {
 			mobileNav.hidden = !open
 			return
 		}
@@ -249,14 +276,103 @@ function initializeHomePage() {
 		}
 	})
 
-	if (!prefersReducedMotion) {
+	if (!disableMotion) {
+		gsap.to(camera.position, {
+			x: pageView.camera.x + pageView.drift.x * motionIntensity,
+			y: pageView.camera.y + pageView.drift.y * motionIntensity,
+			duration: prefersReducedMotion ? 24 : 14,
+			repeat: -1,
+			yoyo: true,
+			ease: 'sine.inOut',
+		})
+
+		gsap.to(points.rotation, {
+			x: pageView.rotation.x + pageView.drift.z * motionIntensity,
+			duration: prefersReducedMotion ? 30 : 18,
+			repeat: -1,
+			yoyo: true,
+			ease: 'sine.inOut',
+		})
+
+		gsap.to(points.rotation, {
+			y: `+=${Math.PI * 2}`,
+			duration: prefersReducedMotion ? 64 : 36,
+			repeat: -1,
+			ease: 'none',
+		})
+	}
+
+	if (!prefersReducedMotion && !disableMotion) {
+		/* Hero entrance animations */
+		const heroContent = document.querySelector('.hero-content')
+		const heroStats = document.querySelector('.hero-stats')
+		const heroScroll = document.querySelector('.hero-scroll')
+
+		if (heroContent) {
+			const heroEyebrow = heroContent.querySelector('.hero-eyebrow')
+			const heroTitle = heroContent.querySelector('.hero-title')
+			const heroArabic = heroContent.querySelector('.hero-arabic')
+			const heroSummary = heroContent.querySelector('.hero-summary')
+
+			const heroTl = gsap.timeline({ delay: overlay ? 2 : 0.3 })
+
+			if (heroEyebrow) {
+				heroTl.from(heroEyebrow, {
+					y: 20,
+					opacity: 0,
+					duration: 0.8,
+					ease: 'expo.out',
+				}, 0)
+			}
+			if (heroTitle) {
+				heroTl.from(heroTitle.children, {
+					y: 40,
+					opacity: 0,
+					duration: 1,
+					ease: 'expo.out',
+					stagger: 0.12,
+				}, 0.1)
+			}
+			if (heroArabic) {
+				heroTl.from(heroArabic, {
+					y: 20,
+					opacity: 0,
+					duration: 0.8,
+					ease: 'expo.out',
+				}, 0.4)
+			}
+			if (heroSummary) {
+				heroTl.from(heroSummary, {
+					y: 20,
+					opacity: 0,
+					duration: 0.8,
+					ease: 'expo.out',
+				}, 0.5)
+			}
+			if (heroStats) {
+				heroTl.from(heroStats, {
+					y: 20,
+					opacity: 0,
+					duration: 0.8,
+					ease: 'expo.out',
+				}, 0.6)
+			}
+			if (heroScroll) {
+				heroTl.from(heroScroll, {
+					opacity: 0,
+					duration: 1.2,
+					ease: 'power2.out',
+				}, 0.9)
+			}
+		}
+
 		document
 			.querySelectorAll(
-				'.section-heading, .intro-container, .card, .section-container, .research-item, .footer-item'
+				'.section-heading, .about-label, .intro-aside, .intro-copy, .card, .section-container, .research-item, .footer-item'
 			)
 			.forEach((element) => {
 				gsap.from(element, {
-					y: 28,
+					y: 36,
 					opacity: 0,
 					ease: 'expo.out',
 					duration: 0.8,
@@ -286,25 +402,37 @@ function initializeHomePage() {
 		}
 	}
 
-	if (!prefersReducedMotion) {
+	if (!prefersReducedMotion && !disableMotion) {
 		const galaxyTimeline = gsap.timeline({
 			scrollTrigger: {
-				trigger: '#app',
+				trigger: document.documentElement,
 				start: 'top top',
 				end: 'bottom bottom',
-				scrub: 1,
+				scrub: 1.1,
 			},
 		})
 
 		galaxyTimeline
-			.to(points.rotation, { z: 0.3, ease: 'none' }, 0)
-			.from(
-				pointsMaterial.uniforms.uSize,
-				{ value: (isMobile || isSafari ? 1 : 0) * renderer.getPixelRatio() },
+			.to(camera.position, { z: pageView.scrollCamera.z, ease: 'none' }, 0)
+			.to(
+				points.rotation,
+				{
+					x: pageView.scrollRotation.x,
+					z: pageView.scrollRotation.z,
+					ease: 'none',
+				},
 				0
 			)
-			.to(parameters, { swirlRatio: 5, ease: 'none' }, 0)
-			.to(camera.position, { y: 2, x: -1 }, 0)
+			.to(
+				pointsMaterial.uniforms.uSize,
+				{ value: (pageView.pointSize + 3.5) * renderer.getPixelRatio(), ease: 'none' },
+				0
+			)
+			.to(
+				parameters,
+				{ swirlRatio: Math.max(5, pageView.swirlRatio * 0.18), ease: 'none' },
+				0
+			)
 	}
 
 	const copyrightYear = document.getElementById('copyright-year')
@@ -315,9 +443,9 @@ function initializeHomePage() {
 }
 
 if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initializeHomePage, {
+	document.addEventListener('DOMContentLoaded', initializeSite, {
 		once: true,
 	})
 } else {
-	initializeHomePage()
+	initializeSite()
 }

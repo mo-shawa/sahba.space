@@ -1,13 +1,40 @@
 ---
+import type { PageStat } from '../../data/siteContent'
+
 interface Props {
 	title: string
 	arabicTitle?: string
+	eyebrow?: string
+	description?: string
+	stats?: PageStat[]
 }
 
-const { title, arabicTitle } = Astro.props
+const { title, arabicTitle, eyebrow, description, stats = [] } = Astro.props
 ---
 
 <div class="section-heading">
-	<h1 class="section-title">{title}</h1>
-	{arabicTitle && <p class="section-subtitle">{arabicTitle}</p>}
+	<div class="section-heading-meta">
+		{eyebrow && <p class="section-eyebrow">{eyebrow}</p>}
+		{arabicTitle && <p class="section-subtitle">{arabicTitle}</p>}
+	</div>
+	<div class="section-heading-grid">
+		<div class="section-heading-copy">
+			<h1 class="section-title">{title}</h1>
+			{description && <p class="section-description">{description}</p>}
+		</div>
+		{
+			stats.length > 0 && (
+				<dl class="section-stats">
+					{
+						stats.map((item) => (
+							<div class="section-stat">
+								<dt>{item.label}</dt>
+								<dd>{item.value}</dd>
+							</div>
+						))
+					}
+				</dl>
+			)
+		}
+	</div>
 </div>

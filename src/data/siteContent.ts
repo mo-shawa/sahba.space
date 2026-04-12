@@ -11,6 +11,51 @@ export type RichTextPart =
 			rel?: string
 	  }
 
+export type PageKey =
+	| 'home'
+	| 'leadership'
+	| 'research'
+	| 'lectures'
+	| 'interviews'
+	| 'testimonials'
+	| 'contact'
+
+export interface PageStat {
+	label: string
+	value: string
+}
+
+export interface GalaxyView {
+	camera: {
+		x: number
+		y: number
+		z: number
+	}
+	drift: {
+		x: number
+		y: number
+		z: number
+	}
+	rotation: {
+		x: number
+		y: number
+		z: number
+	}
+	scrollCamera: {
+		x: number
+		y: number
+		z: number
+	}
+	scrollRotation: {
+		x: number
+		y: number
+		z: number
+	}
+	outsideColor: string
+	pointSize: number
+	swirlRatio: number
+}
+
 export interface ImageAsset {
 	src: string
 	alt: string
@@ -34,6 +79,9 @@ export interface PageHeading {
 	title: string
 	arabicTitle: string
 	description: string
+	eyebrow: string
+	summary: string
+	stats: PageStat[]
 }
 
 export interface AboutContent {
@@ -111,6 +159,7 @@ export const siteMeta = {
 
 export const brand = {
 	label: 'sahba.space',
+	tagline: 'Space, justice, and sustainable futures',
 	href: '/home',
 	icon: {
 		src: '/favicon-32x32.png',
@@ -150,38 +199,100 @@ export const pageHeadings = {
 		title: 'Sahba El-Shawa',
 		arabicTitle: 'صهباء الشوا',
 		description: siteMeta.description,
+		eyebrow: 'Space ethics • sustainability • Earth observation',
+		summary:
+			'Palestinian-Jordanian engineer, founder, and researcher shaping more ethical futures for space on Earth and beyond.',
+		stats: [
+			{ label: 'United Nations Youth Office', value: '17 young leaders' },
+			{ label: 'Institutes founded', value: '2' },
+			{ label: 'Analog astronaut', value: 'First female Palestinian' },
+		],
 	},
 	leadership: {
 		title: 'Leadership',
 		arabicTitle: 'قيادة',
 		description: 'Leadership roles and institutional work by Sahba El-Shawa.',
+		eyebrow: 'Institution building across policy, research, and education',
+		summary:
+			'Founding and advisory work spanning emerging space countries, ethics, climate action, and student access.',
+		stats: [
+			{ label: 'Organizations', value: '7' },
+			{ label: 'Founding roles', value: '2' },
+			{ label: 'Active since', value: '2020' },
+		],
 	},
 	research: {
 		title: 'Research',
 		arabicTitle: 'أبحاث',
 		description: 'Research publications and conference work by Sahba El-Shawa.',
+		eyebrow: 'Earth observation, climate, governance, and justice',
+		summary:
+			'Conference and journal work connecting sustainability, accountability, analog research, and the ethics of space systems.',
+		stats: [
+			{ label: 'Research tracks', value: '5' },
+			{ label: 'IAC papers', value: '17' },
+			{ label: 'Current lens', value: 'Justice + climate' },
+		],
 	},
 	lectures: {
 		title: 'Lectures',
 		arabicTitle: 'محاضرات',
 		description: 'Lectures, webinars, and presentations by Sahba El-Shawa.',
+		eyebrow: 'Talks, workshops, and invited presentations',
+		summary:
+			'Public speaking across universities, UN forums, and space communities on commercialization, climate action, and cultural frameworks.',
+		stats: [
+			{ label: 'Talks listed', value: '5' },
+			{ label: 'Timespan', value: '2021-2025' },
+			{ label: 'Formats', value: 'UN + academia' },
+		],
 	},
 	interviews: {
 		title: 'Interviews',
 		arabicTitle: 'مقابلات',
 		description: 'Interviews, podcasts, and media appearances by Sahba El-Shawa.',
+		eyebrow: 'Conversations across media, law, policy, and culture',
+		summary:
+			'Media appearances exploring space ethics, accessibility, governance, technology, and public imagination in both Arabic and English.',
+		stats: [
+			{ label: 'Appearances', value: '13' },
+			{ label: 'Languages', value: 'Arabic + English' },
+			{ label: 'Formats', value: 'Podcast + panel + press' },
+		],
 	},
 	testimonials: {
 		title: 'Testimonials',
 		arabicTitle: 'توصيات',
 		description: 'Selected testimonials about Sahba El-Shawa.',
+		eyebrow: 'Peer, mentor, and collaborator perspectives',
+		summary:
+			'Reflections on Sahba\'s leadership style, intellectual range, mentorship, and ability to align principle with action.',
+		stats: [
+			{ label: 'Voices', value: '6' },
+			{ label: 'Timespan', value: '2020-2025' },
+			{ label: 'Themes', value: 'Research + leadership' },
+		],
 	},
 	contact: {
 		title: 'Contact',
 		arabicTitle: 'تواصل',
 		description: 'Contact and social links for Sahba El-Shawa.',
+		eyebrow: 'Collaborate, commission, or continue the conversation',
+		summary:
+			'Open to research collaborations, lectures, policy conversations, and thoughtful media inquiries.',
+		stats: [
+			{ label: 'Channels', value: '3' },
+			{ label: 'Open to', value: 'Research + speaking' },
+			{ label: 'Regions', value: 'Jordan / Italy' },
+		],
 	},
-} satisfies Record<string, PageHeading>
+} satisfies Record<PageKey, PageHeading>
+
+export const homeFocusAreas = [
+	'Earth observation for justice and accountability',
+	'Ethical space governance and demilitarization',
+	'Analog research, outreach, and sustainable exploration',
+] as const
 
 export const aboutContent: AboutContent = {
 	title: pageHeadings.home.title,
@@ -670,3 +781,76 @@ export const footerContent = {
 	owner: 'Sahba El-Shawa',
 	note: 'Header image courtesy of Unsplash',
 } as const
+
+export const galaxyViews: Record<PageKey, GalaxyView> = {
+	home: {
+		camera: { x: 0.15, y: 0.55, z: 0.85 },
+		drift: { x: 0.18, y: 0.12, z: 0.1 },
+		rotation: { x: 0.18, y: 0.7, z: 0.08 },
+		scrollCamera: { x: -0.75, y: 1.3, z: 1.8 },
+		scrollRotation: { x: 0.34, y: 1.18, z: 0.42 },
+		outsideColor: '#c9a96e',
+		pointSize: 8.2,
+		swirlRatio: 560,
+	},
+	leadership: {
+		camera: { x: -1.2, y: 1.1, z: 1.32 },
+		drift: { x: 0.16, y: 0.08, z: 0.08 },
+		rotation: { x: 0.36, y: 1.25, z: 0.25 },
+		scrollCamera: { x: -0.3, y: 1.85, z: 2.2 },
+		scrollRotation: { x: 0.58, y: 1.78, z: 0.5 },
+		outsideColor: '#7bbfaa',
+		pointSize: 8.1,
+		swirlRatio: 620,
+	},
+	research: {
+		camera: { x: 1.45, y: 0.32, z: 1.22 },
+		drift: { x: 0.2, y: 0.06, z: 0.08 },
+		rotation: { x: 0.22, y: 1.52, z: -0.18 },
+		scrollCamera: { x: 0.25, y: 1.1, z: 2.1 },
+		scrollRotation: { x: 0.42, y: 2.05, z: 0.2 },
+		outsideColor: '#7b8ec2',
+		pointSize: 7.8,
+		swirlRatio: 500,
+	},
+	lectures: {
+		camera: { x: 0.9, y: -0.12, z: 1.08 },
+		drift: { x: 0.12, y: 0.14, z: 0.1 },
+		rotation: { x: 0.16, y: 0.96, z: 0.3 },
+		scrollCamera: { x: -0.1, y: 1.18, z: 1.92 },
+		scrollRotation: { x: 0.44, y: 1.55, z: 0.56 },
+		outsideColor: '#d4a05a',
+		pointSize: 8.3,
+		swirlRatio: 540,
+	},
+	interviews: {
+		camera: { x: -0.28, y: 1.52, z: 1.55 },
+		drift: { x: 0.18, y: 0.1, z: 0.14 },
+		rotation: { x: 0.3, y: 1.9, z: 0.36 },
+		scrollCamera: { x: -1.05, y: 0.68, z: 2.05 },
+		scrollRotation: { x: 0.56, y: 2.48, z: 0.7 },
+		outsideColor: '#c98a6e',
+		pointSize: 8.1,
+		swirlRatio: 520,
+	},
+	testimonials: {
+		camera: { x: 0.42, y: 1.02, z: 0.96 },
+		drift: { x: 0.12, y: 0.14, z: 0.08 },
+		rotation: { x: 0.26, y: 1.06, z: -0.12 },
+		scrollCamera: { x: -0.22, y: 1.55, z: 1.72 },
+		scrollRotation: { x: 0.5, y: 1.62, z: 0.14 },
+		outsideColor: '#8bc2a0',
+		pointSize: 8,
+		swirlRatio: 650,
+	},
+	contact: {
+		camera: { x: -1.55, y: 0.22, z: 1.32 },
+		drift: { x: 0.14, y: 0.08, z: 0.08 },
+		rotation: { x: 0.18, y: 1.34, z: 0.16 },
+		scrollCamera: { x: -0.42, y: 1.04, z: 1.84 },
+		scrollRotation: { x: 0.42, y: 1.92, z: 0.38 },
+		outsideColor: '#a0c28b',
+		pointSize: 7.6,
+		swirlRatio: 700,
+	},
+}

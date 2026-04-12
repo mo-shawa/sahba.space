@@ -1,0 +1,226 @@
+.hero {
+	position: relative;
+	min-height: 100vh;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: calc(var(--nav-height) + 2rem) 2rem 4rem;
+	text-align: center;
+	gap: 2rem;
+	overflow: hidden;
+}
+
+.hero::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(
+			ellipse 50% 45% at 50% 46%,
+			rgba(4, 8, 26, 0.92) 0%,
+			rgba(4, 8, 26, 0.7) 35%,
+			rgba(4, 8, 26, 0.3) 60%,
+			transparent 85%
+		);
+	pointer-events: none;
+	z-index: 0;
+}
+
+/* Decorative orbital ring */
+.hero::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: min(85vw, 62rem);
+	aspect-ratio: 2.2 / 1;
+	transform: translate(-50%, -55%) rotate(-5deg);
+	border: 1px solid rgba(201, 169, 110, 0.1);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	animation: orbit-drift 30s ease-in-out infinite;
+}
+
+.hero-orbit--outer {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: min(110vw, 78rem);
+	aspect-ratio: 2.6 / 1;
+	transform: translate(-50%, -50%) rotate(3deg);
+	border: 1px solid rgba(201, 169, 110, 0.06);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	animation: orbit-drift-reverse 40s ease-in-out infinite;
+}
+
+@keyframes orbit-drift {
+	0%, 100% { transform: translate(-50%, -55%) rotate(-5deg); }
+	50% { transform: translate(-50%, -55%) rotate(-3deg) scale(1.02); }
+}
+
+@keyframes orbit-drift-reverse {
+	0%, 100% { transform: translate(-50%, -50%) rotate(3deg); }
+	50% { transform: translate(-50%, -50%) rotate(5deg) scale(0.98); }
+}
+
+.hero-content {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	max-width: 52rem;
+}
+
+.hero-eyebrow {
+	font-family: 'Space Mono', monospace;
+	font-size: 0.68rem;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--primary-color);
+	padding: 0.5rem 1.2rem;
+	border: 1px solid var(--border-color-strong);
+	border-radius: 999px;
+	background: rgba(4, 8, 26, 0.65);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.hero-title {
+	font-family: 'Instrument Serif', serif;
+	font-size: clamp(4.5rem, 14vw, 10rem);
+	font-weight: 400;
+	line-height: 0.88;
+	letter-spacing: -0.03em;
+	color: var(--text-primary);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0;
+	margin-top: 0.5rem;
+	text-shadow: 0 2px 30px rgba(4, 8, 26, 0.6);
+}
+
+.hero-title-line {
+	display: block;
+}
+
+.hero-title-line--accent {
+	font-style: italic;
+	background: linear-gradient(135deg, var(--color-stardust-bright), var(--color-stardust), var(--color-nebula));
+	color: transparent;
+	background-clip: text;
+	-webkit-background-clip: text;
+}
+
+.hero-arabic {
+	font-size: clamp(1.4rem, 3vw, 2rem);
+	color: var(--text-secondary);
+	letter-spacing: 0.1em;
+	opacity: 0.65;
+	margin-top: 0.3rem;
+}
+
+.hero-summary {
+	max-width: 44ch;
+	font-size: 1.08rem;
+	color: var(--text-secondary);
+	line-height: 1.75;
+	margin-top: 0.5rem;
+	text-shadow: 0 1px 12px rgba(4, 8, 26, 0.5);
+}
+
+.hero-stats {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	gap: 1px;
+	border-radius: var(--border-radius);
+	overflow: hidden;
+	border: 1px solid var(--border-color);
+	background: var(--border-color);
+}
+
+.hero-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	padding: 1.1rem 1.8rem;
+	background: var(--surface-strong);
+	text-align: center;
+}
+
+.hero-stat-value {
+	font-family: 'Space Mono', monospace;
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: var(--primary-color);
+	letter-spacing: 0.02em;
+}
+
+.hero-stat-label {
+	font-size: 0.68rem;
+	color: var(--text-secondary);
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.hero-scroll {
+	position: absolute;
+	bottom: 2.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: 1;
+}
+
+.hero-scroll-line {
+	display: block;
+	width: 1px;
+	height: 3rem;
+	background: linear-gradient(to bottom, var(--primary-color), transparent);
+	animation: hero-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes hero-pulse {
+	0%, 100% {
+		opacity: 0.2;
+		transform: scaleY(0.7);
+		transform-origin: top;
+	}
+	50% {
+		opacity: 0.8;
+		transform: scaleY(1);
+		transform-origin: top;
+	}
+}
+
+@media only screen and (max-width: 720px) {
+	.hero {
+		min-height: 100svh;
+		padding: calc(var(--nav-height) + 1rem) 1rem 5rem;
+		gap: 2rem;
+	}
+
+	.hero-stats {
+		flex-direction: column;
+		width: 100%;
+		max-width: 20rem;
+	}
+
+	.hero-stat {
+		padding: 0.85rem 1.2rem;
+	}
+
+	.hero-scroll {
+		bottom: 1.5rem;
+	}
+}

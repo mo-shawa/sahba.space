@@ -4,11 +4,13 @@ import type { LeadershipItem } from '../../data/siteContent'
 
 interface Props {
 	item: LeadershipItem
+	index?: number
 }
 
-const { item } = Astro.props
+const { item, index = 0 } = Astro.props
 ---
-<article class="card">
+<article class="card leadership-card">
+	<div class="card-kicker">{String(index + 1).padStart(2, '0')}</div>
 	<div class="card-top">
 		<h3 class="card-title">{item.title}</h3>
 	</div>
