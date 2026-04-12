@@ -9,9 +9,8 @@ interface Props {
 const { testimonial } = Astro.props
 ---
 
-<article class="card darken">
-	<h1 class="quote">"</h1>
-	<div class="testimonial-copy">
+<article class="card testimonial-card">
+	<blockquote class="testimonial-copy">
 		{
 			testimonial.quote.map((paragraph) => (
 				<p>
@@ -19,9 +18,8 @@ const { testimonial } = Astro.props
 				</p>
 			))
 		}
-	</div>
-	<h1 class="quote">"</h1>
-	<small>
+	</blockquote>
+	<small class="testimonial-attribution">
 		<RichTextInline parts={testimonial.attribution} />
 	</small>
 </article>

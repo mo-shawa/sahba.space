@@ -10,6 +10,8 @@ const className = ['icon-wrapper', link.className].filter(Boolean).join(' ')
 ---
 
 <a
+	aria-label={link.label}
+	title={link.label}
 	target={link.target}
 	rel={link.rel}
 	class={className}
@@ -22,4 +24,5 @@ const className = ['icon-wrapper', link.className].filter(Boolean).join(' ')
 		width={link.icon.width}
 		height={link.icon.height}
 	/>
+	<span class="social-link-label">{link.label}</span>
 </a>

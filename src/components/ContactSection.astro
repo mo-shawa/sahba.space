@@ -1,26 +1,24 @@
 ---
+import SectionTitle from './common/SectionTitle.astro'
 import SocialLink from './common/SocialLink.astro'
-import { footerContent, socialLinks } from '../data/siteContent'
+import { pageHeadings, socialLinks } from '../data/siteContent'
 ---
 
-<section id="contact">
-	<div id="contact-links">
-		{
-			socialLinks.map((link) => (
-				<SocialLink link={link} />
-			))
-		}
+<section
+	id="contact"
+	class="page-section"
+>
+	<SectionTitle
+		title={pageHeadings.contact.title}
+		arabicTitle={pageHeadings.contact.arabicTitle}
+	/>
+	<div class="section-container darken contact-panel">
+		<div class="social-links-panel social-links-panel--contact">
+			{
+				socialLinks.map((link) => (
+					<SocialLink link={link} />
+				))
+			}
+		</div>
 	</div>
-	<footer>
-		<small class="footer-item">
-			Copyright © <span id="copyright-year"></span> {footerContent.owner} - Website by
-			<a
-				target="_blank"
-				rel="noreferrer"
-				href={footerContent.creditHref}
-			>
-				{footerContent.creditLabel}
-			</a>
-		</small>
-	</footer>
 </section>

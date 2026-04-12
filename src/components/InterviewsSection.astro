@@ -1,11 +1,17 @@
 ---
 import MediaCard from './common/MediaCard.astro'
 import SectionTitle from './common/SectionTitle.astro'
-import { interviews } from '../data/siteContent'
+import { interviews, pageHeadings } from '../data/siteContent'
 ---
 
-<section id="interviews">
-	<SectionTitle title="Interviews" />
+<section
+	id="interviews"
+	class="page-section"
+>
+	<SectionTitle
+		title={pageHeadings.interviews.title}
+		arabicTitle={pageHeadings.interviews.arabicTitle}
+	/>
 	<div class="flex-card-container">
 		{
 			interviews.map((entry) => (

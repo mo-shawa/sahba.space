@@ -1,0 +1,12 @@
+---
+import LecturesSection from '../components/LecturesSection.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+import { pageHeadings } from '../data/siteContent'
+---
+
+<SiteLayout
+	title={`${pageHeadings.lectures.title} | ${pageHeadings.home.title}`}
+	description={pageHeadings.lectures.description}
+>
+	<LecturesSection />
+</SiteLayout>

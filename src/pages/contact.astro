@@ -1,0 +1,12 @@
+---
+import ContactSection from '../components/ContactSection.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+import { pageHeadings } from '../data/siteContent'
+---
+
+<SiteLayout
+	title={`${pageHeadings.contact.title} | ${pageHeadings.home.title}`}
+	description={pageHeadings.contact.description}
+>
+	<ContactSection />
+</SiteLayout>

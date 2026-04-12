@@ -1,0 +1,12 @@
+---
+import ResearchSection from '../components/ResearchSection.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+import { pageHeadings } from '../data/siteContent'
+---
+
+<SiteLayout
+	title={`${pageHeadings.research.title} | ${pageHeadings.home.title}`}
+	description={pageHeadings.research.description}
+>
+	<ResearchSection />
+</SiteLayout>

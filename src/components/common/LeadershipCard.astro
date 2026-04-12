@@ -8,7 +8,6 @@ interface Props {
 
 const { item } = Astro.props
 ---
-
 <article class="card">
 	<div class="card-top">
 		<h3 class="card-title">{item.title}</h3>
@@ -22,4 +21,16 @@ const { item } = Astro.props
 			))
 		}
 	</div>
+	{
+		item.website && (
+			<a
+				class="card-link"
+				href={item.website.href}
+				target={item.website.target}
+				rel={item.website.rel}
+			>
+				{item.website.label}
+			</a>
+		)
+	}
 </article>

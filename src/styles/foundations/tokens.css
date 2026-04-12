@@ -3,9 +3,12 @@
 	--spacing-s: 1rem;
 	--spacing-m: 2rem;
 	--spacing-l: 4rem;
+	--nav-height: 4.5rem;
 	--primary-color: #35ffee;
 	--secondary-color: #adea93;
 	--darken-background: rgba(0, 0, 0, 0.8);
+	--surface-color: rgba(0, 0, 0, 0.74);
+	--surface-strong: rgba(0, 0, 0, 0.9);
 	--max-width: 1200px;
 	--border-radius: 1rem;
 }

@@ -11,7 +11,6 @@ import {
 	WebGLRenderer,
 } from 'three/src/Three'
 import { gsap } from 'gsap'
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import fragmentShader from '../shaders/fragment.glsl?raw'
 import vertexShader from '../shaders/vertex.glsl?raw'
@@ -21,37 +20,48 @@ function initializeHomePage() {
 
 	if (!app) return
 
-	const isMobile = 'ontouchstart' in document.documentElement
+	const prefersReducedMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)'
+	).matches
+	const isMobile =
+		'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0
 	const isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)
 	const searchParams = new URLSearchParams(window.location.search)
-	let skipIntroAnimation = ['1', 'true'].includes(
+	const skipIntroAnimation = ['1', 'true'].includes(
 		searchParams.get('skipIntro')?.toLowerCase() ?? 'false'
 	)
 
 	const overlay = document.getElementById('overlay')
+	const revealPage = () => {
+		document.body.style.overflowY = 'auto'
+	}
+	const removeOverlay = () => {
+		overlay?.remove()
+	}
 	const overlayOptions: GSAPTweenVars = {
 		opacity: 0,
 		ease: 'expo.inOut',
 		duration: 1,
 		delay: 1.5,
 		onStart: () => {
-			document.body.style.overflowY = 'auto'
+			revealPage()
 		},
 		onComplete: () => {
-			overlay?.remove()
+			removeOverlay()
 		},
 	}
 
-	if (skipIntroAnimation) {
-		document.body.style.overflowY = 'auto'
-		overlay?.remove()
-	} else if (window.scrollY > 0) {
-		gsap.to(overlay, { ...overlayOptions, delay: 0 })
+	if (!overlay) {
+		revealPage()
+	} else if (skipIntroAnimation || window.scrollY > 0 || prefersReducedMotion) {
+		revealPage()
+		removeOverlay()
 	} else {
-		window.addEventListener('DOMContentLoaded', () => {
-			gsap.to(overlay, overlayOptions)
-		})
+		document.body.style.overflowY = 'hidden'
+		gsap.to(overlay, overlayOptions)
 	}
+
+	app.querySelector('canvas.webgl')?.remove()
 
 	const scene = new Scene()
 	const sizes = {
@@ -90,7 +100,7 @@ function initializeHomePage() {
 	}
 
 	const parameters = {
-		count: 180000,
+		count: prefersReducedMotion ? 48000 : 180000,
 		size: 0.005,
 		radius: 1.5,
 		branches: 6,
@@ -163,162 +173,151 @@ function initializeHomePage() {
 		window.requestAnimationFrame(tick)
 	}
 
-	tick()
+	if (prefersReducedMotion) {
+		renderer.render(scene, camera)
+	} else {
+		tick()
+	}
 
-	gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+	gsap.registerPlugin(ScrollTrigger)
 
 	ScrollTrigger.defaults({
 		immediateRender: false,
 	})
 
 	const navEl = document.querySelector('nav')
-	const navHeight = navEl!.offsetHeight
 
-	gsap.from(navEl, {
-		y: -navHeight,
-		opacity: 0,
-		scrollTrigger: {
-			trigger: '#hero',
-			start: '20%',
-		},
-	})
+	if (navEl && !prefersReducedMotion) {
+		gsap.from(navEl, {
+			y: -navEl.offsetHeight,
+			opacity: 0,
+			duration: 0.8,
+			ease: 'expo.out',
+		})
+	}
 
-	const hamburger = document.getElementById('hamburger')
+	const hamburger = document.getElementById('hamburger') as HTMLButtonElement | null
 	const mobileNav = document.getElementById('mobile-nav')
-	const navLinks = document.querySelectorAll('.nav-link')
-	const mobileLinks = document.querySelectorAll('.mobile-link')
 
-	let isNavVisible = false
+	function toggleMobileNav(open: boolean) {
+		if (!hamburger || !mobileNav) return
 
-	const navIn: GSAPTweenVars = {
-		right: 0,
-		ease: 'expo.inOut',
-		onComplete: () => {
-			hamburger!.classList.remove('disabled')
-			isNavVisible = !isNavVisible
-		},
+		hamburger.setAttribute('aria-expanded', String(open))
+
+		if (prefersReducedMotion) {
+			mobileNav.hidden = !open
+			return
+		}
+
+		gsap.killTweensOf(mobileNav)
+
+		if (open) {
+			mobileNav.hidden = false
+			gsap.fromTo(
+				mobileNav,
+				{ autoAlpha: 0, y: -12 },
+				{ autoAlpha: 1, y: 0, duration: 0.25, ease: 'expo.out' }
+			)
+			return
+		}
+
+		gsap.to(mobileNav, {
+			autoAlpha: 0,
+			y: -12,
+			duration: 0.2,
+			ease: 'expo.in',
+			onComplete: () => {
+				mobileNav.hidden = true
+			},
+		})
 	}
 
-	const navOut: GSAPTweenVars = {
-		...navIn,
-		right: '-100%',
-	}
-
-	hamburger!.addEventListener('click', () => {
-		if (hamburger!.classList.contains('disabled')) return
-
-		hamburger!.classList.add('disabled')
-		if (isNavVisible) gsap.to(mobileNav, navOut)
-		else gsap.to(mobileNav, navIn)
+	hamburger?.addEventListener('click', () => {
+		const isExpanded = hamburger.getAttribute('aria-expanded') === 'true'
+		toggleMobileNav(!isExpanded)
 	})
 
-	navLinks.forEach((link) => {
-		link.addEventListener('click', (evt) => {
-			evt.preventDefault()
-			const href = link.getAttribute('href')!
-			gsap.to(window, scrollToOptions(href))
+	document.querySelectorAll('#mobile-nav .mobile-link').forEach((link) => {
+		link.addEventListener('click', () => {
+			toggleMobileNav(false)
 		})
 	})
 
-	mobileLinks.forEach((link) => {
-		link.addEventListener('click', (evt) => {
-			evt.preventDefault()
-			const href = link.getAttribute('href')!
-			gsap.to(mobileNav, navOut)
-			gsap.to(window, scrollToOptions(href))
-		})
+	window.addEventListener('resize', () => {
+		if (window.innerWidth > 1240) {
+			toggleMobileNav(false)
+		}
 	})
 
-	function scrollToOptions(href: string): GSAPTweenVars {
-		return {
-			duration: 1,
-			ease: 'expo.inOut',
-			scrollTo: { y: href, offsetY: href === '#contact' ? 0 : 20 },
+	if (!prefersReducedMotion) {
+		document
+			.querySelectorAll(
+				'.section-heading, .intro-container, .card, .section-container, .research-item, .footer-item'
+			)
+			.forEach((element) => {
+				gsap.from(element, {
+					y: 28,
+					opacity: 0,
+					ease: 'expo.out',
+					duration: 0.8,
+					scrollTrigger: {
+						trigger: element,
+						start: 'top 85%',
+					},
+				})
+			})
+
+		const iconWrappers = document.querySelectorAll('.icon-wrapper')
+
+		if (iconWrappers.length > 0) {
+			gsap.from(iconWrappers, {
+				delay: 0.15,
+				scale: 0.96,
+				opacity: 0,
+				y: 18,
+				ease: 'expo.out',
+				duration: 0.7,
+				stagger: 0.08,
+				scrollTrigger: {
+					trigger: iconWrappers[0],
+					start: 'top 88%',
+				},
+			})
 		}
 	}
 
-	gsap.to('#pointer', {
-		duration: 1.5,
-		y: 15,
-		repeat: -1,
-		yoyo: true,
-		ease: 'sine.inOut',
-		scrollTrigger: {
-			trigger: '#pointer',
-			start: 'top bottom',
-			toggleActions: 'play pause play pause',
-		},
-	})
-
-	const aboutTimeline = gsap.timeline({
-		scrollTrigger: {
-			trigger: '#about',
-			start: '-30%',
-			end: '-10%',
-		},
-	})
-
-	document
-		.querySelectorAll('.card, .section-title, .section-container, .lecture')
-		.forEach((element) => {
-			gsap.from(element, {
-				xPercent: -10,
-				opacity: 0,
-				ease: 'expo.out',
-				scrollTrigger: {
-					trigger: element,
-					start: ' 50%',
-				},
-			})
+	if (!prefersReducedMotion) {
+		const galaxyTimeline = gsap.timeline({
+			scrollTrigger: {
+				trigger: '#app',
+				start: 'top top',
+				end: 'bottom bottom',
+				scrub: 1,
+			},
 		})
 
-	aboutTimeline.from('.intro-container', {
-		opacity: 0,
-		xPercent: -20,
-	})
-
-	const galaxyTimeline = gsap.timeline({
-		scrollTrigger: {
-			trigger: '#app',
-			start: 'top top',
-			end: 'bottom -10%',
-			scrub: 1,
-		},
-	})
-
-	galaxyTimeline
-		.to(points.rotation, { z: 0.3, ease: 'expo.out' }, 0)
-		.from(
-			pointsMaterial.uniforms.uSize,
-			{ value: (isMobile || isSafari ? 1 : 0) * renderer.getPixelRatio() },
-			0
-		)
-		.to(parameters, { swirlRatio: 5, ease: 'expo' }, 0)
-		.to(camera.position, { y: 2, x: -1 }, 0)
-
-	const iconWrappers: NodeListOf<HTMLAnchorElement> =
-		document.querySelectorAll('.icon-wrapper')
-	const iconsOptions: GSAPTweenVars = {
-		delay: 0.5,
-		scale: 0,
-		opacity: 0,
-		xPercent: -150,
-		ease: 'expo.inOut',
-		duration: 1,
-		stagger: 0.1,
+		galaxyTimeline
+			.to(points.rotation, { z: 0.3, ease: 'none' }, 0)
+			.from(
+				pointsMaterial.uniforms.uSize,
+				{ value: (isMobile || isSafari ? 1 : 0) * renderer.getPixelRatio() },
+				0
+			)
+			.to(parameters, { swirlRatio: 5, ease: 'none' }, 0)
+			.to(camera.position, { y: 2, x: -1 }, 0)
 	}
 
-	gsap.from(iconWrappers, {
-		...iconsOptions,
-		scrollTrigger: {
-			trigger: iconWrappers,
-			end: 'bottom bottom',
-		},
-	})
+	const copyrightYear = document.getElementById('copyright-year')
 
-	document.getElementById('copyright-year')!.textContent = new Date()
-		.getFullYear()
-		.toString()
+	if (copyrightYear) {
+		copyrightYear.textContent = new Date().getFullYear().toString()
+	}
 }
 
-initializeHomePage()
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initializeHomePage, {
+		once: true,
+	})
+} else {
+	initializeHomePage()
+}

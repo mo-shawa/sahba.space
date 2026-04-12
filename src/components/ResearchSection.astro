@@ -1,11 +1,17 @@
 ---
 import ResearchGroup from './common/ResearchGroup.astro'
 import SectionTitle from './common/SectionTitle.astro'
-import { researchGroups, researchProfileLink } from '../data/siteContent'
+import { pageHeadings, researchGroups, researchProfileLink } from '../data/siteContent'
 ---
 
-<section id="research">
-	<SectionTitle title="Research" />
+<section
+	id="research"
+	class="page-section"
+>
+	<SectionTitle
+		title={pageHeadings.research.title}
+		arabicTitle={pageHeadings.research.arabicTitle}
+	/>
 	<div class="section-container darken">
 		{
 			researchGroups.map((group) => (

@@ -1,0 +1,12 @@
+---
+import InterviewsSection from '../components/InterviewsSection.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+import { pageHeadings } from '../data/siteContent'
+---
+
+<SiteLayout
+	title={`${pageHeadings.interviews.title} | ${pageHeadings.home.title}`}
+	description={pageHeadings.interviews.description}
+>
+	<InterviewsSection />
+</SiteLayout>

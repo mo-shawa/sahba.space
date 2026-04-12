@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
-
-* {
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
 }
@@ -12,8 +14,10 @@ html {
 
 body {
 	overflow-x: hidden;
-	overflow-y: hidden;
+	overflow-y: auto;
 	font-family: 'Space Mono', monospace;
+	background: black;
+	line-height: 1.65;
 }
 
 h1 {
@@ -45,6 +49,18 @@ a {
 
 a:hover {
 	color: var(--secondary-color);
+}
+
+img {
+	max-width: 100%;
+	display: block;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
 }
 
 @media only screen and (max-width: 1240px) {

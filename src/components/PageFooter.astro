@@ -1,0 +1,14 @@
+---
+import { footerContent } from '../data/siteContent'
+
+const currentYear = new Date().getFullYear()
+---
+
+<footer>
+	<small class="footer-item">
+		<span>
+			Copyright © <span id="copyright-year">{currentYear}</span> {footerContent.owner}
+		</span>
+		<span class="footer-note">{footerContent.note}</span>
+	</small>
+</footer>

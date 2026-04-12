@@ -1,9 +1,13 @@
 ---
 interface Props {
 	title: string
+	arabicTitle?: string
 }
 
-const { title } = Astro.props
+const { title, arabicTitle } = Astro.props
 ---
 
-<h1 class="section-title">{title}</h1>
+<div class="section-heading">
+	<h1 class="section-title">{title}</h1>
+	{arabicTitle && <p class="section-subtitle">{arabicTitle}</p>}
+</div>

@@ -1,6 +1,16 @@
 ---
-import NavLinksList from './common/NavLinksList.astro'
-import { brand, navigationItems } from '../data/siteContent'
+import { brand, mobileNavigationItems, navigationItems } from '../data/siteContent'
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/'
+
+function isActivePath(href?: string) {
+	if (!href) return false
+	if (href === '/home') {
+		return pathname === '/' || pathname === '/home'
+	}
+
+	return pathname === href
+}
 ---
 
 <nav>
@@ -29,28 +39,83 @@ import { brand, navigationItems } from '../data/siteContent'
 		id="desktop-nav"
 		class="nav-item"
 	>
-		<NavLinksList
-			items={navigationItems}
-			listClass="nav-links"
-			linkClass="nav-link"
-		/>
+		<ul class="nav-links">
+			{
+				navigationItems.map((item) => {
+					const groupActive = item.children?.some((child) => isActivePath(child.href))
+
+					return item.children ? (
+						<li class:list={['nav-group', groupActive && 'nav-group--active']}>
+							<button
+								type="button"
+								class="nav-link nav-group-trigger"
+								aria-haspopup="true"
+							>
+								{item.label}
+							</button>
+							<ul class="nav-submenu">
+								{
+									item.children.map((child) => (
+										<li>
+											<a
+												class:list={['nav-link', 'nav-submenu-link', isActivePath(child.href) && 'nav-link--active']}
+												href={child.href}
+											>
+												{child.label}
+											</a>
+										</li>
+									))
+								}
+							</ul>
+						</li>
+					) : (
+						<li>
+							<a
+								class:list={['nav-link', isActivePath(item.href) && 'nav-link--active']}
+								href={item.href}
+							>
+								{item.label}
+							</a>
+						</li>
+					)
+				})
+			}
+		</ul>
 	</div>
-	<img
-		src="/svg/hamburger.svg"
-		alt="hamburger icon"
-		class="svg"
+	<button
+		type="button"
 		id="hamburger"
-		width="32"
-		height="32"
-	/>
+		aria-controls="mobile-nav"
+		aria-expanded="false"
+		aria-label="Open navigation menu"
+	>
+		<img
+			src="/svg/hamburger.svg"
+			alt=""
+			class="hamburger-icon"
+			width="32"
+			height="32"
+			aria-hidden="true"
+		/>
+	</button>
 </nav>
 <div
 	id="mobile-nav"
 	class="nav-item"
+	hidden
 >
-	<NavLinksList
-		items={navigationItems}
-		listClass="mobile-links"
-		linkClass="mobile-link"
-	/>
+	<ul class="mobile-links">
+		{
+			mobileNavigationItems.map((item) => (
+				<li>
+					<a
+						class:list={['mobile-link', isActivePath(item.href) && 'nav-link--active']}
+						href={item.href}
+					>
+						{item.label}
+					</a>
+				</li>
+			))
+		}
+	</ul>
 </div>

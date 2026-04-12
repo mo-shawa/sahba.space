@@ -1,35 +1,26 @@
 ---
-import AboutSection from '../components/AboutSection.astro'
-import BaseLayout from '../layouts/BaseLayout.astro'
-import ContactSection from '../components/ContactSection.astro'
-import HeroSection from '../components/HeroSection.astro'
-import InterviewsSection from '../components/InterviewsSection.astro'
-import LeadershipSection from '../components/LeadershipSection.astro'
-import LecturesSection from '../components/LecturesSection.astro'
-import LoadingOverlay from '../components/LoadingOverlay.astro'
-import Navigation from '../components/Navigation.astro'
-import ResearchSection from '../components/ResearchSection.astro'
-import TestimonialsSection from '../components/TestimonialsSection.astro'
-import { siteMeta } from '../data/siteContent'
+const redirectTo = '/home'
 ---
 
-<BaseLayout
-	title={siteMeta.title}
-	description={siteMeta.description}
->
-	<div id="app">
-		<LoadingOverlay />
-		<Navigation />
-		<HeroSection />
-		<AboutSection />
-		<LeadershipSection />
-		<ResearchSection />
-		<LecturesSection />
-		<InterviewsSection />
-		<TestimonialsSection />
-		<ContactSection />
-	</div>
-	<script>
-		import '../scripts/home'
-	</script>
-</BaseLayout>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			http-equiv="refresh"
+			content={`0;url=${redirectTo}`}
+		/>
+		<link
+			rel="canonical"
+			href={redirectTo}
+		/>
+		<title>Redirecting...</title>
+	</head>
+	<body>
+		<script>
+			window.location.replace('/home')
+		</script>
+		<p>
+			<a href={redirectTo}>Continue to the homepage</a>
+		</p>
+	</body>
+</html>

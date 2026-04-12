@@ -1,0 +1,12 @@
+---
+import LeadershipSection from '../components/LeadershipSection.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+import { pageHeadings } from '../data/siteContent'
+---
+
+<SiteLayout
+	title={`${pageHeadings.leadership.title} | ${pageHeadings.home.title}`}
+	description={pageHeadings.leadership.description}
+>
+	<LeadershipSection />
+</SiteLayout>

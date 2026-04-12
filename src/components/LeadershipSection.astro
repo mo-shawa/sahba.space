@@ -1,11 +1,17 @@
 ---
 import LeadershipCard from './common/LeadershipCard.astro'
 import SectionTitle from './common/SectionTitle.astro'
-import { leadershipItems } from '../data/siteContent'
+import { leadershipItems, pageHeadings } from '../data/siteContent'
 ---
 
-<section id="leadership">
-	<SectionTitle title="Leadership" />
+<section
+	id="leadership"
+	class="page-section"
+>
+	<SectionTitle
+		title={pageHeadings.leadership.title}
+		arabicTitle={pageHeadings.leadership.arabicTitle}
+	/>
 	<div class="card-container">
 		{
 			leadershipItems.map((item) => (

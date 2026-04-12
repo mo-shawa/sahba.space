@@ -1,19 +1,26 @@
 ---
 import RichTextInline from './common/RichTextInline.astro'
+import SocialLink from './common/SocialLink.astro'
 import SectionTitle from './common/SectionTitle.astro'
-import { aboutContent } from '../data/siteContent'
+import { aboutContent, socialLinks } from '../data/siteContent'
 ---
 
-<section id="about">
-	<SectionTitle title={aboutContent.title} />
-	<div class="intro-container">
-		<img
-			class={aboutContent.image.className}
-			src={aboutContent.image.src}
-			alt={aboutContent.image.alt}
-			width={aboutContent.image.width}
-			height={aboutContent.image.height}
-		/>
+<section
+	id="home"
+	class="page-section page-section--home"
+>
+	<SectionTitle
+		title={aboutContent.title}
+		arabicTitle={aboutContent.arabicTitle}
+	/>
+	<div class="intro-container home-intro-container">
+		<div class="social-links-panel social-links-panel--home darken">
+			{
+				socialLinks.map((link) => (
+					<SocialLink link={link} />
+				))
+			}
+		</div>
 		<div class="intro-copy">
 			{
 				aboutContent.paragraphs.map((paragraph) => (

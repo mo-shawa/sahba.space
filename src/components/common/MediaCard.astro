@@ -10,33 +10,37 @@ const cardClassName = ['card', entry.variant, entry.emphasis]
 	.filter(Boolean)
 	.join(' ')
 ---
-
 <article class={cardClassName}>
-	<div class="card-top">
-		<a
-			target="_blank"
-			rel="noreferrer"
-			href={entry.href}
-		>
-			<img
-				class={entry.image.className}
-				src={entry.image.src}
-				alt={entry.image.alt}
-				width={entry.image.width}
-				height={entry.image.height}
-			/>
-		</a>
+	{
+		entry.image && (
+			<div class="card-top">
+				<a
+					target="_blank"
+					rel="noreferrer"
+					href={entry.href}
+				>
+					<img
+						class={entry.image.className}
+						src={entry.image.src}
+						alt={entry.image.alt}
+						width={entry.image.width}
+						height={entry.image.height}
+					/>
+				</a>
+			</div>
+		)
+	}
+	<div class="card-body card-copy-group">
+		<h3 class="card-title">{entry.title}</h3>
+		{entry.summary && <p class="card-summary">{entry.summary}</p>}
+		{entry.date && <small class="card-date">{entry.date}</small>}
 	</div>
-	<div class="card-body">
-		<h3>{entry.title}</h3>
-		{entry.date && <small>{entry.date}</small>}
-		{entry.date && <br />}
-		<a
-			target="_blank"
-			rel="noreferrer"
-			href={entry.href}
-		>
-			{entry.linkLabel}
-		</a>
-	</div>
+	<a
+		class="card-link"
+		target="_blank"
+		rel="noreferrer"
+		href={entry.href}
+	>
+		{entry.ctaLabel}
+	</a>
 </article>

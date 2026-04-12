@@ -1,11 +1,17 @@
 ---
 import SectionTitle from './common/SectionTitle.astro'
 import TestimonialCard from './common/TestimonialCard.astro'
-import { testimonials } from '../data/siteContent'
+import { pageHeadings, testimonials } from '../data/siteContent'
 ---
 
-<section id="testimonials">
-	<SectionTitle title="Testimonials" />
+<section
+	id="testimonials"
+	class="page-section"
+>
+	<SectionTitle
+		title={pageHeadings.testimonials.title}
+		arabicTitle={pageHeadings.testimonials.arabicTitle}
+	/>
 	<div class="flex-card-container">
 		{
 			testimonials.map((testimonial) => (

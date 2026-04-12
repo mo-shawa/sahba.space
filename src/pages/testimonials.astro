@@ -1,0 +1,12 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro'
+import TestimonialsSection from '../components/TestimonialsSection.astro'
+import { pageHeadings } from '../data/siteContent'
+---
+
+<SiteLayout
+	title={`${pageHeadings.testimonials.title} | ${pageHeadings.home.title}`}
+	description={pageHeadings.testimonials.description}
+>
+	<TestimonialsSection />
+</SiteLayout>

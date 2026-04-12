@@ -1,0 +1,13 @@
+---
+import AboutSection from '../components/AboutSection.astro'
+import SiteLayout from '../layouts/SiteLayout.astro'
+import { pageHeadings } from '../data/siteContent'
+---
+
+<SiteLayout
+	title={pageHeadings.home.title}
+	description={pageHeadings.home.description}
+	showOverlay={true}
+>
+	<AboutSection />
+</SiteLayout>
