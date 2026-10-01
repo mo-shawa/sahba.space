@@ -1,13 +1,129 @@
 ---
-import { heroContent } from '../data/siteContent'
+import Chapter from './common/Chapter.astro'
+import Words from './common/Words.astro'
+import { aboutContent, heroContent, person } from '../data/siteContent'
 ---
 
-<section id="hero">
-	<h1 class="title">{heroContent.title}</h1>
-	<a
-		class="nav-link"
-		href={heroContent.ctaHref}
+<Chapter
+	name="cosmos"
+	length={2.8}
+	id="top"
+	labelledby="name"
+>
+	<div
+		class="hero"
+		data-beat="0,0.3"
 	>
-		<span id="pointer">{heroContent.ctaLabel}</span>
-	</a>
-</section>
+		<p class="hero__role small"><Words text={heroContent.role} /></p>
+		<p
+			class="hero__arabic"
+			lang="ar"
+			dir="rtl"
+		>
+			<Words text={person.nameArabic} />
+		</p>
+		<h1
+			id="name"
+			class="hero__name"
+			aria-label={person.name}
+		>
+			<span
+				class="hero__line"
+				aria-hidden="true"><Words
+					text={person.givenName}
+					letters
+				/></span
+			>
+			<span
+				class="hero__line"
+				aria-hidden="true"><Words
+					text={person.familyName}
+					letters
+				/></span
+			>
+		</h1>
+	</div>
+
+	<p
+		class="lead large"
+		data-beat="0.38,1"
+	>
+		<Words text={aboutContent.lead} />
+	</p>
+</Chapter>
+
+<style>
+	.hero {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-template-rows: auto 1fr auto;
+		height: 100%;
+	}
+
+	.hero__role {
+		grid-column: 1 / span 4;
+		grid-row: 1;
+		color: var(--night-ink-soft);
+	}
+
+	.hero__arabic {
+		grid-column: 9 / -1;
+		grid-row: 1;
+		justify-self: end;
+		font-family: var(--arabic);
+		font-size: var(--t-large);
+		line-height: 1;
+		color: var(--night-ink-soft);
+	}
+
+	.hero__name {
+		grid-column: 1 / -1;
+		grid-row: 3;
+		display: flex;
+		flex-direction: column;
+		font-size: var(--t-display);
+		font-weight: 520;
+		font-stretch: 118%;
+		line-height: 0.84;
+		letter-spacing: -0.045em;
+		margin-left: -0.05em;
+	}
+
+	.hero__line {
+		display: block;
+		white-space: nowrap;
+	}
+
+	.hero__name :global(.ch) {
+		display: inline-block;
+	}
+
+	.lead {
+		grid-column: 1 / span 6;
+		align-self: center;
+		max-width: 16em;
+	}
+
+	@media (max-width: 800px) {
+		.hero__role {
+			grid-column: 1 / span 7;
+		}
+
+		.hero__arabic {
+			grid-column: 8 / -1;
+			white-space: nowrap;
+		}
+
+		.hero__name {
+			font-size: min(19.5vw, 8rem);
+			font-stretch: 112%;
+		}
+
+		.lead {
+			grid-column: 1 / -1;
+			align-self: start;
+			padding-top: 8vh;
+		}
+	}
+</style>

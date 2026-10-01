@@ -1,9 +1,52 @@
 ---
+/** Paper section heading: one very large word, small supporting line. */
 interface Props {
 	title: string
+	id: string
 }
 
-const { title } = Astro.props
+const { title, id } = Astro.props
+import Words from './Words.astro'
 ---
 
-<h1 class="section-title">{title}</h1>
+<header class="section-head grid">
+	<h2
+		class="section-head__title title"
+		id={id}
+		data-rise
+	>
+		<Words text={title} />
+	</h2>
+	{
+		Astro.slots.has('default') && (
+			<div class="section-head__aside small soft">
+				<slot />
+			</div>
+		)
+	}
+</header>
+
+<style>
+	.section-head {
+		align-items: end;
+		row-gap: 1.25rem;
+		padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
+	}
+
+	.section-head__title {
+		grid-column: 1 / span 9;
+		margin-left: -0.04em;
+	}
+
+	.section-head__aside {
+		grid-column: 10 / -1;
+		padding-bottom: 0.6em;
+	}
+
+	@media (max-width: 800px) {
+		.section-head__title,
+		.section-head__aside {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

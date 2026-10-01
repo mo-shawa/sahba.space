@@ -1,20 +1,76 @@
 ---
+import '@fontsource-variable/mona-sans/wdth.css'
+import monaSans from '@fontsource-variable/mona-sans/files/mona-sans-latin-wdth-normal.woff2?url'
+import 'lenis/dist/lenis.css'
 import '../styles/site.css'
+import { education, person, siteMeta, socialLinks } from '../data/siteContent'
 
 interface Props {
 	title?: string
 	description?: string
 }
 
-const {
-	title = "Sahba El-Shawa's Website",
-	description = "Sahba El-Shawa's Personal Website",
-} = Astro.props
+const { title = siteMeta.title, description = siteMeta.description } =
+	Astro.props
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? siteMeta.url)
+
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: person.name,
+	url: siteMeta.url,
+	description,
+	sameAs: socialLinks.filter((link) => link.external).map((link) => link.href),
+	alumniOf: education
+		.filter((entry) => !entry.note)
+		.map((entry) => ({
+			'@type': 'CollegeOrUniversity',
+			name: entry.institution,
+		})),
+}
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+		/>
+		<title>{title}</title>
+		<meta
+			name="description"
+			content={description}
+		/>
+		<link
+			rel="canonical"
+			href={canonical}
+		/>
+		<meta
+			name="theme-color"
+			content="#040506"
+		/>
+		<meta
+			property="og:type"
+			content="website"
+		/>
+		<meta
+			property="og:title"
+			content={title}
+		/>
+		<meta
+			property="og:description"
+			content={description}
+		/>
+		<meta
+			property="og:url"
+			content={canonical}
+		/>
+		<meta
+			name="twitter:card"
+			content="summary"
+		/>
 		<link
 			rel="apple-touch-icon"
 			sizes="180x180"
@@ -36,21 +92,30 @@ const {
 			rel="manifest"
 			href="/site.webmanifest"
 		/>
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0"
+		<link
+			rel="preload"
+			href={monaSans}
+			as="font"
+			type="font/woff2"
+			crossorigin
 		/>
-		<meta
-			name="theme-color"
-			content="#000000"
+		<script is:inline>
+			document.documentElement.classList.add('js')
+			if (/[?&]skipIntro=(1|true)\b/i.test(location.search)) {
+				document.documentElement.classList.add('skip-intro')
+			}
+		</script>
+		<script
+			is:inline
+			type="application/ld+json"
+			set:html={JSON.stringify(structuredData)}
 		/>
-		<meta
-			name="description"
-			content={description}
-		/>
-		<title>{title}</title>
 	</head>
 	<body>
+		<a
+			class="skip-link"
+			href="#main">Skip to content</a
+		>
 		<slot />
 	</body>
 </html>

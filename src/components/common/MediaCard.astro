@@ -1,42 +1,120 @@
 ---
-import type { MediaEntry } from '../../data/siteContent'
+import type { Interview } from '../../data/siteContent'
 
 interface Props {
-	entry: MediaEntry
+	entry: Interview
 }
 
 const { entry } = Astro.props
-const cardClassName = ['card', entry.variant, entry.emphasis]
-	.filter(Boolean)
-	.join(' ')
 ---
 
-<article class={cardClassName}>
-	<div class="card-top">
-		<a
-			target="_blank"
-			rel="noreferrer"
-			href={entry.href}
-		>
-			<img
-				class={entry.image.className}
-				src={entry.image.src}
-				alt={entry.image.alt}
-				width={entry.image.width}
-				height={entry.image.height}
-			/>
-		</a>
-	</div>
-	<div class="card-body">
-		<h3>{entry.title}</h3>
-		{entry.date && <small>{entry.date}</small>}
-		{entry.date && <br />}
-		<a
-			target="_blank"
-			rel="noreferrer"
-			href={entry.href}
-		>
-			{entry.linkLabel}
-		</a>
-	</div>
-</article>
+<li
+	class="interview"
+	data-reveal
+>
+	<a
+		class="interview__link"
+		href={entry.href}
+		target="_blank"
+		rel="noreferrer"
+		data-preview={entry.image.src}
+		data-preview-position={entry.image.position}
+	>
+		<img
+			class="interview__thumb"
+			src={entry.image.src}
+			alt=""
+			width={entry.image.width}
+			height={entry.image.height}
+			style={entry.image.position ? `object-position: ${entry.image.position}` : undefined}
+			loading="lazy"
+			decoding="async"
+		/>
+		<span class="interview__outlet medium">{entry.outlet}</span>
+		<span class="interview__topic soft">{entry.topic ?? ''}</span>
+		<span class="interview__format small">{entry.format}</span>
+		<span class="interview__date small soft numeric">{entry.date ?? ''}</span>
+		<span class="visually-hidden">, {entry.linkLabel}</span>
+	</a>
+</li>
+
+<style>
+	.interview {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		border-top: 1px solid var(--rule);
+	}
+
+	.interview:last-child {
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.interview__link {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		align-items: baseline;
+		padding-block: 1.25rem 1.35rem;
+		transition: color 300ms var(--ease-out);
+	}
+
+	.interview__thumb {
+		display: none;
+	}
+
+	.interview__outlet {
+		grid-column: 1 / span 4;
+		max-width: 16em;
+	}
+
+	.interview__topic {
+		grid-column: 5 / span 4;
+	}
+
+	.interview__format {
+		grid-column: 9 / span 2;
+	}
+
+	.interview__date {
+		grid-column: 11 / span 2;
+		justify-self: end;
+		text-align: right;
+	}
+
+	/* Hovering one row quiets the others. */
+	:global(.interviews__list:hover) .interview__link {
+		color: var(--ink-soft);
+	}
+
+	:global(.interviews__list:hover) .interview__link:hover {
+		color: var(--ink);
+	}
+
+	@media (max-width: 800px) {
+		.interview__link {
+			grid-template-columns: 4.5rem 1fr;
+			column-gap: 1rem;
+			row-gap: 0.2rem;
+			align-items: start;
+		}
+
+		.interview__thumb {
+			display: block;
+			grid-column: 1;
+			grid-row: 1 / span 4;
+			width: 4.5rem;
+			aspect-ratio: 1;
+			object-fit: cover;
+		}
+
+		.interview__outlet,
+		.interview__topic,
+		.interview__format,
+		.interview__date {
+			grid-column: 2;
+			justify-self: start;
+			text-align: left;
+		}
+	}
+</style>

@@ -1,60 +1,198 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
-
-* {
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
 }
 
 html {
-	font-size: 18px;
-	color: white;
+	background: var(--night);
+	color: var(--ink);
+	font-family: var(--sans);
+	font-size: 100%;
+	font-optical-sizing: auto;
+	-webkit-text-size-adjust: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
 }
 
 body {
-	overflow-x: hidden;
-	overflow-y: hidden;
-	font-family: 'Space Mono', monospace;
+	min-height: 100vh;
+	overflow-x: clip;
+	font-size: var(--t-body);
+	line-height: 1.55;
+	font-weight: 400;
+	font-stretch: 100%;
 }
 
-h1 {
-	font-size: 2.5rem;
+img,
+svg,
+canvas,
+video {
+	display: block;
+	max-width: 100%;
 }
 
-h2 {
-	font-size: 2rem;
-}
-
-h3 {
-	font-size: 1.5rem;
-}
-
-p,
-li {
-	font-size: 1rem;
-}
-
-small {
-	color: #9e9e9e;
+img {
+	height: auto;
 }
 
 a {
-	color: var(--primary-color);
+	color: inherit;
 	text-decoration: none;
-	transition: color 300ms;
 }
 
-a:hover {
-	color: var(--secondary-color);
+button {
+	font: inherit;
+	color: inherit;
+	background: none;
+	border: 0;
+	cursor: pointer;
 }
 
-@media only screen and (max-width: 1240px) {
-	html {
-		font-size: 16px;
-	}
+ul,
+ol {
+	list-style: none;
 }
 
-@media only screen and (max-width: 960px) {
-	html {
-		font-size: 14px;
+h1,
+h2,
+h3 {
+	font-weight: inherit;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+p {
+	text-wrap: pretty;
+}
+
+::selection {
+	background: var(--signal);
+	color: var(--paper);
+}
+
+:focus-visible {
+	outline: 2px solid var(--signal);
+	outline-offset: 3px;
+}
+
+.visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+}
+
+.skip-link {
+	position: fixed;
+	top: 0.75rem;
+	left: 0.75rem;
+	z-index: 100;
+	padding: 0.6rem 0.9rem;
+	background: var(--paper);
+	color: var(--ink);
+	font-size: var(--t-small);
+	transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+	transform: none;
+}
+
+/* ---------- Grid ---------- */
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: var(--gap);
+	padding-inline: var(--margin);
+}
+
+/* ---------- Surfaces ---------- */
+
+/* Paper sections slide over the fixed night canvas like a curtain. */
+.paper {
+	position: relative;
+	background: var(--paper);
+	color: var(--ink);
+}
+
+/* ---------- Type ---------- */
+
+.small {
+	font-size: var(--t-small);
+	line-height: 1.4;
+	letter-spacing: 0.005em;
+}
+
+.soft {
+	color: var(--ink-soft);
+}
+
+.title {
+	font-size: var(--t-title);
+	font-weight: 480;
+	font-stretch: 100%;
+	line-height: 0.86;
+	letter-spacing: -0.045em;
+}
+
+.large {
+	font-size: var(--t-large);
+	font-weight: 430;
+	line-height: 1.12;
+	letter-spacing: -0.022em;
+}
+
+.medium {
+	font-size: var(--t-medium);
+	font-weight: 460;
+	line-height: 1.25;
+	letter-spacing: -0.01em;
+}
+
+.numeric {
+	font-variant-numeric: tabular-nums;
+}
+
+.link {
+	background-image: linear-gradient(currentColor, currentColor);
+	background-size: 100% 1px;
+	background-position: 0 100%;
+	background-repeat: no-repeat;
+	transition: background-size 600ms var(--ease-out);
+}
+
+.link:hover {
+	background-size: 0% 1px;
+	background-position: 100% 100%;
+}
+
+/* Words rise from behind a mask. */
+.w {
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: top;
+	padding-bottom: 0.12em;
+	margin-bottom: -0.12em;
+}
+
+.w > span {
+	display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
 	}
 }

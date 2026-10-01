@@ -9,17 +9,21 @@ const { parts } = Astro.props
 ---
 
 {
-	parts.map((part) =>
-		part.type === 'link' ? (
-			<a
-				href={part.href}
-				target={part.target}
-				rel={part.rel}
-			>
-				{part.value}
-			</a>
-		) : (
-			part.value
-		)
-	)
+	parts.map((part) => {
+		if (part.type === 'link') {
+			return (
+				<a
+					href={part.href}
+					target={part.target}
+					rel={part.rel}
+				>
+					{part.value}
+				</a>
+			)
+		}
+		if (part.type === 'highlight') {
+			return <mark>{part.value}</mark>
+		}
+		return part.value
+	})
 }

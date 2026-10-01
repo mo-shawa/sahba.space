@@ -1,11 +1,43 @@
+@font-face {
+	font-family: 'Plex Arabic Name';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	/* IBM Plex Sans Arabic, subset to the glyphs of her name. */
+	src: url('/fonts/plex-arabic-name.woff2') format('woff2');
+}
+
 :root {
-	--spacing-xs: 0.5rem;
-	--spacing-s: 1rem;
-	--spacing-m: 2rem;
-	--spacing-l: 4rem;
-	--primary-color: #35ffee;
-	--secondary-color: #adea93;
-	--darken-background: rgba(0, 0, 0, 0.8);
-	--max-width: 1200px;
-	--border-radius: 1rem;
+	/* Day: the page is paper. Night: only where the particles are. */
+	--paper: #eceae4;
+	--paper-deep: #e2dfd7;
+	--ink: #111210;
+	--ink-soft: #5b5a54;
+	--rule: rgba(17, 18, 16, 0.15);
+
+	--night: #040506;
+	--night-ink: #ecebe6;
+	--night-ink-soft: #9a9993;
+	--night-rule: rgba(236, 235, 230, 0.2);
+
+	/* Used sparingly: focus, selection, the Jordan marker. */
+	--signal: #e0592a;
+
+	--sans: 'Mona Sans Variable', 'Mona Sans', system-ui, sans-serif;
+	--arabic: 'Plex Arabic Name', 'IBM Plex Sans Arabic', 'Geeza Pro', sans-serif;
+
+	/* Type: few sizes, far apart. */
+	--t-small: 0.8125rem;
+	--t-body: 1.0625rem;
+	--t-medium: clamp(1.125rem, 1.35vw, 1.375rem);
+	--t-large: clamp(1.625rem, 2.7vw, 2.75rem);
+	--t-title: clamp(3rem, 9.5vw, 10rem);
+	--t-display: clamp(3.6rem, 13.5vw, 15rem);
+
+	--margin: clamp(1.25rem, 3.2vw, 3.25rem);
+	--gap: clamp(0.75rem, 1.6vw, 1.5rem);
+	--section: clamp(6rem, 13vw, 12rem);
+
+	--ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+	--ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
 }

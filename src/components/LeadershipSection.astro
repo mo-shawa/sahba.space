@@ -4,13 +4,27 @@ import SectionTitle from './common/SectionTitle.astro'
 import { leadershipItems } from '../data/siteContent'
 ---
 
-<section id="leadership">
-	<SectionTitle title="Leadership" />
-	<div class="card-container">
-		{
-			leadershipItems.map((item) => (
-				<LeadershipCard item={item} />
-			))
-		}
-	</div>
+<section
+	id="leadership"
+	class="leadership paper"
+	aria-labelledby="leadership-title"
+>
+	<SectionTitle
+		title="Leadership"
+		id="leadership-title"
+	/>
+
+	<ol class="leadership__list grid">
+		{leadershipItems.map((item) => <LeadershipCard item={item} />)}
+	</ol>
 </section>
+
+<style>
+	.leadership {
+		padding-block: var(--section) 0;
+	}
+
+	.leadership__list > :global(:last-child) {
+		border-bottom: 1px solid var(--rule);
+	}
+</style>

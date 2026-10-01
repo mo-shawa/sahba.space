@@ -1,0 +1,85 @@
+---
+/**
+ * A night chapter: a tall scroll track with a sticky stage on top of the
+ * particle canvas. Children marked [data-beat="enter,exit"] are choreographed
+ * by the chapter's scroll progress (0..1).
+ */
+interface Props {
+	name: string
+	/** Track length in viewport heights */
+	length: number
+	id?: string
+	labelledby?: string
+}
+
+const { name, length, id, labelledby } = Astro.props
+---
+
+<section
+	class="chapter"
+	data-chapter={name}
+	id={id}
+	aria-labelledby={labelledby}
+	style={`--length: ${length}`}
+>
+	<div class="chapter__stage grid">
+		<slot />
+	</div>
+</section>
+
+<style>
+	.chapter {
+		position: relative;
+		height: calc(var(--length) * 100vh);
+		height: calc(var(--length) * 100svh);
+		color: var(--night-ink);
+	}
+
+	.chapter__stage {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		height: 100svh;
+		overflow: hidden;
+		grid-template-rows: 1fr;
+		padding-block: 5.5rem var(--margin);
+	}
+
+	.chapter__stage > :global(*) {
+		grid-row: 1;
+	}
+
+	/* Underline the masked words, so links vanish with them. */
+	.chapter :global(.link) {
+		background: none;
+	}
+
+	.chapter :global(.link .w > span) {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.2em;
+	}
+
+	/* Later beats stay hidden until their choreography is set up. */
+	:global(html.js:not(.beats-ready)) .chapter :global([data-beat]:not([data-beat^='0,'])) {
+		visibility: hidden;
+	}
+
+	/* Without JS there's no choreography: lay the beats out as plain text. */
+	:global(html:not(.js)) .chapter {
+		height: auto;
+		background: var(--night);
+	}
+
+	:global(html:not(.js)) .chapter__stage {
+		position: static;
+		height: auto;
+		row-gap: 4rem;
+		grid-template-rows: none;
+		padding-block: 8rem;
+	}
+
+	:global(html:not(.js)) .chapter__stage > :global(*) {
+		grid-row: auto;
+	}
+</style>

@@ -1,0 +1,159 @@
+---
+import { education, recognition } from '../data/siteContent'
+---
+
+<div class="facts">
+	<section
+		class="facts__group grid"
+		aria-labelledby="education-title"
+	>
+		<h3
+			id="education-title"
+			class="facts__label small"
+		>
+			Education
+		</h3>
+		<ol class="facts__rows">
+			{
+				education.map((entry) => (
+					<li
+						class="facts__row"
+						data-reveal
+					>
+						<span class="facts__key">{entry.degree}</span>
+						<span class="facts__main">{entry.field}</span>
+						<a
+							class="facts__meta"
+							href={entry.href}
+							target="_blank"
+							rel="noreferrer"
+						>
+							{entry.note ? `${entry.institution}, ${entry.note.toLowerCase()}` : entry.institution}
+						</a>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section
+		class="facts__group grid"
+		aria-labelledby="recognition-title"
+	>
+		<h3
+			id="recognition-title"
+			class="facts__label small"
+		>
+			Recognition
+		</h3>
+		<ol class="facts__rows">
+			{
+				recognition.map((item) => (
+					<li
+						class="facts__row"
+						data-reveal
+					>
+						<span class="facts__key numeric">{item.year}</span>
+						<a
+							class="facts__main"
+							href={item.href}
+							target="_blank"
+							rel="noreferrer"
+						>
+							{item.title === 'Alternate Astronaut'
+								? `Selected as an ${item.title}`
+								: item.title}
+						</a>
+						<span class="facts__meta">{item.detail}</span>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+</div>
+
+<style>
+	.facts {
+		display: grid;
+		row-gap: clamp(3rem, 6vw, 5rem);
+	}
+
+	.facts__label {
+		grid-column: 1 / span 3;
+		padding-top: 1rem;
+		color: var(--ink-soft);
+	}
+
+	.facts__rows {
+		grid-column: 4 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+	}
+
+	.facts__row {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		align-items: baseline;
+		padding-block: 1rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.facts__row:last-child {
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.facts__key {
+		grid-column: span 1;
+		color: var(--ink-soft);
+	}
+
+	.facts__main {
+		grid-column: span 5;
+		font-size: var(--t-medium);
+		font-weight: 460;
+		line-height: 1.25;
+		letter-spacing: -0.01em;
+	}
+
+	.facts__meta {
+		grid-column: span 3;
+		color: var(--ink-soft);
+	}
+
+	a.facts__main,
+	a.facts__meta {
+		transition: color 300ms var(--ease-out);
+	}
+
+	a.facts__main:hover,
+	a.facts__meta:hover {
+		color: var(--ink);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+	}
+
+	@media (max-width: 800px) {
+		.facts__label,
+		.facts__rows {
+			grid-column: 1 / -1;
+		}
+
+		.facts__row {
+			grid-template-columns: 4rem 1fr;
+			column-gap: var(--gap);
+			row-gap: 0.25rem;
+		}
+
+		.facts__key {
+			grid-column: 1;
+			grid-row: 1 / span 2;
+		}
+
+		.facts__main,
+		.facts__meta {
+			grid-column: 2;
+		}
+	}
+</style>

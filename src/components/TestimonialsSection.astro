@@ -4,13 +4,23 @@ import TestimonialCard from './common/TestimonialCard.astro'
 import { testimonials } from '../data/siteContent'
 ---
 
-<section id="testimonials">
-	<SectionTitle title="Testimonials" />
-	<div class="flex-card-container">
-		{
-			testimonials.map((testimonial) => (
-				<TestimonialCard testimonial={testimonial} />
-			))
-		}
+<section
+	id="testimonials"
+	class="testimonials paper"
+	aria-labelledby="testimonials-title"
+>
+	<SectionTitle
+		title="Testimonials"
+		id="testimonials-title"
+	/>
+
+	<div class="grid">
+		{testimonials.map((testimonial) => <TestimonialCard testimonial={testimonial} />)}
 	</div>
 </section>
+
+<style>
+	.testimonials {
+		padding-block: var(--section) clamp(4rem, 10vw, 9rem);
+	}
+</style>

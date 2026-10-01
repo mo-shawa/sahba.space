@@ -17,6 +17,7 @@ const { items, listClass, linkClass } = Astro.props
 				<a
 					class={linkClass}
 					href={item.href}
+					data-nav-link={item.href}
 				>
 					{item.label}
 				</a>

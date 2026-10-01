@@ -1,56 +1,182 @@
 ---
 import NavLinksList from './common/NavLinksList.astro'
-import { brand, navigationItems } from '../data/siteContent'
+import { navigationItems, person } from '../data/siteContent'
 ---
 
-<nav>
-	<div class="nav-item">
-		<a
-			id="moon-icon"
-			href={brand.href}
-			class="nav-link nav-brand-icon"
-		>
-			<img
-				width={brand.icon.width}
-				height={brand.icon.height}
-				src={brand.icon.src}
-				alt={brand.icon.alt}
-			/>
-		</a>
-		<a
-			href={brand.href}
-			class="nav-link nav-brand-link"
-		>
-			{brand.label}
-		</a>
-	</div>
-
-	<div
-		id="desktop-nav"
-		class="nav-item"
+<nav
+	class="nav grid"
+	aria-label="Primary"
+>
+	<a
+		href="#top"
+		class="nav__name small"
 	>
-		<NavLinksList
-			items={navigationItems}
-			listClass="nav-links"
-			linkClass="nav-link"
-		/>
-	</div>
-	<img
-		src="/svg/hamburger.svg"
-		alt="hamburger icon"
-		class="svg"
-		id="hamburger"
-		width="32"
-		height="32"
+		{person.name}
+	</a>
+
+	<NavLinksList
+		items={navigationItems}
+		listClass="nav__links"
+		linkClass="nav__link small"
 	/>
+
+	<button
+		class="nav__toggle small"
+		type="button"
+		aria-expanded="false"
+		aria-controls="menu"
+		data-menu-toggle
+	>
+		<span class="nav__toggle-open">Menu</span>
+		<span class="nav__toggle-close">Close</span>
+	</button>
 </nav>
+
 <div
-	id="mobile-nav"
-	class="nav-item"
+	id="menu"
+	class="menu"
 >
 	<NavLinksList
 		items={navigationItems}
-		listClass="mobile-links"
-		linkClass="mobile-link"
+		listClass="menu__links"
+		linkClass="menu__link"
 	/>
 </div>
+
+<style>
+	.nav {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 30;
+		align-items: baseline;
+		padding-block: 1.25rem;
+		color: var(--night-ink);
+		transition: color 400ms var(--ease-out);
+		pointer-events: none;
+	}
+
+	:global(html.on-paper:not(.menu-open)) .nav {
+		color: var(--ink);
+	}
+
+	/* Over paper, the nav sits on paper so rows never run underneath it. */
+	.nav::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: var(--paper);
+		opacity: 0;
+		transition: opacity 400ms var(--ease-out);
+	}
+
+	:global(html.on-paper:not(.menu-open)) .nav::before {
+		opacity: 1;
+	}
+
+	.nav > :global(*) {
+		pointer-events: auto;
+	}
+
+	.nav__name {
+		grid-column: 1 / span 4;
+		font-weight: 520;
+		justify-self: start;
+		white-space: nowrap;
+	}
+
+	:global(.nav__links) {
+		grid-column: 6 / -1;
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	:global(.nav__link) {
+		position: relative;
+	}
+
+	:global(.nav__link)::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: -0.15em;
+		height: 1px;
+		background: currentColor;
+		transform: scaleX(0);
+		transform-origin: right;
+		transition: transform 500ms var(--ease-out);
+	}
+
+	:global(.nav__link:hover)::after,
+	:global(.nav__link[aria-current='true'])::after {
+		transform: scaleX(1);
+		transform-origin: left;
+	}
+
+	.nav__toggle {
+		display: none;
+		grid-column: 9 / -1;
+		justify-self: end;
+	}
+
+	.nav__toggle-close,
+	:global(html.menu-open) .nav__toggle-open {
+		display: none;
+	}
+
+	:global(html.menu-open) .nav__toggle-close {
+		display: inline;
+	}
+
+	.menu {
+		position: fixed;
+		inset: 0;
+		z-index: 25;
+		display: flex;
+		align-items: flex-end;
+		padding: 6rem var(--margin) var(--margin);
+		background: var(--night);
+		color: var(--night-ink);
+		clip-path: inset(0 0 100% 0);
+		transition: clip-path 700ms var(--ease-in-out);
+	}
+
+	:global(html.menu-open) .menu {
+		clip-path: inset(0 0 0 0);
+	}
+
+	:global(.menu__links) {
+		display: grid;
+		gap: 0.1rem;
+	}
+
+	:global(.menu__link) {
+		font-size: clamp(2.5rem, 12vw, 4.5rem);
+		font-weight: 500;
+		font-stretch: 110%;
+		line-height: 1.02;
+		letter-spacing: -0.04em;
+	}
+
+	@media (max-width: 1000px) {
+		:global(.nav__links) {
+			display: none;
+		}
+
+		.nav__toggle {
+			display: block;
+		}
+	}
+
+	@media (min-width: 1001px) {
+		.menu {
+			display: none;
+		}
+	}
+
+	:global(html:not(.js)) .nav__toggle {
+		display: none;
+	}
+</style>

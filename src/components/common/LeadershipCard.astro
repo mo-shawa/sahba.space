@@ -1,5 +1,4 @@
 ---
-import RichTextInline from './RichTextInline.astro'
 import type { LeadershipItem } from '../../data/siteContent'
 
 interface Props {
@@ -9,17 +8,107 @@ interface Props {
 const { item } = Astro.props
 ---
 
-<article class="card">
-	<div class="card-top">
-		<h3 class="card-title">{item.title}</h3>
-	</div>
-	<div class="card-body card-copy-group">
+<li
+	class="org"
+	data-reveal
+>
+	<h3 class="org__name large">
 		{
-			item.details.map((detail) => (
-				<small class="card-copy">
-					<RichTextInline parts={detail} />
-				</small>
+			item.href ? (
+				<a
+					href={item.href}
+					target="_blank"
+					rel="noreferrer"
+				>
+					{item.organization}
+				</a>
+			) : (
+				item.organization
+			)
+		}
+	</h3>
+	<ul class="org__roles">
+		{
+			item.roles.map((role) => (
+				<li class="org__role">
+					<span>{role.role}</span>
+					<span class="org__period small numeric">{role.period ?? ''}</span>
+				</li>
 			))
 		}
-	</div>
-</article>
+	</ul>
+</li>
+
+<style>
+	.org {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		row-gap: 1.25rem;
+		padding-block: 1.5rem 2rem;
+		border-top: 1px solid var(--rule);
+	}
+
+	.org__name {
+		grid-column: 1 / span 5;
+		max-width: 12em;
+	}
+
+	.org__name a {
+		transition: color 300ms var(--ease-out);
+	}
+
+	.org__name a:hover {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.12em;
+	}
+
+	.org__roles {
+		grid-column: 7 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		align-content: start;
+		padding-top: 0.6rem;
+	}
+
+	.org__role {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		align-items: baseline;
+		padding-block: 0.55rem;
+	}
+
+	.org__role > span:first-child {
+		grid-column: 1 / span 4;
+	}
+
+	.org__period {
+		grid-column: 5 / -1;
+		justify-self: end;
+		color: var(--ink-soft);
+		white-space: nowrap;
+	}
+
+	@media (max-width: 800px) {
+		.org__name,
+		.org__roles {
+			grid-column: 1 / -1;
+		}
+
+		.org__roles {
+			padding-top: 0;
+		}
+
+		.org__role {
+			grid-template-columns: 1fr auto;
+			column-gap: 1rem;
+		}
+
+		.org__role > span:first-child,
+		.org__period {
+			grid-column: auto;
+		}
+	}
+</style>
