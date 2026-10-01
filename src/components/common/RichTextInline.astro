@@ -11,15 +11,9 @@ const { parts } = Astro.props
 {
 	parts.map((part) => {
 		if (part.type === 'link') {
-			return (
-				<a
-					href={part.href}
-					target={part.target}
-					rel={part.rel}
-				>
-					{part.value}
-				</a>
-			)
+			// One line: whitespace inside the tag would render before punctuation.
+			// prettier-ignore
+			return <a href={part.href} target={part.target} rel={part.rel}>{part.value}</a>
 		}
 		if (part.type === 'highlight') {
 			return <mark>{part.value}</mark>

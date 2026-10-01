@@ -3,6 +3,7 @@ import {
 	BufferAttribute,
 	BufferGeometry,
 	Color,
+	ColorManagement,
 	Euler,
 	MathUtils,
 	Matrix3,
@@ -14,7 +15,7 @@ import {
 	ShaderMaterial,
 	Vector3,
 	WebGLRenderer,
-} from 'three/src/Three'
+} from 'three'
 import { EARTH_MASK, EARTH_MASK_HEIGHT, EARTH_MASK_WIDTH } from '../data/earthMask'
 import fragmentShader from '../shaders/fragment.glsl?raw'
 import vertexShader from '../shaders/vertex.glsl?raw'
@@ -49,6 +50,10 @@ export interface Cosmos {
 	/** Where Jordan is on screen after the last render, in CSS pixels. */
 	jordan: ScreenPoint
 }
+
+// The palette is authored as display colours and written straight into
+// particle attributes, so skip three.js's sRGB → linear conversion.
+ColorManagement.enabled = false
 
 const JORDAN = { lat: 31, lon: 36 }
 

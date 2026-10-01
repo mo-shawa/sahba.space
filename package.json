@@ -12,20 +12,20 @@
     "earth-mask": "node scripts/generate-earth-mask.mjs"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.8",
-    "@types/three": "^0.148.0",
-    "astro": "^5.7.0",
+    "@astrojs/check": "^0.9.10",
+    "@types/three": "^0.186.0",
+    "astro": "^7.3.5",
     "d3-geo": "^3.1.1",
     "topojson-client": "^3.1.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "world-atlas": "^2.0.2",
-    "wrangler": "^4.81.1"
+    "wrangler": "^4.145.0"
   },
   "dependencies": {
     "@fontsource-variable/mona-sans": "^5.3.0",
     "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
-    "gsap": "^3.11.4",
+    "gsap": "^3.15.0",
     "lenis": "^1.3.26",
-    "three": "^0.148.0"
+    "three": "^0.186.1"
   }
 }
