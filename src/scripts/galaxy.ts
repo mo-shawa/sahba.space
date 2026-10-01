@@ -461,8 +461,13 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 
 		const front = new Vector3(0, 0.06, 1)
 		const galaxy = frame(new Vector3(0, 1, 0), portrait ? 3 : 2.1, portrait ? 0 : 0.42, north, wide)
+		// Tall phones have room for a big globe above the text; squarer
+		// portrait screens (tablets, narrow windows) need a smaller, higher one.
+		const squarish = aspect() > 0.65
 		const earth = portrait
-			? frame(front, fill(0.72), 0, upright, long, 0.38)
+			? squarish
+				? frame(front, fill(0.5), 0, upright, long, 0.52)
+				: frame(front, fill(0.72), 0, upright, long, 0.38)
 			: frame(front, fill(0.6), 0.36, upright, long)
 		const far = portrait
 			? frame(front, 70, 0.3, upright, long, 0.5)
