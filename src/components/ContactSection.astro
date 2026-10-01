@@ -1,26 +1,118 @@
 ---
+import Chapter from './common/Chapter.astro'
 import SocialLink from './common/SocialLink.astro'
-import { footerContent, socialLinks } from '../data/siteContent'
+import Words from './common/Words.astro'
+import { footerContent, person, socialLinks } from '../data/siteContent'
+
+const email = socialLinks.find((link) => link.label === 'Email')!
+const otherLinks = socialLinks.filter((link) => link !== email)
+const year = new Date().getFullYear()
 ---
 
-<section id="contact">
-	<div id="contact-links">
-		{
-			socialLinks.map((link) => (
-				<SocialLink link={link} />
-			))
-		}
+<Chapter
+	name="home"
+	length={2.2}
+	id="contact"
+	labelledby="contact-title"
+>
+	<div
+		class="contact"
+		data-beat="0.45,1"
+	>
+		<h2
+			id="contact-title"
+			class="small soft"
+		>
+			<Words text="Contact" />
+		</h2>
+		<a
+			class="contact__email"
+			href={email.href}
+		>
+			<Words text={email.handle} />
+		</a>
+		<p class="contact__links small">
+			{otherLinks.map((link) => <SocialLink link={link} />)}
+		</p>
 	</div>
-	<footer>
-		<small class="footer-item">
-			Copyright © <span id="copyright-year"></span> {footerContent.owner} - Website by
+
+	<footer
+		class="footer small"
+		data-beat="0.45,1"
+	>
+		<p class="soft">
+			<Words text={`© ${year} ${footerContent.owner}`} />
+		</p>
+		<p
+			class="soft footer__arabic"
+			lang="ar"
+			dir="rtl"
+		>
+			<Words text={person.nameArabic} />
+		</p>
+		<p class="soft">
+			<span class="w"><span>Website by</span></span>
 			<a
-				target="_blank"
-				rel="noreferrer"
+				class="link"
 				href={footerContent.creditHref}
+				target="_blank"
+				rel="noreferrer"><Words text={footerContent.creditLabel} /></a
 			>
-				{footerContent.creditLabel}
-			</a>
-		</small>
+		</p>
 	</footer>
-</section>
+</Chapter>
+
+<style>
+	.contact {
+		grid-column: 1 / span 8;
+		align-self: center;
+		display: grid;
+		justify-items: start;
+		gap: 1.5rem;
+	}
+
+	.contact__email {
+		font-size: clamp(2.4rem, 7.2vw, 8.5rem);
+		font-weight: 480;
+		font-stretch: 105%;
+		line-height: 0.9;
+		letter-spacing: -0.045em;
+		margin-left: -0.04em;
+		transition: color 300ms var(--ease-out);
+	}
+
+	.contact__email:hover {
+		color: var(--signal);
+	}
+
+	.contact__links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+	}
+
+	.footer {
+		grid-column: 1 / -1;
+		align-self: end;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.5rem 2rem;
+	}
+
+	.footer__arabic {
+		font-family: var(--arabic);
+		font-size: 1.05rem;
+		line-height: 1.2;
+	}
+
+	.soft {
+		color: var(--night-ink-soft);
+	}
+
+	@media (max-width: 800px) {
+		.contact {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

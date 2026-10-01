@@ -9,9 +9,16 @@ interface Props {
 const { testimonial } = Astro.props
 ---
 
-<article class="card darken">
-	<h1 class="quote">"</h1>
-	<div class="testimonial-copy">
+<figure
+	class="voice"
+	data-reveal
+>
+	<figcaption class="voice__person">
+		<span class="medium">{testimonial.name}</span>
+		<span class="small soft"><RichTextInline parts={testimonial.role} /></span>
+		<span class="small soft numeric">{testimonial.year}</span>
+	</figcaption>
+	<blockquote class="voice__quote">
 		{
 			testimonial.quote.map((paragraph) => (
 				<p>
@@ -19,9 +26,61 @@ const { testimonial } = Astro.props
 				</p>
 			))
 		}
-	</div>
-	<h1 class="quote">"</h1>
-	<small>
-		<RichTextInline parts={testimonial.attribution} />
-	</small>
-</article>
+	</blockquote>
+</figure>
+
+<style>
+	.voice {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		row-gap: 1.5rem;
+		padding-block: 1.5rem clamp(3rem, 6vw, 5rem);
+		border-top: 1px solid var(--rule);
+	}
+
+	.voice__person {
+		grid-column: 1 / span 4;
+		display: grid;
+		align-content: start;
+		gap: 0.3rem;
+		max-width: 20rem;
+	}
+
+	.voice__person :global(a) {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.18em;
+	}
+
+	.voice__quote {
+		grid-column: 6 / span 6;
+		display: grid;
+		gap: 1em;
+		font-size: var(--t-medium);
+		line-height: 1.45;
+		letter-spacing: -0.005em;
+		max-width: 36em;
+	}
+
+	/* The line each testimonial is remembered by. */
+	.voice__quote :global(mark) {
+		background: none;
+		color: inherit;
+		font-weight: 560;
+	}
+
+	.voice__quote :global(a) {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.18em;
+		text-decoration-color: var(--rule);
+	}
+
+	@media (max-width: 800px) {
+		.voice__person,
+		.voice__quote {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

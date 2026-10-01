@@ -7,7 +7,9 @@ import InterviewsSection from '../components/InterviewsSection.astro'
 import LeadershipSection from '../components/LeadershipSection.astro'
 import LecturesSection from '../components/LecturesSection.astro'
 import LoadingOverlay from '../components/LoadingOverlay.astro'
+import MissionSection from '../components/MissionSection.astro'
 import Navigation from '../components/Navigation.astro'
+import OverviewEffectSection from '../components/OverviewEffectSection.astro'
 import ResearchSection from '../components/ResearchSection.astro'
 import TestimonialsSection from '../components/TestimonialsSection.astro'
 import { siteMeta } from '../data/siteContent'
@@ -17,18 +19,21 @@ import { siteMeta } from '../data/siteContent'
 	title={siteMeta.title}
 	description={siteMeta.description}
 >
-	<div id="app">
-		<LoadingOverlay />
-		<Navigation />
+	<LoadingOverlay />
+	<Navigation />
+	<main id="main">
+		<!-- Night chapters (particles) alternate with paper sections. -->
 		<HeroSection />
 		<AboutSection />
-		<LeadershipSection />
+		<OverviewEffectSection />
 		<ResearchSection />
+		<MissionSection />
+		<LeadershipSection />
 		<LecturesSection />
 		<InterviewsSection />
 		<TestimonialsSection />
 		<ContactSection />
-	</div>
+	</main>
 	<script>
 		import '../scripts/home'
 	</script>

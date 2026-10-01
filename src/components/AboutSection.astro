@@ -1,27 +1,103 @@
 ---
+import RecognitionSection from './RecognitionSection.astro'
 import RichTextInline from './common/RichTextInline.astro'
 import SectionTitle from './common/SectionTitle.astro'
 import { aboutContent } from '../data/siteContent'
 ---
 
-<section id="about">
-	<SectionTitle title={aboutContent.title} />
-	<div class="intro-container">
-		<img
-			class={aboutContent.image.className}
-			src={aboutContent.image.src}
-			alt={aboutContent.image.alt}
-			width={aboutContent.image.width}
-			height={aboutContent.image.height}
-		/>
-		<div class="intro-copy">
+<section
+	id="about"
+	class="about paper"
+	aria-labelledby="about-title"
+>
+	<SectionTitle
+		title="About"
+		id="about-title"
+	/>
+
+	<div class="about__body grid">
+		<figure
+			class="about__portrait"
+			data-reveal
+		>
+			<img
+				src={aboutContent.portrait.src}
+				alt={aboutContent.portrait.alt}
+				width={aboutContent.portrait.width}
+				height={aboutContent.portrait.height}
+				loading="lazy"
+				decoding="async"
+			/>
+			<figcaption class="small soft">{aboutContent.portraitCaption}</figcaption>
+		</figure>
+
+		<div class="about__bio">
 			{
-				aboutContent.paragraphs.map((paragraph) => (
-					<p class="intro-content">
+				aboutContent.bio.map((paragraph) => (
+					<p data-reveal>
 						<RichTextInline parts={paragraph} />
 					</p>
 				))
 			}
 		</div>
 	</div>
+
+	<RecognitionSection />
 </section>
+
+<style>
+	.about {
+		padding-block: var(--section) var(--section);
+	}
+
+	.about__body {
+		row-gap: 3rem;
+		padding-bottom: clamp(4rem, 9vw, 8rem);
+	}
+
+	.about__portrait {
+		grid-column: 1 / span 4;
+		display: grid;
+		gap: 0.75rem;
+		align-self: start;
+	}
+
+	.about__portrait img {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		object-position: 50% 20%;
+	}
+
+	.about__bio {
+		grid-column: 6 / span 6;
+		display: grid;
+		gap: 1.25em;
+		font-size: var(--t-medium);
+		line-height: 1.45;
+		letter-spacing: -0.005em;
+		max-width: 36em;
+	}
+
+	.about__bio :global(a) {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.18em;
+		text-decoration-color: var(--rule);
+		transition: text-decoration-color 300ms var(--ease-out);
+	}
+
+	.about__bio :global(a:hover) {
+		text-decoration-color: currentColor;
+	}
+
+	@media (max-width: 800px) {
+		.about__portrait {
+			grid-column: 1 / span 9;
+		}
+
+		.about__bio {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

@@ -1,0 +1,25 @@
+---
+/** Wraps each word in a mask so it can rise into view. */
+interface Props {
+	text: string
+	letters?: boolean
+}
+
+const { text, letters = false } = Astro.props
+const words = text.split(' ')
+---
+
+{
+	words.map((word, index) => (
+		<>
+			<span class="w">
+				<span>
+					{letters
+						? [...word].map((letter) => <span class="ch">{letter}</span>)
+						: word}
+				</span>
+			</span>
+			{index < words.length - 1 ? ' ' : ''}
+		</>
+	))
+}

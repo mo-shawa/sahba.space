@@ -1,8 +1,2 @@
 @import './foundations/tokens.css';
 @import './foundations/base.css';
-@import './layout.css';
-@import './components/loading.css';
-@import './components/navigation.css';
-@import './components/sections.css';
-@import './components/cards.css';
-@import './components/contact.css';

@@ -1,21 +1,154 @@
 ---
-import RichTextInline from './RichTextInline.astro'
-import type { ResearchGroup as ResearchGroupContent } from '../../data/siteContent'
+import type { Publication, Venue } from '../../data/siteContent'
 
 interface Props {
-	group: ResearchGroupContent
+	year: number
+	publications: Publication[]
+	venues: Venue[]
 }
 
-const { group } = Astro.props
+const { year, publications, venues } = Astro.props
+const venueFor = (publication: Publication) =>
+	venues.find((venue) => venue.id === publication.venue)!
 ---
 
-<article class="research-item">
-	<h3>{group.title}</h3>
-	{
-		group.entries.map((entry) => (
-			<small>
-				<RichTextInline parts={entry} />
-			</small>
-		))
+<li
+	class="year"
+	data-year-group
+>
+	<h3 class="year__label numeric">{year}</h3>
+	<ol class="year__rows">
+		{
+			publications.map((publication) => {
+				const venue = venueFor(publication)
+				return (
+					<li
+						class="pub"
+						id={`pub-${publication.id}`}
+						data-venue={venue.id}
+					>
+						<p class="pub__title">
+							{publication.title}
+							{publication.detail && (
+								<span class="pub__detail small">{publication.detail}</span>
+							)}
+						</p>
+						<p class="pub__venue small">
+							<abbr title={venue.detail ? `${venue.name}, ${venue.detail}` : venue.name}>
+								{venue.short}
+							</abbr>
+						</p>
+						<p class="pub__authors small">
+							El-Shawa, S{publication.coAuthored ? ', et al.' : ''}
+						</p>
+					</li>
+				)
+			})
+		}
+	</ol>
+</li>
+
+<style>
+	.year {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		border-top: 1px solid var(--ink);
 	}
-</article>
+
+	.year[hidden] {
+		display: none;
+	}
+
+	.year__label {
+		grid-column: 1 / span 2;
+		padding-top: 1.1rem;
+		font-size: var(--t-medium);
+		font-weight: 460;
+	}
+
+	.year__rows {
+		grid-column: 3 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+	}
+
+	.pub {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		align-items: baseline;
+		padding-block: 1.1rem 1.2rem;
+		scroll-margin-top: 30vh;
+		transition: background-color 300ms var(--ease-out);
+	}
+
+	.pub[hidden] {
+		display: none;
+	}
+
+	.pub + .pub:not([hidden]),
+	.pub[hidden] + .pub {
+		border-top: 1px solid var(--rule);
+	}
+
+	.pub__title {
+		grid-column: 1 / span 6;
+		display: grid;
+		gap: 0.35rem;
+		font-size: var(--t-medium);
+		font-weight: 460;
+		line-height: 1.25;
+		letter-spacing: -0.01em;
+		text-wrap: balance;
+	}
+
+	.pub__detail {
+		font-weight: 400;
+		letter-spacing: 0;
+		color: var(--ink-soft);
+	}
+
+	.pub__venue {
+		grid-column: 7 / span 2;
+	}
+
+	.pub__venue abbr {
+		text-decoration: none;
+		cursor: help;
+	}
+
+	.pub__authors {
+		grid-column: 9 / span 2;
+		color: var(--ink-soft);
+	}
+
+	.pub:target .pub__title {
+		color: var(--signal);
+	}
+
+	@media (max-width: 800px) {
+		.year__label {
+			grid-column: 1 / -1;
+		}
+
+		.year__rows {
+			grid-column: 1 / -1;
+		}
+
+		.pub {
+			grid-template-columns: auto 1fr;
+			column-gap: 1rem;
+			row-gap: 0.4rem;
+		}
+
+		.pub__title {
+			grid-column: 1 / -1;
+		}
+
+		.pub__venue,
+		.pub__authors {
+			grid-column: auto;
+		}
+	}
+</style>

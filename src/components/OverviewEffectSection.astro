@@ -1,0 +1,128 @@
+---
+import Chapter from './common/Chapter.astro'
+import Words from './common/Words.astro'
+import { education, overviewEffect, publications } from '../data/siteContent'
+
+const related = publications.find(
+	(publication) => publication.id === overviewEffect.relatedPublicationId
+)
+const phd = education.find((entry) => entry.degree === 'PhD')
+---
+
+<Chapter
+	name="earth"
+	length={3}
+	labelledby="overview-title"
+>
+	<div
+		class="intro"
+		data-beat="0.12,0.52"
+	>
+		<p class="small soft"><Words text={overviewEffect.label} /></p>
+		<h2
+			id="overview-title"
+			class="title"
+		>
+			<Words text={overviewEffect.title} />
+		</h2>
+		<p class="intro__definition medium"><Words text={overviewEffect.definition} /></p>
+	</div>
+
+	<div
+		class="research"
+		data-beat="0.56,1"
+	>
+		<p class="large"><Words text={overviewEffect.body} /></p>
+		{
+			phd && (
+				<p class="small soft">
+					<Words text={`${phd.degree}, ${phd.field}, ${phd.institution}`} />
+				</p>
+			)
+		}
+		{
+			related && (
+				<p class="small">
+					<a
+						class="link"
+						href={`#pub-${related.id}`}
+					>
+						<Words text={`Related paper: ${related.title}`} />
+					</a>
+				</p>
+			)
+		}
+	</div>
+
+	<div
+		class="jordan"
+		data-jordan
+		aria-hidden="true"
+	>
+		<span class="jordan__line"></span>
+		<span class="jordan__label small">Jordan</span>
+	</div>
+</Chapter>
+
+<style>
+	.intro,
+	.research {
+		grid-column: 1 / span 6;
+		align-self: center;
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.intro .title {
+		margin-left: -0.04em;
+	}
+
+	.intro__definition {
+		max-width: 22em;
+		color: var(--night-ink-soft);
+	}
+
+	.research .large {
+		max-width: 17em;
+	}
+
+	.research .small:last-child {
+		max-width: 30em;
+	}
+
+	.soft {
+		color: var(--night-ink-soft);
+	}
+
+	/* Tracks the Jordan cluster on the globe; positioned every frame. */
+	.jordan {
+		position: fixed;
+		left: 0;
+		top: 0;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		opacity: 0;
+		pointer-events: none;
+		will-change: transform, opacity;
+	}
+
+	.jordan__line {
+		width: 3.5rem;
+		height: 1px;
+		background: var(--signal);
+	}
+
+	.jordan__label {
+		color: var(--night-ink);
+	}
+
+	@media (max-width: 800px) {
+		.intro,
+		.research {
+			grid-column: 1 / -1;
+			align-self: end;
+		}
+	}
+</style>

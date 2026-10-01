@@ -1,0 +1,76 @@
+---
+import Chapter from './common/Chapter.astro'
+import Words from './common/Words.astro'
+import { groundContent, leadershipItems } from '../data/siteContent'
+
+const role = leadershipItems.find((item) => item.code === 'JSRI')?.roles[0]?.role
+---
+
+<Chapter
+	name="ground"
+	length={3}
+	labelledby="ground-title"
+>
+	<div
+		class="ground"
+		data-beat="0.14,0.58"
+	>
+		{role && <p class="small soft"><Words text={role} /></p>}
+		<h2
+			id="ground-title"
+			class="title"
+		>
+			<Words text={groundContent.organization} />
+		</h2>
+	</div>
+
+	<div
+		class="statement"
+		data-beat="0.6,1"
+	>
+		<p class="large"><Words text={groundContent.statement} /></p>
+		<p class="small">
+			<a
+				class="link"
+				href={groundContent.href}
+				target="_blank"
+				rel="noreferrer"><Words text="jsri.space" /></a
+			>
+		</p>
+	</div>
+</Chapter>
+
+<style>
+	.ground,
+	.statement {
+		grid-column: 1 / span 9;
+		align-self: start;
+		display: grid;
+		gap: 1.5rem;
+		padding-top: 4vh;
+	}
+
+	.ground .title {
+		margin-left: -0.04em;
+		max-width: 9em;
+	}
+
+	.statement {
+		grid-column: 1 / span 7;
+	}
+
+	.statement .large {
+		max-width: 19em;
+	}
+
+	.soft {
+		color: var(--night-ink-soft);
+	}
+
+	@media (max-width: 800px) {
+		.ground,
+		.statement {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

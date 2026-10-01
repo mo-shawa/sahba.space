@@ -1,16 +1,135 @@
 ---
-import MediaCard from './common/MediaCard.astro'
 import SectionTitle from './common/SectionTitle.astro'
 import { lectures } from '../data/siteContent'
 ---
 
-<section id="lectures">
-	<SectionTitle title="Lectures" />
-	<div class="flex-card-container">
+<section
+	id="lectures"
+	class="lectures paper"
+	aria-labelledby="lectures-title"
+>
+	<SectionTitle
+		title="Lectures"
+		id="lectures-title"
+	/>
+
+	<ol class="lectures__list grid">
 		{
-			lectures.map((entry) => (
-				<MediaCard entry={entry} />
+			lectures.map((lecture) => (
+				<li
+					class="talk"
+					data-reveal
+				>
+					<a
+						class="talk__image"
+						href={lecture.href}
+						target="_blank"
+						rel="noreferrer"
+						tabindex="-1"
+						aria-hidden="true"
+					>
+						<img
+							src={lecture.image.src}
+							alt=""
+							width={lecture.image.width}
+							height={lecture.image.height}
+							loading="lazy"
+							decoding="async"
+						/>
+					</a>
+					<div class="talk__text">
+						<p class="talk__meta small">
+							<time
+								class="numeric"
+								datetime={lecture.dateTime}
+							>
+								{lecture.date}
+							</time>
+							<span>{lecture.host}</span>
+						</p>
+						<h3 class="talk__title large">
+							<a
+								href={lecture.href}
+								target="_blank"
+								rel="noreferrer"
+							>
+								{lecture.title}
+							</a>
+						</h3>
+						<p class="talk__context soft">{lecture.context}</p>
+					</div>
+				</li>
 			))
 		}
-	</div>
+	</ol>
 </section>
+
+<style>
+	.lectures {
+		padding-block: var(--section) 0;
+	}
+
+	.lectures__list {
+		row-gap: clamp(3rem, 7vw, 6rem);
+	}
+
+	.talk {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		row-gap: 1.5rem;
+		padding-top: var(--gap);
+		border-top: 1px solid var(--rule);
+	}
+
+	.talk__image {
+		grid-column: 1 / span 6;
+		overflow: hidden;
+		background: var(--ink);
+	}
+
+	.talk__image img {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+		transition: transform 1.2s var(--ease-out);
+	}
+
+	.talk:hover .talk__image img {
+		transform: scale(1.03);
+	}
+
+	.talk__text {
+		grid-column: 8 / -1;
+		display: grid;
+		align-content: start;
+		gap: 1rem;
+	}
+
+	.talk__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem 1.25rem;
+	}
+
+	.talk__meta span {
+		color: var(--ink-soft);
+	}
+
+	.talk__title a:hover {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.12em;
+	}
+
+	.talk__context {
+		max-width: 32em;
+	}
+
+	@media (max-width: 800px) {
+		.talk__image,
+		.talk__text {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

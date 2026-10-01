@@ -1,24 +1,136 @@
 ---
 import ResearchGroup from './common/ResearchGroup.astro'
 import SectionTitle from './common/SectionTitle.astro'
-import { researchGroups, researchProfileLink } from '../data/siteContent'
+import {
+	publications,
+	researchProfileLink,
+	venues,
+} from '../data/siteContent'
+
+const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a)
+const countFor = (venue: string) =>
+	publications.filter((publication) => publication.venue === venue).length
 ---
 
-<section id="research">
-	<SectionTitle title="Research" />
-	<div class="section-container darken">
-		{
-			researchGroups.map((group) => (
-				<ResearchGroup group={group} />
-			))
-		}
-		<a
-			target={researchProfileLink.target}
-			rel={researchProfileLink.rel}
-			class="rg-btn"
-			href={researchProfileLink.href}
+<section
+	id="research"
+	class="research paper"
+	aria-labelledby="research-title"
+>
+	<SectionTitle
+		title="Publications"
+		id="research-title"
+	>
+		<p>
+			Selected papers, {Math.min(...years)} to {Math.max(...years)}. More on her
+			<a
+				class="link"
+				href={researchProfileLink.href}
+				target="_blank"
+				rel="noreferrer">ResearchGate profile</a
+			>.
+		</p>
+	</SectionTitle>
+
+	<div class="research__body grid">
+		<div
+			class="filters"
+			role="group"
+			aria-label="Filter publications by venue"
+			data-filters
 		>
-			{researchProfileLink.label}
-		</a>
+			<button
+				type="button"
+				class="filter small"
+				aria-pressed="true"
+				data-filter="all"
+			>
+				All <span class="numeric">{publications.length}</span>
+			</button>
+			{
+				venues.map((venue) => (
+					<button
+						type="button"
+						class="filter small"
+						aria-pressed="false"
+						data-filter={venue.id}
+						title={venue.name}
+					>
+						{venue.short} <span class="numeric">{countFor(venue.id)}</span>
+					</button>
+				))
+			}
+		</div>
+
+		<ol class="index">
+			{
+				years.map((year) => (
+					<ResearchGroup
+						year={year}
+						publications={publications.filter((p) => p.year === year)}
+						venues={venues}
+					/>
+				))
+			}
+		</ol>
 	</div>
 </section>
+
+<style>
+	.research {
+		padding-block: var(--section);
+	}
+
+	.research__body {
+		row-gap: 1.5rem;
+	}
+
+	.filters {
+		grid-column: 3 / -1;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.filter {
+		padding: 0.45rem 0.8rem 0.5rem;
+		border: 1px solid var(--rule);
+		border-radius: 0.25rem;
+		transition:
+			background-color 250ms var(--ease-out),
+			color 250ms var(--ease-out),
+			border-color 250ms var(--ease-out);
+	}
+
+	.filter .numeric {
+		color: var(--ink-soft);
+		margin-left: 0.2rem;
+	}
+
+	.filter:hover {
+		border-color: var(--ink);
+	}
+
+	.filter[aria-pressed='true'] {
+		background: var(--ink);
+		border-color: var(--ink);
+		color: var(--paper);
+	}
+
+	.filter[aria-pressed='true'] .numeric {
+		color: var(--paper-deep);
+	}
+
+	.index {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: subgrid;
+		border-bottom: 1px solid var(--ink);
+	}
+
+	@media (max-width: 800px) {
+		.filters {
+			grid-column: 1 / -1;
+		}
+	}
+</style>
