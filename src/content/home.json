@@ -1,0 +1,56 @@
+{
+	"seo": {
+		"title": "Sahba El-Shawa",
+		"description": "Sahba El-Shawa is a Jordanian-Canadian interdisciplinary researcher and social entrepreneur, and the Founder of the Jordan Space Research Initiative."
+	},
+	"name": "Sahba El-Shawa",
+	"givenName": "Sahba",
+	"familyName": "El-Shawa",
+	"nameArabic": "صهباء الشوا",
+	"role": "Interdisciplinary researcher and social entrepreneur",
+	"lead": "Sahba El-Shawa is a Jordanian-Canadian interdisciplinary researcher and social entrepreneur originally from Palestine.",
+	"portrait": {
+		"image": "/images/sahba-mss.webp",
+		"alt": "Sahba El-Shawa speaking at a podium at the International Space University, in front of a Master of Space Studies Program poster",
+		"caption": "International Space University, 2019"
+	},
+	"bio": "Sahba holds a BASc in Mechanical Engineering from the [University of British Columbia](https://www.ubc.ca/), an MSc in Space Studies from the [International Space University](https://www.isunet.edu/), and is now pursuing her [PhD in Sustainable Development and Climate Change](https://www.phd-sdc.it/) at IUSS Pavia in Italy. During her studies, she collaborated with the [German Aerospace Centre](https://www.dlr.de/DE/Home/home_node.html) (DLR) on robotics research and completed an internship at the [European Space Agency](https://www.esa.int/)'s Clean Space initiative focusing on the environmental impacts of space activities, both on Earth and in space.\n\nSahba is an active volunteer in the [Space Generation Advisory Council](https://spacegeneration.org/), acting as National Point of Contact for Jordan, as well as Co-Lead of the Ethics & Human Rights project group and the Space for Climate Action policy working group. She is also a National Coordinator in the [Moon Village Association](https://moonvillageassociation.org/) and its Participation of Emerging Space Countries program.\n\nShe is passionate about outreach and education, and has organized space design competitions for students around the world including Canada, Europe, and the Middle East. Sahba is a vocal advocate for decoupling defense and space. She is committed to creating opportunities for underrepresented communities in space and helping guide the space industry towards a more equitable, ethical, and sustainable future.",
+	"overview": {
+		"label": "PhD research",
+		"title": "The Overview Effect",
+		"definition": "A cognitive shift in awareness reported by some astronauts while viewing Earth from space.",
+		"body": "Her PhD research centers around the neuropsychological basis of the Overview Effect, and how making it more accessible using Virtual Reality can help drive sustainable behaviour on Earth.",
+		"relatedPaper": "Bringing Space Down to Earth: Virtual Reality Simulations of the Overview Effect"
+	},
+	"jsri": {
+		"role": "Founder and Executive Director",
+		"organization": "Jordan Space Research Initiative",
+		"statement": "She is the Founder of the Jordan Space Research Initiative, which aims to bridge sustainable development with space exploration and establish an analog research facility in Jordan.",
+		"url": "https://www.jsri.space/",
+		"linkLabel": "jsri.space"
+	},
+	"quote": {
+		"text": "If you don’t find the opportunities that you want, you can create them for yourself and for other people.",
+		"source": "Center for Air and Space Law, University of Mississippi School of Law"
+	},
+	"contact": {
+		"email": "hello@sahba.space",
+		"links": [
+			{
+				"label": "LinkedIn",
+				"handle": "in/selshawa",
+				"url": "https://www.linkedin.com/in/selshawa/"
+			},
+			{
+				"label": "Instagram",
+				"handle": "@sahbae",
+				"url": "https://www.instagram.com/sahbae/"
+			},
+			{
+				"label": "ResearchGate",
+				"handle": "Sahba-El-Shawa",
+				"url": "https://www.researchgate.net/profile/Sahba-El-Shawa"
+			}
+		]
+	}
+}

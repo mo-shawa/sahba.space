@@ -1,4 +1,5 @@
 ---
+import { getImage, Image } from 'astro:assets'
 import type { Interview } from '../../data/siteContent'
 
 interface Props {
@@ -6,6 +7,9 @@ interface Props {
 }
 
 const { entry } = Astro.props
+// The desktop hover preview loads a single, larger rendition on demand.
+const preview = await getImage({ src: entry.image, width: 640, format: 'webp' })
+const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefined
 ---
 
 <li
@@ -17,18 +21,16 @@ const { entry } = Astro.props
 		href={entry.href}
 		target="_blank"
 		rel="noreferrer"
-		data-preview={entry.image.src}
-		data-preview-position={entry.image.position}
+		data-preview={preview.src}
+		data-preview-position={entry.imageFocus || undefined}
 	>
-		<img
+		<Image
 			class="interview__thumb"
-			src={entry.image.src}
+			src={entry.image}
 			alt=""
-			width={entry.image.width}
-			height={entry.image.height}
-			style={entry.image.position ? `object-position: ${entry.image.position}` : undefined}
+			width={160}
+			style={focus}
 			loading="lazy"
-			decoding="async"
 		/>
 		<span class="interview__outlet medium">{entry.outlet}</span>
 		<span class="interview__topic soft">{entry.topic ?? ''}</span>

@@ -1,0 +1,31 @@
+{
+	"lectures": [
+		{
+			"date": "2022-10-13",
+			"host": "Howard University School of Law",
+			"title": "Space Commercialization: An Ethics and Sustainability Perspective",
+			"context": "Space Law course guest lecture on space commercialization.",
+			"url": "https://drive.google.com/file/d/1Ll1-1N2VxlApS97-N06U5DqSMRJWHvto/view?usp=sharing",
+			"image": "/images/lectures/HUSL.webp",
+			"imageAlt": "Title slide: Space Commercialization, An Ethics and Sustainability Perspective"
+		},
+		{
+			"date": "2022-09-29",
+			"host": "Science Summit at the UN General Assembly",
+			"title": "Saving the World with Interdisciplinarity: Addressing Future Challenges",
+			"context": "Presentation representing the PhD in Sustainable Development and Climate Change on the value of interdisciplinarity.",
+			"url": "https://drive.google.com/file/d/1Nvsr14AghES2vnYZrM7aYAa3U3D2z79C/view?usp=sharing",
+			"image": "/images/lectures/UNGA.webp",
+			"imageAlt": "Title slide: Saving the World with Interdisciplinarity, Addressing Future Challenges"
+		},
+		{
+			"date": "2022-09-14",
+			"host": "UN/Austria Symposium on Space for Climate Action",
+			"title": "Recommendations from the “Space for Climate Action” Policy Division in the Space Generation Advisory Council",
+			"context": "Pitch presentation representing the Space Generation Advisory Council's policy division on Space for Climate Action.",
+			"url": "https://drive.google.com/file/d/1trg2We7ZO6pAlhIrW2a4lij6Ahi01Ih0/view?usp=sharing",
+			"image": "/images/lectures/UN_Austria.webp",
+			"imageAlt": "Title slide: Recommendations from the Space for Climate Action Policy Division in the Space Generation Advisory Council"
+		}
+	]
+}

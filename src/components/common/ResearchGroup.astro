@@ -1,15 +1,12 @@
 ---
-import type { Publication, Venue } from '../../data/siteContent'
+import type { Publication } from '../../data/siteContent'
 
 interface Props {
 	year: number
 	publications: Publication[]
-	venues: Venue[]
 }
 
-const { year, publications, venues } = Astro.props
-const venueFor = (publication: Publication) =>
-	venues.find((venue) => venue.id === publication.venue)!
+const { year, publications } = Astro.props
 ---
 
 <li
@@ -20,7 +17,7 @@ const venueFor = (publication: Publication) =>
 	<ol class="year__rows">
 		{
 			publications.map((publication) => {
-				const venue = venueFor(publication)
+				const venue = publication.venue
 				return (
 					<li
 						class="pub"

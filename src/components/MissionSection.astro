@@ -1,9 +1,9 @@
 ---
 import Chapter from './common/Chapter.astro'
 import Words from './common/Words.astro'
-import { groundContent, leadershipItems } from '../data/siteContent'
+import { groundContent } from '../data/siteContent'
 
-const role = leadershipItems.find((item) => item.code === 'JSRI')?.roles[0]?.role
+const role = groundContent.role
 ---
 
 <Chapter
@@ -34,7 +34,7 @@ const role = leadershipItems.find((item) => item.code === 'JSRI')?.roles[0]?.rol
 				class="link"
 				href={groundContent.href}
 				target="_blank"
-				rel="noreferrer"><Words text="jsri.space" /></a
+				rel="noreferrer"><Words text={groundContent.linkLabel || groundContent.href} /></a
 			>
 		</p>
 	</div>

@@ -8,8 +8,8 @@ import {
 } from '../data/siteContent'
 
 const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a)
-const countFor = (venue: string) =>
-	publications.filter((publication) => publication.venue === venue).length
+const countFor = (venueId: string) =>
+	publications.filter((publication) => publication.venue.id === venueId).length
 ---
 
 <section
@@ -22,13 +22,13 @@ const countFor = (venue: string) =>
 		id="research-title"
 	>
 		<p>
-			Selected papers, {Math.min(...years)} to {Math.max(...years)}. More on her
-			<a
-				class="link"
-				href={researchProfileLink.href}
-				target="_blank"
-				rel="noreferrer">ResearchGate profile</a
-			>.
+			Selected papers, {Math.min(...years)} to {Math.max(...years)}.
+			{
+				researchProfileLink && (
+					// prettier-ignore
+					<>More on her <a class="link" href={researchProfileLink.href} target="_blank" rel="noreferrer">ResearchGate profile</a>.</>
+				)
+			}
 		</p>
 	</SectionTitle>
 
@@ -68,7 +68,6 @@ const countFor = (venue: string) =>
 					<ResearchGroup
 						year={year}
 						publications={publications.filter((p) => p.year === year)}
-						venues={venues}
 					/>
 				))
 			}

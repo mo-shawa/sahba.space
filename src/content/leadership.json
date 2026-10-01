@@ -1,0 +1,74 @@
+{
+	"leadership": [
+		{
+			"organization": "Jordan Space Research Initiative",
+			"url": "https://www.jsri.space/",
+			"roles": [
+				{
+					"role": "Founder and Executive Director",
+					"period": ""
+				}
+			]
+		},
+		{
+			"organization": "Moon Village Association",
+			"url": "https://moonvillageassociation.org/",
+			"roles": [
+				{
+					"role": "Team Lead in Participation of Emerging Space Countries Program",
+					"period": "2020 – present"
+				},
+				{
+					"role": "National Coordinator for Jordan",
+					"period": "2020 – present"
+				}
+			]
+		},
+		{
+			"organization": "Space Generation Advisory Council",
+			"url": "https://spacegeneration.org/",
+			"roles": [
+				{
+					"role": "Co-Lead of Ethics and Human Rights Project Group",
+					"period": "2021 – present"
+				},
+				{
+					"role": "Co-Lead of Space for Climate Action Policy Division",
+					"period": "2022 – present"
+				},
+				{
+					"role": "National Point of Contact for Jordan",
+					"period": "2020 – present"
+				}
+			]
+		},
+		{
+			"organization": "Space Science and Engineering Foundation",
+			"url": "",
+			"roles": [
+				{
+					"role": "Coordinator of the Environmental Design Challenge",
+					"period": "2022"
+				}
+			]
+		},
+		{
+			"organization": "Space Settlement Design Competitions",
+			"url": "",
+			"roles": [
+				{
+					"role": "Organizer of Canadian Space Settlement Design Competition",
+					"period": "2019, 2020, 2021"
+				},
+				{
+					"role": "Organizer of Middle East Space Design Competition for Jordan and Palestine",
+					"period": "2020, 2021"
+				},
+				{
+					"role": "Organizer of European Space Design Competition in France in collaboration with the International Space University",
+					"period": "2020"
+				}
+			]
+		}
+	]
+}

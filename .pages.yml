@@ -1,11 +1,450 @@
-# Placeholder Pages CMS configuration.
+# Pages CMS configuration (https://pagescms.org/docs/configuration/).
 #
-# The first Astro pass keeps content inside Astro components to verify
-# pixel-level parity with the current site. Replace this stub with real
-# collection and file schemas once content is moved out of components.
+# Each entry under `content` is a section in the editor at app.pagescms.org.
+# Text lives in src/content/*.json and photos in src/assets/images. Every save
+# is a commit to the repository; the site rebuilds from it. The build checks
+# every file (see src/data/siteContent.ts), so a malformed edit stops the
+# build instead of reaching the live site.
 
 media:
-  input: public/uploads
-  output: /uploads
+  input: src/assets/images
+  output: /images
+  categories: [image]
+  rename: safe
 
-content: []
+content:
+  - name: home
+    label: Home & about
+    type: file
+    path: src/content/home.json
+    format: json
+    fields:
+      - name: name
+        label: Full name
+        type: string
+        required: true
+      - name: givenName
+        label: Big name, first line
+        type: string
+        required: true
+      - name: familyName
+        label: Big name, second line
+        type: string
+        required: true
+      - name: nameArabic
+        label: Name in Arabic
+        type: string
+        required: true
+        description: The site embeds a font with just these letters; if you change the name, tell Mahmoud so he can update it.
+      - name: role
+        label: Role (top of the page)
+        type: string
+        required: true
+      - name: lead
+        label: Opening statement
+        type: text
+        required: true
+        description: Appears next to the galaxy as you start scrolling.
+      - name: portrait
+        label: Portrait
+        type: object
+        fields:
+          - name: image
+            label: Photo
+            type: image
+            required: true
+          - name: alt
+            label: Photo description
+            type: string
+            required: true
+            description: For screen readers. Describe what's in the photo.
+          - name: caption
+            label: Caption
+            type: string
+      - name: bio
+        label: Biography
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          media: false
+          switcher: false
+      - name: overview
+        label: Overview Effect chapter
+        type: object
+        fields:
+          - name: label
+            label: Small label
+            type: string
+            required: true
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: definition
+            label: Definition
+            type: text
+            required: true
+          - name: body
+            label: Research statement
+            type: text
+            required: true
+          - name: relatedPaper
+            label: Related paper
+            type: string
+            description: The exact title of a paper under Publications to link to. Leave empty for no link.
+      - name: jsri
+        label: Jordan Space Research Initiative chapter
+        type: object
+        fields:
+          - name: role
+            label: Small label
+            type: string
+            required: true
+          - name: organization
+            label: Title
+            type: string
+            required: true
+          - name: statement
+            label: Statement
+            type: text
+            required: true
+          - name: url
+            label: Link
+            type: string
+          - name: linkLabel
+            label: Link text
+            type: string
+      - name: quote
+        label: Quote above Interviews
+        type: object
+        fields:
+          - name: text
+            label: Quote
+            type: text
+            required: true
+          - name: source
+            label: Quoted by
+            type: string
+            required: true
+      - name: contact
+        label: Contact
+        type: object
+        fields:
+          - name: email
+            label: Email
+            type: string
+            required: true
+          - name: links
+            label: Links
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: '{label}'
+            fields:
+              - name: label
+                label: Name
+                type: string
+                required: true
+              - name: handle
+                label: Shown as
+                type: string
+                required: true
+              - name: url
+                label: Link
+                type: string
+                required: true
+      - name: seo
+        label: Search & sharing
+        type: object
+        fields:
+          - name: title
+            label: Page title
+            type: string
+            required: true
+          - name: description
+            label: Description
+            type: text
+            required: true
+            description: Shown by search engines and in link previews.
+
+  - name: interviews
+    label: Interviews
+    type: file
+    path: src/content/interviews.json
+    format: json
+    fields:
+      - name: interviews
+        label: Interviews
+        type: object
+        description: Shown in this order, top first.
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{outlet}'
+        fields:
+          - name: outlet
+            label: Outlet
+            type: string
+            required: true
+          - name: format
+            label: Format
+            type: string
+            required: true
+            description: e.g. Podcast, Video interview, Panel, Article, TV interview · Arabic
+          - name: topic
+            label: Topic
+            type: string
+          - name: date
+            label: Date or episode
+            type: string
+            description: Written as it should appear, e.g. Oct 2021 or Season 2 · Episode 12
+          - name: url
+            label: Link
+            type: string
+            required: true
+          - name: linkLabel
+            label: Link text for screen readers
+            type: string
+            description: e.g. Watch on YouTube, Listen, Read the article
+          - name: image
+            label: Image
+            type: image
+            required: true
+            description: Shown as a thumbnail on phones and on hover on computers.
+          - name: imageAlt
+            label: Image description
+            type: string
+          - name: imageFocus
+            label: Image focus (optional)
+            type: string
+            description: Which part of the image to keep when it's cropped to a square, e.g. "50% 30%" (left-right, top-bottom). Leave empty for the centre.
+
+  - name: lectures
+    label: Lectures
+    type: file
+    path: src/content/lectures.json
+    format: json
+    fields:
+      - name: lectures
+        label: Lectures
+        type: object
+        description: Sorted by date automatically, newest first.
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{date} · {host}'
+        fields:
+          - name: date
+            label: Date
+            type: date
+            required: true
+            options:
+              format: yyyy-MM-dd
+          - name: host
+            label: Event or host
+            type: string
+            required: true
+          - name: title
+            label: Talk title
+            type: string
+            required: true
+          - name: context
+            label: Description
+            type: text
+          - name: url
+            label: Link to the slides or recording
+            type: string
+            required: true
+          - name: image
+            label: Image
+            type: image
+            required: true
+            description: A 16:9 image works best, such as the title slide.
+          - name: imageAlt
+            label: Image description
+            type: string
+
+  - name: publications
+    label: Publications
+    type: file
+    path: src/content/publications.json
+    format: json
+    fields:
+      - name: publications
+        label: Publications
+        type: object
+        description: Grouped by year automatically. Within a year, shown in this order.
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{year} · {title}'
+        fields:
+          - name: year
+            label: Year
+            type: number
+            required: true
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: venue
+            label: Venue
+            type: string
+            required: true
+            description: Full name, e.g. International Astronautical Congress. Papers with the same venue are grouped in the filter.
+          - name: venueShort
+            label: Venue abbreviation
+            type: string
+            description: e.g. IAC. Used for the filter buttons.
+          - name: venueDetail
+            label: Venue detail
+            type: string
+            description: Optional, e.g. Elsevier Journal
+          - name: coAuthored
+            label: Co-authored
+            type: boolean
+            description: Adds "et al." after her name.
+          - name: detail
+            label: Volume, pages
+            type: string
+            description: Optional, e.g. Volume 200, November 2022, Pages 574–585
+
+  - name: leadership
+    label: Leadership
+    type: file
+    path: src/content/leadership.json
+    format: json
+    fields:
+      - name: leadership
+        label: Organizations
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{organization}'
+        fields:
+          - name: organization
+            label: Organization
+            type: string
+            required: true
+          - name: url
+            label: Website
+            type: string
+          - name: roles
+            label: Roles
+            type: object
+            list: true
+            fields:
+              - name: role
+                label: Role
+                type: string
+                required: true
+              - name: period
+                label: Years
+                type: string
+                description: e.g. 2020 – present, or 2019, 2020, 2021
+
+  - name: testimonials
+    label: Testimonials
+    type: file
+    path: src/content/testimonials.json
+    format: json
+    fields:
+      - name: testimonials
+        label: Testimonials
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{name}'
+        fields:
+          - name: name
+            label: Name
+            type: string
+            required: true
+          - name: role
+            label: Role
+            type: rich-text
+            options:
+              format: markdown
+              media: false
+              switcher: false
+          - name: year
+            label: Year
+            type: string
+            required: true
+          - name: quote
+            label: Testimonial
+            type: rich-text
+            required: true
+            description: Make one sentence bold to give it emphasis.
+            options:
+              format: markdown
+              media: false
+              switcher: false
+
+  - name: recognition
+    label: Awards
+    type: file
+    path: src/content/recognition.json
+    format: json
+    fields:
+      - name: recognition
+        label: Awards and selections
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{year} · {title}'
+        fields:
+          - name: year
+            label: Year
+            type: string
+            required: true
+          - name: title
+            label: Award
+            type: string
+            required: true
+          - name: organization
+            label: Awarded by
+            type: string
+          - name: url
+            label: Link
+            type: string
+
+  - name: education
+    label: Education
+    type: file
+    path: src/content/education.json
+    format: json
+    fields:
+      - name: education
+        label: Degrees
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{degree} · {field}'
+        fields:
+          - name: degree
+            label: Degree
+            type: string
+            required: true
+            description: e.g. BASc, MSc, PhD
+          - name: field
+            label: Field
+            type: string
+            required: true
+          - name: institution
+            label: Institution
+            type: string
+            required: true
+          - name: url
+            label: Website
+            type: string
+          - name: note
+            label: Note
+            type: string
+            description: Optional, e.g. Now pursuing

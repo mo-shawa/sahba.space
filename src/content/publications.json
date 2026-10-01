@@ -1,0 +1,112 @@
+{
+	"publications": [
+		{
+			"year": 2022,
+			"title": "Jordan Space Research Initiative: Societal Benefits of Lunar Exploration and Analog Research",
+			"venue": "Acta Astronautica",
+			"venueShort": "Acta Astronautica",
+			"venueDetail": "Elsevier Journal",
+			"coAuthored": true,
+			"detail": "Volume 200, November 2022, Pages 574–585"
+		},
+		{
+			"year": 2022,
+			"title": "The Importance of Outreach and Education for Emerging Space Countries",
+			"venue": "Symposium on Space Educational Activities",
+			"venueShort": "SSEA",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		},
+		{
+			"year": 2022,
+			"title": "Bringing Space Down to Earth: Virtual Reality Simulations of the Overview Effect",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": false,
+			"detail": ""
+		},
+		{
+			"year": 2022,
+			"title": "Saving Our Future on Earth Through Our Presence in Space - Recommendations from the Young Generations on the Role of Space for Climate Action",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		},
+		{
+			"year": 2022,
+			"title": "Site Selection Criteria for Space Analogs: Jordan Space Research Initiative Case Study",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		},
+		{
+			"year": 2021,
+			"title": "From Cradle to Grave: ESA Clean Space's Approach to Space Sustainability",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		},
+		{
+			"year": 2021,
+			"title": "Valley of the Moon: Societal Benefits of Lunar Exploration in Jordan",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		},
+		{
+			"year": 2020,
+			"title": "Quantum Consciousness, Intelligence, and Exosapiens: A Novel Approach to the Search for Extraterrestrial Intelligence",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": false,
+			"detail": ""
+		},
+		{
+			"year": 2020,
+			"title": "Jordan and the United Nations Space2030 Agenda: A Roadmap for Space and Sustainable Development",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": false,
+			"detail": ""
+		},
+		{
+			"year": 2020,
+			"title": "A Future Carrington Event: Impact on International Telecommunications",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		},
+		{
+			"year": 2020,
+			"title": "A Comprehensive View of SETI: Technical, Legal, and Outreach Considerations",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		},
+		{
+			"year": 2017,
+			"title": "'Is this the real life? Is this just fantasy?': Human Proxemic Preferences for Recognizing Robot Gestures in Physical Reality and Virtual Reality",
+			"venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+			"venueShort": "IROS",
+			"venueDetail": "",
+			"coAuthored": true,
+			"detail": ""
+		}
+	]
+}

@@ -1,11 +1,9 @@
 ---
 import Chapter from './common/Chapter.astro'
 import Words from './common/Words.astro'
-import { education, overviewEffect, publications } from '../data/siteContent'
+import { education, overviewEffect } from '../data/siteContent'
 
-const related = publications.find(
-	(publication) => publication.id === overviewEffect.relatedPublicationId
-)
+const related = overviewEffect.related
 const phd = education.find((entry) => entry.degree === 'PhD')
 ---
 

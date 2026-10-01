@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets'
 import SectionTitle from './common/SectionTitle.astro'
 import { lectures } from '../data/siteContent'
 ---
@@ -28,13 +29,12 @@ import { lectures } from '../data/siteContent'
 						tabindex="-1"
 						aria-hidden="true"
 					>
-						<img
-							src={lecture.image.src}
+						<Image
+							src={lecture.image}
 							alt=""
-							width={lecture.image.width}
-							height={lecture.image.height}
+							widths={[640, 1280]}
+							sizes="(max-width: 800px) 100vw, 50vw"
 							loading="lazy"
-							decoding="async"
 						/>
 					</a>
 					<div class="talk__text">

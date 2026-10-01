@@ -1,23 +1,10 @@
 ---
-import type { RichTextPart } from '../../data/siteContent'
-
+/** Renders HTML produced at build time from the content files' Markdown. */
 interface Props {
-	parts: RichTextPart[]
+	html: string
 }
 
-const { parts } = Astro.props
+const { html } = Astro.props
 ---
 
-{
-	parts.map((part) => {
-		if (part.type === 'link') {
-			// One line: whitespace inside the tag would render before punctuation.
-			// prettier-ignore
-			return <a href={part.href} target={part.target} rel={part.rel}>{part.value}</a>
-		}
-		if (part.type === 'highlight') {
-			return <mark>{part.value}</mark>
-		}
-		return part.value
-	})
-}
+<Fragment set:html={html} />

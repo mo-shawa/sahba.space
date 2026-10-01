@@ -1,0 +1,70 @@
+{
+	"interviews": [
+		{
+			"outlet": "Diaries of Space Explorers",
+			"format": "Podcast",
+			"topic": "Sustainability and Accessibility of the Space Sector",
+			"date": "Season 2 · Episode 12",
+			"url": "https://diariesofspace.podbean.com/e/the-diaries-of-space-explorers-season-2-episode-12-sustainability-and-accessibility-of-the-space-sector-sahba-el-shawa/",
+			"linkLabel": "Listen",
+			"image": "/images/interviews/diaries-of-space-explorers.webp",
+			"imageAlt": "Diaries of Space Explorers episode artwork",
+			"imageFocus": "50% 60%"
+		},
+		{
+			"outlet": "Space Court Foundation",
+			"format": "Video interview",
+			"topic": "Women of Colour in Space",
+			"date": "Oct 2021",
+			"url": "https://www.youtube.com/watch?v=peiCd3d9PrA",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/space-court-foundation.webp",
+			"imageAlt": "Space Court Foundation, Women of Colour in Space, with Sahba El-Shawa",
+			"imageFocus": "100% 40%"
+		},
+		{
+			"outlet": "University of Mississippi School of Law",
+			"format": "Panel",
+			"topic": "Center for Air and Space Law",
+			"date": "May 2022",
+			"url": "http://lawvideo.law.olemiss.edu/~poindexterbarnes/4th/WomenInAerospace-SpaceLaw-13MAY22.mp4",
+			"linkLabel": "Watch the panel",
+			"image": "/images/interviews/olemissinterview.webp",
+			"imageAlt": "Center for Air and Space Law graphic with a portrait of Sahba El-Shawa and a quote",
+			"imageFocus": "20% 50%"
+		},
+		{
+			"outlet": "Roya TV Jordan",
+			"format": "TV interview · Arabic",
+			"topic": "",
+			"date": "",
+			"url": "https://roya.tv/videos/87948",
+			"linkLabel": "Watch the interview",
+			"image": "/images/interviews/roya.webp",
+			"imageAlt": "Sahba El-Shawa being interviewed on Roya TV",
+			"imageFocus": "35% 40%"
+		},
+		{
+			"outlet": "The Quantum Insider",
+			"format": "Article",
+			"topic": "Quantum Applications for SETI: A Perspective",
+			"date": "Feb 2021",
+			"url": "https://thequantuminsider.com/2021/02/28/quantum-applications-for-seti-a-perspective/",
+			"linkLabel": "Read the article",
+			"image": "/images/interviews/quantuminsider.webp",
+			"imageAlt": "The Quantum Insider article header, Quantum Applications for SETI: A Perspective",
+			"imageFocus": "50% 70%"
+		},
+		{
+			"outlet": "Ignited Thinkers",
+			"format": "Video interview",
+			"topic": "Space Champion Interview",
+			"date": "",
+			"url": "https://www.youtube.com/watch?v=b2mUm8bPGFI",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/ignited-thinkers.webp",
+			"imageAlt": "Ignited Thinkers Space Champion Interview artwork",
+			"imageFocus": "50% 45%"
+		}
+	]
+}

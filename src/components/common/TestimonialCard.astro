@@ -15,17 +15,11 @@ const { testimonial } = Astro.props
 >
 	<figcaption class="voice__person">
 		<span class="medium">{testimonial.name}</span>
-		<span class="small soft"><RichTextInline parts={testimonial.role} /></span>
+		<span class="small soft"><RichTextInline html={testimonial.roleHtml} /></span>
 		<span class="small soft numeric">{testimonial.year}</span>
 	</figcaption>
 	<blockquote class="voice__quote">
-		{
-			testimonial.quote.map((paragraph) => (
-				<p>
-					<RichTextInline parts={paragraph} />
-				</p>
-			))
-		}
+		<RichTextInline html={testimonial.quoteHtml} />
 	</blockquote>
 </figure>
 
@@ -63,8 +57,8 @@ const { testimonial } = Astro.props
 		max-width: 36em;
 	}
 
-	/* The line each testimonial is remembered by. */
-	.voice__quote :global(mark) {
+	/* The line each testimonial is remembered by (bold in the CMS). */
+	.voice__quote :global(strong) {
 		background: none;
 		color: inherit;
 		font-weight: 560;

@@ -1,0 +1,25 @@
+{
+	"education": [
+		{
+			"degree": "BASc",
+			"field": "Mechanical Engineering",
+			"institution": "University of British Columbia",
+			"url": "https://www.ubc.ca/",
+			"note": ""
+		},
+		{
+			"degree": "MSc",
+			"field": "Space Studies",
+			"institution": "International Space University",
+			"url": "https://www.isunet.edu/",
+			"note": ""
+		},
+		{
+			"degree": "PhD",
+			"field": "Sustainable Development and Climate Change",
+			"institution": "IUSS Pavia, Italy",
+			"url": "https://www.phd-sdc.it/",
+			"note": "Now pursuing"
+		}
+	]
+}

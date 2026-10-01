@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets'
 import RecognitionSection from './RecognitionSection.astro'
 import RichTextInline from './common/RichTextInline.astro'
 import SectionTitle from './common/SectionTitle.astro'
@@ -20,25 +21,21 @@ import { aboutContent } from '../data/siteContent'
 			class="about__portrait"
 			data-reveal
 		>
-			<img
-				src={aboutContent.portrait.src}
+			<Image
+				src={aboutContent.portrait.image}
 				alt={aboutContent.portrait.alt}
-				width={aboutContent.portrait.width}
-				height={aboutContent.portrait.height}
+				widths={[480, 800]}
+				sizes="(max-width: 800px) 75vw, 30vw"
 				loading="lazy"
-				decoding="async"
 			/>
 			<figcaption class="small soft">{aboutContent.portraitCaption}</figcaption>
 		</figure>
 
-		<div class="about__bio">
-			{
-				aboutContent.bio.map((paragraph) => (
-					<p data-reveal>
-						<RichTextInline parts={paragraph} />
-					</p>
-				))
-			}
+		<div
+			class="about__bio"
+			data-reveal
+		>
+			<RichTextInline html={aboutContent.bioHtml} />
 		</div>
 	</div>
 
