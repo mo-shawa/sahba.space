@@ -20,8 +20,10 @@
 	--night-ink-soft: #9a9993;
 	--night-rule: rgba(236, 235, 230, 0.2);
 
-	/* Used sparingly: focus, selection, the Jordan marker. */
-	--signal: #e0592a;
+	/* Teal, her favourite colour, used sparingly: selection, focus, markers,
+	   link hovers. A deep shade for paper and a luminous one for night. */
+	--signal: #0d7c78;
+	--signal-night: #45d0c5;
 
 	--sans: 'Mona Sans Variable', 'Mona Sans', system-ui, sans-serif;
 	--arabic: 'Plex Arabic Name', 'IBM Plex Sans Arabic', 'Geeza Pro', sans-serif;
