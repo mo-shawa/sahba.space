@@ -16,7 +16,7 @@ import {
 	Vector3,
 	WebGLRenderer,
 } from 'three'
-import { EARTH_MASK, EARTH_MASK_HEIGHT, EARTH_MASK_WIDTH } from '../data/earthMask'
+import { HIGHLIGHT, HIGHLIGHT_CENTRES, LAND } from '../data/earthMask'
 import fragmentShader from '../shaders/fragment.glsl?raw'
 import vertexShader from '../shaders/vertex.glsl?raw'
 import starsFragmentShader from '../shaders/stars.fragment.glsl?raw'
@@ -47,15 +47,16 @@ export interface ScreenPoint {
 export interface Cosmos {
 	render: (frame: CosmosFrame, delta: number) => void
 	resize: () => void
-	/** Where Jordan is on screen after the last render, in CSS pixels. */
-	jordan: ScreenPoint
+	/** Where Palestine and Jordan are on screen after the last render, in CSS pixels. */
+	labels: { palestine: ScreenPoint; jordan: ScreenPoint }
 }
 
 // The palette is authored as display colours and written straight into
 // particle attributes, so skip three.js's sRGB → linear conversion.
 ColorManagement.enabled = false
 
-const JORDAN = { lat: 31, lon: 36 }
+// The globe turns until this point faces the viewer: between Palestine and Jordan.
+const HOMELAND = { lat: 31.6, lon: 36 }
 
 const palette = {
 	core: new Color('#ffc978'),
@@ -71,20 +72,25 @@ const palette = {
 /* Geometry                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const decodeMask = () => {
-	const binary = atob(EARTH_MASK)
+interface Grid {
+	west: number
+	north: number
+	step: number
+	width: number
+	height: number
+	data: string
+}
+
+/** Reads a packed 2-bit lat/lon grid; outside the grid reads as 0. */
+const decodeGrid = (grid: Grid) => {
+	const binary = atob(grid.data)
 	const bytes = new Uint8Array(binary.length)
 	for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
 	return (lat: number, lon: number) => {
-		const row = Math.min(
-			EARTH_MASK_HEIGHT - 1,
-			Math.floor(((90 - lat) / 180) * EARTH_MASK_HEIGHT)
-		)
-		const col = Math.min(
-			EARTH_MASK_WIDTH - 1,
-			Math.floor(((lon + 180) / 360) * EARTH_MASK_WIDTH)
-		)
-		const index = row * EARTH_MASK_WIDTH + col
+		const row = Math.floor((grid.north - lat) / grid.step)
+		const col = Math.floor((lon - grid.west) / grid.step)
+		if (row < 0 || row >= grid.height || col < 0 || col >= grid.width) return 0
+		const index = row * grid.width + col
 		return (bytes[index >> 2] >> ((index & 3) * 2)) & 3
 	}
 }
@@ -184,7 +190,10 @@ function buildParticles(count: number) {
 	const seed = new Float32Array(count * 4)
 	const surface = new Float32Array(count * 2)
 
-	const sample = decodeMask()
+	const isLand = decodeGrid(LAND)
+	const region = decodeGrid(HIGHLIGHT)
+	const regionSouth = HIGHLIGHT.north - HIGHLIGHT.height * HIGHLIGHT.step
+	const regionEast = HIGHLIGHT.west + HIGHLIGHT.width * HIGHLIGHT.step
 	const color = new Color()
 	const v = new Vector3()
 	const scatter = () =>
@@ -226,23 +235,29 @@ function buildParticles(count: number) {
 		/* Earth */
 		const role = Math.random()
 		let kind: number
-		if (role < 0.004) {
-			// A small, dense, warm cluster over Jordan.
+		if (role < 0.006) {
+			// Dense, warm clusters over Palestine and Jordan. Palestine is much
+			// smaller, so it gets a larger share to read as clearly.
+			const country = Math.random() < 0.4 ? 1 : 2
 			let point
-			do point = { lat: 29 + Math.random() * 4.5, lon: 34.8 + Math.random() * 4.6 }
-			while ((sample(point.lat, point.lon) & 2) === 0)
+			do
+				point = {
+					lat: regionSouth + Math.random() * (HIGHLIGHT.north - regionSouth),
+					lon: HIGHLIGHT.west + Math.random() * (regionEast - HIGHLIGHT.west),
+				}
+			while (region(point.lat, point.lon) !== country)
 			fromLatLon(point.lat, point.lon, v).multiplyScalar(1.001)
 			kind = 2
 		} else if (role < 0.58) {
 			let point
 			do point = randomLatLon()
-			while ((sample(point.lat, point.lon) & 1) === 0)
+			while (isLand(point.lat, point.lon) !== 1)
 			fromLatLon(point.lat, point.lon, v).multiplyScalar(1 + Math.random() * 0.004)
 			kind = 1
 		} else if (role < 0.82) {
 			let point
 			do point = randomLatLon()
-			while ((sample(point.lat, point.lon) & 1) === 1)
+			while (isLand(point.lat, point.lon) === 1)
 			fromLatLon(point.lat, point.lon, v)
 			kind = 0
 		} else if (role < 0.93) {
@@ -593,11 +608,18 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		new Euler(MathUtils.degToRad(15), MathUtils.degToRad(40), 0, 'XYZ')
 	)
 	const facingJordan = new Quaternion().setFromEuler(
-		new Euler(MathUtils.degToRad(JORDAN.lat * 0.75), -MathUtils.degToRad(JORDAN.lon), 0, 'XYZ')
+		new Euler(MathUtils.degToRad(HOMELAND.lat * 0.75), -MathUtils.degToRad(HOMELAND.lon), 0, 'XYZ')
 	)
-	const jordanLocal = fromLatLon(JORDAN.lat, JORDAN.lon, new Vector3())
-	const jordanWorld = new Vector3()
-	const jordan: ScreenPoint = { x: 0, y: 0, visible: false }
+	const anchors = {
+		palestine: fromLatLon(HIGHLIGHT_CENTRES.palestine.lat, HIGHLIGHT_CENTRES.palestine.lon, new Vector3()),
+		jordan: fromLatLon(HIGHLIGHT_CENTRES.jordan.lat, HIGHLIGHT_CENTRES.jordan.lon, new Vector3()),
+	}
+	const labels = {
+		palestine: { x: 0, y: 0, visible: false } as ScreenPoint,
+		jordan: { x: 0, y: 0, visible: false } as ScreenPoint,
+	}
+	const anchorWorld = new Vector3()
+	const toCamera = new Vector3()
 
 	function render(state: CosmosFrame, delta: number) {
 		if (!reducedMotion) elapsed += delta
@@ -692,16 +714,19 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 
 		renderer.render(scene, camera)
 
-		jordanWorld.copy(jordanLocal).applyQuaternion(quaternion)
-		jordan.visible =
-			jordanWorld.dot(camera.position.clone().sub(jordanWorld)) > 0 && stage > 0.5
-		jordanWorld.project(camera)
-		jordan.x = (jordanWorld.x * 0.5 + 0.5) * canvas.clientWidth
-		jordan.y = (-jordanWorld.y * 0.5 + 0.5) * canvas.clientHeight
+		for (const key of ['palestine', 'jordan'] as const) {
+			const label = labels[key]
+			anchorWorld.copy(anchors[key]).applyQuaternion(quaternion)
+			toCamera.copy(camera.position).sub(anchorWorld)
+			label.visible = anchorWorld.dot(toCamera) > 0 && stage > 0.5
+			anchorWorld.project(camera)
+			label.x = (anchorWorld.x * 0.5 + 0.5) * canvas.clientWidth
+			label.y = (-anchorWorld.y * 0.5 + 0.5) * canvas.clientHeight
+		}
 	}
 
 	window.addEventListener('resize', () => resize())
 	resize(true)
 
-	return { render, resize: () => resize(true), jordan }
+	return { render, resize: () => resize(true), labels }
 }

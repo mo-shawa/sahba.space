@@ -1,31 +1,54 @@
 {
 	"lectures": [
 		{
+			"date": "2025-06-17",
+			"showDay": true,
+			"host": "Moon Village Association Culture Considerations Webinar",
+			"title": "A'wna Under a Shared Moon: Justice and Community in the Work of the Palestine Space Institute and Jordan Space Research Initiative",
+			"context": "Talk on A'wna (Palestinian concept of community and collaboration) in the context of PSI and JSRI's work.",
+			"url": "https://www.youtube.com/watch?v=5UoEp3TbrLs&t=2508s",
+			"image": "/images/lectures/awna-under-a-shared-moon.png",
+			"imageAlt": "Title slide: A'wna Under a Shared Moon"
+		},
+		{
 			"date": "2022-10-13",
 			"host": "Howard University School of Law",
 			"title": "Space Commercialization: An Ethics and Sustainability Perspective",
 			"context": "Space Law course guest lecture on space commercialization.",
-			"url": "https://drive.google.com/file/d/1Ll1-1N2VxlApS97-N06U5DqSMRJWHvto/view?usp=sharing",
+			"url": "https://docs.google.com/presentation/d/15MzNA1l0fEpkeWE3L9VCSLXb8NHz0UmHnlXjKVx5wKo/present",
 			"image": "/images/lectures/HUSL.webp",
-			"imageAlt": "Title slide: Space Commercialization, An Ethics and Sustainability Perspective"
+			"imageAlt": "Title slide: Space Commercialization, An Ethics and Sustainability Perspective",
+			"showDay": true
 		},
 		{
 			"date": "2022-09-29",
-			"host": "Science Summit at the UN General Assembly",
+			"host": "United Nations General Assembly Science Summit",
 			"title": "Saving the World with Interdisciplinarity: Addressing Future Challenges",
 			"context": "Presentation representing the PhD in Sustainable Development and Climate Change on the value of interdisciplinarity.",
-			"url": "https://drive.google.com/file/d/1Nvsr14AghES2vnYZrM7aYAa3U3D2z79C/view?usp=sharing",
+			"url": "https://docs.google.com/presentation/d/197yanRxoDgsqF6SSOc8CEYuxN1mbNgiRuNYtYhdgafc/present",
 			"image": "/images/lectures/UNGA.webp",
-			"imageAlt": "Title slide: Saving the World with Interdisciplinarity, Addressing Future Challenges"
+			"imageAlt": "Title slide: Saving the World with Interdisciplinarity, Addressing Future Challenges",
+			"showDay": true
 		},
 		{
 			"date": "2022-09-14",
-			"host": "UN/Austria Symposium on Space for Climate Action",
+			"host": "United Nations/Austria Symposium on Space for Climate Action",
 			"title": "Recommendations from the “Space for Climate Action” Policy Division in the Space Generation Advisory Council",
 			"context": "Pitch presentation representing the Space Generation Advisory Council's policy division on Space for Climate Action.",
-			"url": "https://drive.google.com/file/d/1trg2We7ZO6pAlhIrW2a4lij6Ahi01Ih0/view?usp=sharing",
+			"url": "https://docs.google.com/presentation/d/1OdRiXTTUyW5yCEwxE1fJeDUEaZoAy4guQfDocAtcpt0/present",
 			"image": "/images/lectures/UN_Austria.webp",
-			"imageAlt": "Title slide: Recommendations from the Space for Climate Action Policy Division in the Space Generation Advisory Council"
+			"imageAlt": "Title slide: Recommendations from the Space for Climate Action Policy Division in the Space Generation Advisory Council",
+			"showDay": true
+		},
+		{
+			"date": "2021-09-01",
+			"showDay": false,
+			"host": "European Rover Challenge, European Space Foundation",
+			"title": "",
+			"context": "Presentation representing the Jordan Space Research Initiative, its goals for the Moon Village and Sustainable Development.",
+			"url": "https://youtu.be/xnsMfoH_moY",
+			"image": "/images/lectures/european-rover-challenge-2021.jpg",
+			"imageAlt": "European Rover Challenge 2021 speaker card for Sahba El-Shawa"
 		}
 	]
 }

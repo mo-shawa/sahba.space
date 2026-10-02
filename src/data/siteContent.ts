@@ -70,9 +70,9 @@ const slug = (value: string) =>
 		.slice(0, 80)
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
-const formatDate = (iso: string) => {
+const formatDate = (iso: string, showDay = true) => {
 	const [year, month, day] = iso.split('-').map(Number)
-	return `${day} ${months[month - 1]} ${year}`
+	return showDay ? `${day} ${months[month - 1]} ${year}` : `${months[month - 1]} ${year}`
 }
 
 const text = z.string().trim()
@@ -96,20 +96,21 @@ const home = load(
 		lead: text,
 		portrait: z.object({ image: text, alt: text, caption: optional }),
 		bio: text,
-		overview: z.object({
+		earth: z.object({
 			label: text,
 			title: text,
-			definition: text,
-			body: text,
-			relatedPaper: optional,
-		}),
-		jsri: z.object({
-			role: text,
-			organization: text,
 			statement: text,
-			url: optionalUrl,
-			linkLabel: optional,
+			current: optional,
+			relatedPapers: z.array(text).optional().default([]),
 		}),
+		ground: z.object({
+			label: text,
+			title: text,
+			statement: text,
+			jsri: z.object({ statement: text, url: optionalUrl, linkLabel: optional }),
+			psi: z.object({ statement: text, url: optionalUrl, linkLabel: optional }),
+		}),
+		vision: optional,
 		quote: z.object({ text: text, source: text }),
 		contact: z.object({
 			email: z.string().trim().pipe(z.email()),
@@ -156,12 +157,17 @@ export const aboutContent = {
 }
 
 export const groundContent = {
-	role: home.jsri.role,
-	organization: home.jsri.organization,
-	statement: home.jsri.statement,
-	href: home.jsri.url,
-	linkLabel: home.jsri.linkLabel,
+	label: home.ground.label,
+	title: home.ground.title,
+	statement: home.ground.statement,
+	founded: [home.ground.jsri, home.ground.psi].map((beat) => ({
+		statement: beat.statement,
+		href: beat.url,
+		linkLabel: beat.linkLabel || beat.url,
+	})),
 }
+
+export const visionStatement = home.vision
 
 export const featuredQuote = home.quote
 
@@ -276,7 +282,7 @@ export interface Publication {
 	year: number
 	venue: Venue
 	title: string
-	coAuthored: boolean
+	authors: string
 	detail: string
 }
 
@@ -290,7 +296,7 @@ const publicationRows = load(
 				venue: text,
 				venueShort: optional,
 				venueDetail: optional,
-				coAuthored: z.boolean().optional().default(false),
+				authors: z.string().trim().optional().default('El-Shawa, S'),
 				detail: optional,
 			})
 		),
@@ -312,20 +318,20 @@ export const publications: Publication[] = publicationRows.map((row) => {
 		year: row.year,
 		venue,
 		title: row.title,
-		coAuthored: row.coAuthored,
+		authors: row.authors,
 		detail: row.detail,
 	}
 })
 
-export const overviewEffect = {
-	label: home.overview.label,
-	title: home.overview.title,
-	definition: home.overview.definition,
-	body: home.overview.body,
-	related: publications.find(
-		(publication) =>
-			publication.title.toLowerCase() === home.overview.relatedPaper.toLowerCase()
-	),
+const findPaper = (title: string) =>
+	publications.find((publication) => publication.title.toLowerCase() === title.toLowerCase())
+
+export const earthContent = {
+	label: home.earth.label,
+	title: home.earth.title,
+	statement: home.earth.statement,
+	current: home.earth.current,
+	related: home.earth.relatedPapers.map(findPaper).filter((paper) => paper !== undefined),
 }
 
 export interface Lecture {
@@ -345,8 +351,9 @@ export const lectures: Lecture[] = load(
 		lectures: z.array(
 			z.object({
 				date: z.string().regex(/^\d{4}-\d{2}-\d{2}/, 'use a date like 2022-10-13'),
+				showDay: z.boolean().optional().default(true),
 				host: text,
-				title: text,
+				title: optional,
 				context: optional,
 				url,
 				image: text,
@@ -357,8 +364,8 @@ export const lectures: Lecture[] = load(
 	lecturesFile
 )
 	.lectures.map((lecture) => ({
-		date: formatDate(lecture.date.slice(0, 10)),
-		dateTime: lecture.date.slice(0, 10),
+		date: formatDate(lecture.date.slice(0, 10), lecture.showDay),
+		dateTime: lecture.showDay ? lecture.date.slice(0, 10) : lecture.date.slice(0, 7),
 		host: lecture.host,
 		title: lecture.title,
 		context: lecture.context,
@@ -415,7 +422,11 @@ export interface Testimonial {
 	name: string
 	roleHtml: string
 	year: string
+	/** The bolded line, shown large; the full testimonial opens on request. */
+	excerptHtml: string
 	quoteHtml: string
+	/** False when the excerpt already is the whole testimonial. */
+	hasMore: boolean
 }
 
 export const testimonials: Testimonial[] = load(
@@ -426,9 +437,17 @@ export const testimonials: Testimonial[] = load(
 		),
 	}),
 	testimonialsFile
-).testimonials.map((entry) => ({
-	name: entry.name,
-	roleHtml: inlineMarkdown(entry.role),
-	year: entry.year,
-	quoteHtml: markdown(entry.quote),
-}))
+).testimonials.map((entry) => {
+	const emphasis = entry.quote.match(/\*\*(.+?)\*\*/s)?.[1].trim()
+	const plain = entry.quote.replace(/\*\*/g, '').trim()
+	// A mid-sentence excerpt reads as a quote with a leading ellipsis.
+	const excerpt = emphasis ? (/^[a-z]/.test(emphasis) ? `…${emphasis}` : emphasis) : plain
+	return {
+		name: entry.name,
+		roleHtml: inlineMarkdown(entry.role),
+		year: entry.year,
+		excerptHtml: inlineMarkdown(excerpt),
+		quoteHtml: markdown(entry.quote),
+		hasMore: (emphasis ?? plain).replace(/[.\s]+$/, '') !== plain.replace(/[.\s]+$/, ''),
+	}
+})

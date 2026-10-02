@@ -18,9 +18,24 @@ const { testimonial } = Astro.props
 		<span class="small soft"><RichTextInline html={testimonial.roleHtml} /></span>
 		<span class="small soft numeric">{testimonial.year}</span>
 	</figcaption>
-	<blockquote class="voice__quote">
-		<RichTextInline html={testimonial.quoteHtml} />
-	</blockquote>
+	<div class="voice__words">
+		<blockquote class="voice__excerpt large">
+			<p>“<RichTextInline html={testimonial.excerptHtml} />”</p>
+		</blockquote>
+		{
+			testimonial.hasMore && (
+				<details class="voice__more">
+					<summary class="small">
+						<span class="voice__open">Read the full testimonial</span>
+						<span class="voice__close">Close</span>
+					</summary>
+					<blockquote class="voice__quote">
+						<RichTextInline html={testimonial.quoteHtml} />
+					</blockquote>
+				</details>
+			)
+		}
+	</div>
 </figure>
 
 <style>
@@ -29,7 +44,7 @@ const { testimonial } = Astro.props
 		display: grid;
 		grid-template-columns: subgrid;
 		row-gap: 1.5rem;
-		padding-block: 1.5rem clamp(3rem, 6vw, 5rem);
+		padding-block: 1.5rem clamp(2.5rem, 5vw, 4rem);
 		border-top: 1px solid var(--rule);
 	}
 
@@ -47,10 +62,60 @@ const { testimonial } = Astro.props
 		text-underline-offset: 0.18em;
 	}
 
+	.voice__words {
+		grid-column: 6 / span 7;
+		display: grid;
+		gap: 1.25rem;
+		align-content: start;
+	}
+
+	.voice__excerpt {
+		max-width: 20em;
+		text-indent: -0.42em;
+	}
+
+	.voice__excerpt :global(a) {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.12em;
+	}
+
+	.voice__more summary {
+		display: inline-flex;
+		cursor: pointer;
+		list-style: none;
+		color: var(--ink-soft);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.25em;
+		text-decoration-color: var(--rule);
+		transition:
+			color 300ms var(--ease-out),
+			text-decoration-color 300ms var(--ease-out);
+	}
+
+	.voice__more summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.voice__more summary:hover {
+		color: var(--ink);
+		text-decoration-color: var(--signal);
+	}
+
+	.voice__close,
+	.voice__more[open] .voice__open {
+		display: none;
+	}
+
+	.voice__more[open] .voice__close {
+		display: inline;
+	}
+
 	.voice__quote {
-		grid-column: 6 / span 6;
 		display: grid;
 		gap: 1em;
+		margin-top: 1.25rem;
 		font-size: var(--t-medium);
 		line-height: 1.45;
 		letter-spacing: -0.005em;
@@ -59,8 +124,6 @@ const { testimonial } = Astro.props
 
 	/* The line each testimonial is remembered by (bold in the CMS). */
 	.voice__quote :global(strong) {
-		background: none;
-		color: inherit;
 		font-weight: 560;
 	}
 
@@ -73,7 +136,7 @@ const { testimonial } = Astro.props
 
 	@media (max-width: 800px) {
 		.voice__person,
-		.voice__quote {
+		.voice__words {
 			grid-column: 1 / -1;
 		}
 	}

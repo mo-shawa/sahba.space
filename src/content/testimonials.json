@@ -1,22 +1,40 @@
 {
 	"testimonials": [
 		{
+			"name": "Divya Persaud",
+			"role": "Research Manager at [PSI](http://www.palestinespace.org/) and Research Fellow at the University of Glasgow",
+			"year": "2025",
+			"quote": "**My discipline considers Sahba as a standard of integrity.** Her passion for ethics and her capacity to inspire her peers has garnered an international reputation through both her academic work and mentorship of numerous communities. Greater than her formal organizational achievements is that she has unwittingly amassed a community of junior professionals who look to her as an example of principle. This is the greatest value Sahba brings to the teams she leads... I have no doubt in Sahba’s capacity to inspire future generations, because she is already so deeply engaged in doing this already."
+		},
+		{
+			"name": "Mario Martina",
+			"role": "PhD Coordinator in the PhD SDC program and University Rector at IUSS Pavia",
+			"year": "2023",
+			"quote": "**Sahba is a creative researcher who is not limited by conventional paradigms but instead connects concepts, ideas, and methodologies from human and scientific disciplines.**"
+		},
+		{
+			"name": "Alfredo Tomasetta",
+			"role": "PhD Supervisor in the PhD SDC program and Associate Professor at IUSS Pavia",
+			"year": "2022",
+			"quote": "At the most basic level, Sahba is simply very smart. She is quick to see the point of an argument and she combines this skill with a level of imagination and originality well beyond what one would expect of a very young scholar. Moreover, Sahba is very good at articulating her imaginative ideas, she expresses herself in a clear and precise manner and is an excellent listener. **She has an engineering background, but her main characteristic is an exceptional intellectual curiosity.**"
+		},
+		{
 			"name": "Zaina Abu Sha'ar",
 			"role": "[JSRI](https://www.jsri.space/) Team Member and MSc Student in Space Engineering Systems at [Skoltech](https://www.skoltech.ru/en/)",
 			"year": "2022",
 			"quote": "They say a good leader has integrity, courage, respect, empathy, and gratitude. After working with Sahba for two years, it is clear that she possesses all of these qualities and more. Throughout my time with the Jordan Space Research Initiative, Sahba has been motivational and supportive, which presented me with the opportunity to dive in new endeavors. **I can honestly say that Sahba is a huge inspiration and I am truly blessed to have crossed paths with her.**"
 		},
 		{
-			"name": "Ezequiel Gonzalez",
+			"name": "Ezequiel González",
 			"role": "Expert EO Mission Planning & Space Ops at [Leanspace](https://leanspace.io/)",
 			"year": "2020",
-			"quote": "Sahba is an awesome person and a well-rounded professional. She has shown solid management skills and conducted cutting-edge research. We shared many moments throughout the [MSS](https://www.isunet.edu/mss/) program and I really enjoyed our talks about space, physics, and consciousness. I could appreciate her sound knowledge in those topics and **her never-ending willingness to push the boundaries and explore the unknown.** She loves what she does and she expresses in a way that makes others feel the same. Sahba's attitude and passion will surely inspire every team she could be part of in the future."
+			"quote": "Sahba is an awesome person and a well-rounded professional. She has shown solid management skills and conducted cutting-edge research. We shared many moments throughout the MSS program and I really enjoyed our talks about space, physics, and consciousness. I could appreciate her sound knowledge in those topics and **her never-ending willingness to push the boundaries and explore the unknown.** She loves what she does and she expresses in a way that makes others feel the same. Sahba's attitude and passion will surely inspire every team she could be part of in the future."
 		},
 		{
 			"name": "Alvina Gakhokidze",
 			"role": "Electrical Engineering Student at the [University of British Columbia](https://www.ubc.ca/)",
 			"year": "2022",
-			"quote": "Sahba was my mentor for the first time at the 2019 Canadian Space Settlement Design Competition (CSSDC), which she had organized herself. As one of the many students who was in an unfamiliar environment, surrounded by other students I did not know, and anxious from the stakes of the competition, I found Sahba's leadership comforting and encouraging - she helped students overcome their nervousness and participate in the various activities and get to know each other. **She turned a stressful competition into an enjoyable learning experience.** During the following year's CSSDC, the pandemic had hit, and it was uncertain whether the competition would occur.\n\nSahba, however, had put impressive effort into offering an alternative, online version of the competition which helped us to not miss out on any key opportunities while in quarantine. Sahba was a great mentor in the 2019 International SSDC finals as well; when I came to her with conceptual problems, she responded in ways that helped me consider alternative ideas and reach the solution myself. Sahba's crucial support in the ISSDC, and her work in organizing the CSSDC and making the space industry more accessible to Canadian students, helped our team place first in the international competition that year."
+			"quote": "Sahba was my mentor for the first time at the 2019 Canadian Space Settlement Design Competition (CSSDC), which she had organized herself. As one of the many students who was in an unfamiliar environment, surrounded by other students I didn’t know, and anxious from the stakes of the competition, I found Sahba’s leadership comforting and encouraging - she helped students overcome their nervousness and participate in the various activities and get to know each other. **She turned a stressful competition into an enjoyable learning experience.** During the following year’s CSSDC, the pandemic had hit, and it was uncertain whether the competition would occur. Sahba, however, had put impressive effort into offering an alternative, online version of the competition which helped us to not miss out on any key opportunities while in quarantine. Sahba was a great mentor in the 2019 International SSDC finals as well; when I came to her with conceptual problems, she responded in ways that helped me consider alternative ideas and reach the solution myself. Sahba’s crucial support in the ISSDC, and her work in organizing the CSSDC and making the space industry more accessible to Canadian students, helped our team place first in the international competition that year."
 		}
 	]
 }

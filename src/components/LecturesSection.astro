@@ -11,6 +11,7 @@ import { lectures } from '../data/siteContent'
 >
 	<SectionTitle
 		title="Lectures"
+		arabic="محاضرات"
 		id="lectures-title"
 	/>
 
@@ -33,7 +34,7 @@ import { lectures } from '../data/siteContent'
 							src={lecture.image}
 							alt=""
 							widths={[640, 1280]}
-							sizes="(max-width: 800px) 100vw, 50vw"
+							sizes="(max-width: 800px) 100vw, 33vw"
 							loading="lazy"
 						/>
 					</a>
@@ -53,10 +54,12 @@ import { lectures } from '../data/siteContent'
 								target="_blank"
 								rel="noreferrer"
 							>
-								{lecture.title}
+								{lecture.title || lecture.context}
 							</a>
 						</h3>
-						<p class="talk__context soft">{lecture.context}</p>
+						{lecture.title && lecture.context && (
+							<p class="talk__context soft">{lecture.context}</p>
+						)}
 					</div>
 				</li>
 			))
@@ -70,7 +73,7 @@ import { lectures } from '../data/siteContent'
 	}
 
 	.lectures__list {
-		row-gap: clamp(3rem, 7vw, 6rem);
+		row-gap: clamp(2.5rem, 5vw, 4.5rem);
 	}
 
 	.talk {
@@ -83,7 +86,7 @@ import { lectures } from '../data/siteContent'
 	}
 
 	.talk__image {
-		grid-column: 1 / span 6;
+		grid-column: 1 / span 4;
 		overflow: hidden;
 		background: var(--ink);
 	}
@@ -100,7 +103,7 @@ import { lectures } from '../data/siteContent'
 	}
 
 	.talk__text {
-		grid-column: 8 / -1;
+		grid-column: 6 / -1;
 		display: grid;
 		align-content: start;
 		gap: 1rem;
@@ -114,6 +117,10 @@ import { lectures } from '../data/siteContent'
 
 	.talk__meta span {
 		color: var(--ink-soft);
+	}
+
+	.talk__title {
+		max-width: 22em;
 	}
 
 	.talk__title a:hover {

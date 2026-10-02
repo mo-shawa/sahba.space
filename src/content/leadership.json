@@ -1,18 +1,56 @@
 {
 	"leadership": [
 		{
+			"organization": "UN Youth Office",
+			"url": "https://www.un.org/youthaffairs/en/meet-2025-cohort-young-leaders-sdgs",
+			"roles": [
+				{
+					"role": "Selected as one of 17 UN Young Leaders for the SDGs out of over 33,000 global applicants",
+					"period": "2025 – 2027"
+				}
+			]
+		},
+		{
+			"organization": "Palestine Space Institute",
+			"url": "http://www.palestinespace.org/",
+			"roles": [
+				{
+					"role": "Founder and Managing Director",
+					"period": "2023 – present"
+				}
+			]
+		},
+		{
 			"organization": "Jordan Space Research Initiative",
-			"url": "https://www.jsri.space/",
+			"url": "http://jsri.space/",
 			"roles": [
 				{
 					"role": "Founder and Executive Director",
-					"period": ""
+					"period": "2020 – present"
+				}
+			]
+		},
+		{
+			"organization": "Space Generation Advisory Council",
+			"url": "http://spacegeneration.org/",
+			"roles": [
+				{
+					"role": "Co-Lead of Ethics and Human Rights Project Group",
+					"period": "2021 – 2024"
+				},
+				{
+					"role": "Co-Lead of Space for Climate Action Policy Division",
+					"period": "2022 – 2024"
+				},
+				{
+					"role": "National Point of Contact for Jordan",
+					"period": "2020 – 2024"
 				}
 			]
 		},
 		{
 			"organization": "Moon Village Association",
-			"url": "https://moonvillageassociation.org/",
+			"url": "http://moonvillageassociation.org/",
 			"roles": [
 				{
 					"role": "Team Lead in Participation of Emerging Space Countries Program",
@@ -20,25 +58,7 @@
 				},
 				{
 					"role": "National Coordinator for Jordan",
-					"period": "2020 – present"
-				}
-			]
-		},
-		{
-			"organization": "Space Generation Advisory Council",
-			"url": "https://spacegeneration.org/",
-			"roles": [
-				{
-					"role": "Co-Lead of Ethics and Human Rights Project Group",
-					"period": "2021 – present"
-				},
-				{
-					"role": "Co-Lead of Space for Climate Action Policy Division",
-					"period": "2022 – present"
-				},
-				{
-					"role": "National Point of Contact for Jordan",
-					"period": "2020 – present"
+					"period": "2020 – 2024"
 				}
 			]
 		},

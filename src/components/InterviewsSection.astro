@@ -1,7 +1,13 @@
 ---
 import MediaCard from './common/MediaCard.astro'
 import SectionTitle from './common/SectionTitle.astro'
+import ShowMore from './common/ShowMore.astro'
 import { featuredQuote, interviews, person } from '../data/siteContent'
+
+// The first few rows show; the rest wait behind a button unless they would be
+// only a couple.
+const shown = 6
+const collapsed = interviews.length - shown >= 3
 ---
 
 <section
@@ -11,6 +17,7 @@ import { featuredQuote, interviews, person } from '../data/siteContent'
 >
 	<SectionTitle
 		title="Interviews"
+		arabic="مقابلات"
 		id="interviews-title"
 	/>
 
@@ -26,9 +33,32 @@ import { featuredQuote, interviews, person } from '../data/siteContent'
 		</figcaption>
 	</figure>
 
-	<ol class="interviews__list grid">
-		{interviews.map((entry) => <MediaCard entry={entry} />)}
+	<ol
+		class="interviews__list grid"
+		id="interview-list"
+		data-collapsible={collapsed || undefined}
+	>
+		{
+			interviews.map((entry, index) => (
+				<MediaCard
+					entry={entry}
+					extra={collapsed && index >= shown}
+				/>
+			))
+		}
 	</ol>
+
+	{
+		collapsed && (
+			<div class="interviews__more grid">
+				<ShowMore
+					controls="interview-list"
+					label="More interviews"
+					count={interviews.length - shown}
+				/>
+			</div>
+		)
+	}
 
 	<div
 		class="preview"
@@ -45,6 +75,16 @@ import { featuredQuote, interviews, person } from '../data/siteContent'
 <style>
 	.interviews {
 		padding-block: var(--section) 0;
+	}
+
+	/* Closing rule under the last visible row, inside the page margins. */
+	.interviews__list {
+		background: linear-gradient(var(--rule), var(--rule)) bottom / calc(100% - 2 * var(--margin)) 1px
+			no-repeat;
+	}
+
+	.interviews__more {
+		padding-top: 1.5rem;
 	}
 
 	.quote {

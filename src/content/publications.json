@@ -6,16 +6,97 @@
 			"venue": "Acta Astronautica",
 			"venueShort": "Acta Astronautica",
 			"venueDetail": "Elsevier Journal",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
 			"detail": "Volume 200, November 2022, Pages 574–585"
 		},
 		{
-			"year": 2022,
-			"title": "The Importance of Outreach and Education for Emerging Space Countries",
-			"venue": "Symposium on Space Educational Activities",
-			"venueShort": "SSEA",
+			"year": 2023,
+			"title": "Recommendations on Space for Climate Action from the Official Policy Position of the Space Generation Advisory Council",
+			"venue": "Global Space Conference on Climate Change",
+			"venueShort": "GLOC",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
+			"detail": ""
+		},
+		{
+			"year": 2023,
+			"title": "Space for Environmental Disaster Management: Flood Mitigation and Adaptation Case Study",
+			"venue": "Global Space Conference on Climate Change",
+			"venueShort": "GLOC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S, et al.",
+			"detail": ""
+		},
+		{
+			"year": 2025,
+			"title": "Earth Observation for Justice in Gaza: Ethical and Legal Implications",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S and Rotola, G",
+			"detail": ""
+		},
+		{
+			"year": 2025,
+			"title": "Witnessing with Earth Observation: Using Sentinel-2 Data to Assess Environmental Destruction in Gaza",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S and Persaud, D",
+			"detail": ""
+		},
+		{
+			"year": 2024,
+			"title": "Pathways for the UN Space2030 Agenda: A Comprehensive View of the Impact of Space on Social and Environmental Sustainability",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S",
+			"detail": ""
+		},
+		{
+			"year": 2024,
+			"title": "Lessons Learned from PETRA-1: Psychological, Environmental, and Technological Research Analog",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S and Abu-Sha'ar, Z",
+			"detail": ""
+		},
+		{
+			"year": 2024,
+			"title": "The Palestine Space Institute: Disrupting a Culture of Space Militarism, Colonialism, and Imperialism",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S and Persaud, D",
+			"detail": ""
+		},
+		{
+			"year": 2024,
+			"title": "Space as a Zone of Peace: Envisioning a Resolution for the Demilitarization of Outer Space",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S, et al.",
+			"detail": ""
+		},
+		{
+			"year": 2023,
+			"title": "First Analog Mission of the Jordan Space Research Initiative: One Small Step for Emerging Space Countries, One Giant Leap for Jordan",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S, et al.",
+			"detail": ""
+		},
+		{
+			"year": 2023,
+			"title": "Investigating the Neuropsychological Impact of the Overview Effect using Virtual Reality",
+			"venue": "International Astronautical Congress",
+			"venueShort": "IAC",
+			"venueDetail": "",
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		},
 		{
@@ -24,7 +105,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": false,
+			"authors": "El-Shawa, S",
 			"detail": ""
 		},
 		{
@@ -33,7 +114,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		},
 		{
@@ -42,7 +123,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		},
 		{
@@ -51,7 +132,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		},
 		{
@@ -60,7 +141,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		},
 		{
@@ -69,7 +150,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": false,
+			"authors": "El-Shawa, S",
 			"detail": ""
 		},
 		{
@@ -78,7 +159,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": false,
+			"authors": "El-Shawa, S",
 			"detail": ""
 		},
 		{
@@ -87,7 +168,7 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		},
 		{
@@ -96,7 +177,16 @@
 			"venue": "International Astronautical Congress",
 			"venueShort": "IAC",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
+			"detail": ""
+		},
+		{
+			"year": 2022,
+			"title": "The Importance of Outreach and Education for Emerging Space Countries",
+			"venue": "Symposium on Space Educational Activities",
+			"venueShort": "SSEA",
+			"venueDetail": "",
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		},
 		{
@@ -105,7 +195,7 @@
 			"venue": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
 			"venueShort": "IROS",
 			"venueDetail": "",
-			"coAuthored": true,
+			"authors": "El-Shawa, S, et al.",
 			"detail": ""
 		}
 	]

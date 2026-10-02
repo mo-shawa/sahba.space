@@ -20,11 +20,12 @@ The particle scenes, layout and styling stay in code; the editor only touches co
 
 ## For Sahba
 
-- **Add an interview:** Interviews → add an item at the top → fill in the outlet, format, link and an image → Save.
-- **Add a talk:** Lectures → add an item → pick the date (they sort themselves) → Save.
-- **Add a paper:** Publications → add an item → year, title and venue (papers group by year automatically) → Save.
+- **Add an interview:** Interviews → add an item at the top → fill in the outlet, format, link and an image → Save. The first six show on the page; the rest open with a "More interviews" button.
+- **Add a talk:** Lectures → add an item → pick the date (they sort themselves) → Save. If you only know the month, turn off "Show the day".
+- **Add a paper:** Publications → add an item → year, title, venue and authors (papers group by year automatically) → Save. The most recent years show first; earlier ones open with a button.
 - **Edit your bio:** Home & about → Biography. Use the link button for links.
-- **Emphasise a line in a testimonial:** make that sentence bold.
+- **Edit the night scenes:** Home & about → Earth chapter, Desert chapter and Closing statement. Keep them short; each line is revealed as you scroll.
+- **Emphasise a line in a testimonial:** make that sentence bold. It's shown large, with the full testimonial a click away.
 
 Changes appear on the site a minute or two after saving, once publishing is connected.
 

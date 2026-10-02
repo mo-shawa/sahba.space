@@ -1,6 +1,7 @@
 ---
 import ResearchGroup from './common/ResearchGroup.astro'
 import SectionTitle from './common/SectionTitle.astro'
+import ShowMore from './common/ShowMore.astro'
 import {
 	publications,
 	researchProfileLink,
@@ -10,6 +11,16 @@ import {
 const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a)
 const countFor = (venueId: string) =>
 	publications.filter((publication) => publication.venue.id === venueId).length
+const inYear = (year: number) => publications.filter((p) => p.year === year)
+
+// Open on the most recent years, at least eight papers; the rest wait behind a
+// button unless they would be only a few.
+let shownYears = 0
+for (let count = 0; shownYears < years.length && count < 8; shownYears++) {
+	count += inYear(years[shownYears]).length
+}
+const earlier = years.slice(shownYears).reduce((sum, year) => sum + inYear(year).length, 0)
+const collapsed = earlier >= 4
 ---
 
 <section
@@ -19,6 +30,7 @@ const countFor = (venueId: string) =>
 >
 	<SectionTitle
 		title="Publications"
+		arabic="أبحاث"
 		id="research-title"
 	>
 		<p>
@@ -62,16 +74,33 @@ const countFor = (venueId: string) =>
 			}
 		</div>
 
-		<ol class="index">
+		<ol
+			class="index"
+			id="publication-list"
+			data-collapsible={collapsed || undefined}
+		>
 			{
-				years.map((year) => (
+				years.map((year, index) => (
 					<ResearchGroup
 						year={year}
-						publications={publications.filter((p) => p.year === year)}
+						publications={inYear(year)}
+						extra={collapsed && index >= shownYears}
 					/>
 				))
 			}
 		</ol>
+
+		{
+			collapsed && (
+				<div class="research__more">
+					<ShowMore
+						controls="publication-list"
+						label="Earlier papers"
+						count={earlier}
+					/>
+				</div>
+			)
+		}
 	</div>
 </section>
 
@@ -120,6 +149,10 @@ const countFor = (venueId: string) =>
 		color: var(--paper-deep);
 	}
 
+	.research__more {
+		grid-column: 3 / -1;
+	}
+
 	.index {
 		grid-column: 1 / -1;
 		display: grid;
@@ -128,7 +161,8 @@ const countFor = (venueId: string) =>
 	}
 
 	@media (max-width: 800px) {
-		.filters {
+		.filters,
+		.research__more {
 			grid-column: 1 / -1;
 		}
 	}

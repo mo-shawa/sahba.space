@@ -3,9 +3,11 @@
 interface Props {
 	title: string
 	id: string
+	/** The section's name in Arabic, as on her original site. */
+	arabic?: string
 }
 
-const { title, id } = Astro.props
+const { title, id, arabic } = Astro.props
 import Words from './Words.astro'
 ---
 
@@ -16,6 +18,17 @@ import Words from './Words.astro'
 		data-rise
 	>
 		<Words text={title} />
+		{
+			arabic && (
+				<span
+					class="section-head__arabic"
+					lang="ar"
+					dir="rtl"
+				>
+					{arabic}
+				</span>
+			)
+		}
 	</h2>
 	{
 		Astro.slots.has('default') && (
@@ -36,6 +49,18 @@ import Words from './Words.astro'
 	.section-head__title {
 		grid-column: 1 / span 9;
 		margin-left: -0.04em;
+	}
+
+	.section-head__arabic {
+		display: inline-block;
+		margin-left: 0.35em;
+		font-family: var(--arabic);
+		font-size: 0.32em;
+		font-weight: 400;
+		letter-spacing: 0;
+		line-height: 1;
+		color: var(--ink-soft);
+		vertical-align: 0.15em;
 	}
 
 	.section-head__aside {

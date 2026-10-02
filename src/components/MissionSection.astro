@@ -3,63 +3,79 @@ import Chapter from './common/Chapter.astro'
 import Words from './common/Words.astro'
 import { groundContent } from '../data/siteContent'
 
-const role = groundContent.role
+// Beats share the chapter evenly after the opening statement.
+const [jsri, psi] = groundContent.founded
 ---
 
 <Chapter
 	name="ground"
-	length={3}
+	length={3.6}
 	labelledby="ground-title"
 >
 	<div
-		class="ground"
-		data-beat="0.14,0.58"
+		class="beat"
+		data-beat="0.12,0.44"
 	>
-		{role && <p class="small soft"><Words text={role} /></p>}
+		<p class="small soft"><Words text={groundContent.label} /></p>
 		<h2
 			id="ground-title"
 			class="title"
 		>
-			<Words text={groundContent.organization} />
+			<Words text={groundContent.title} />
 		</h2>
+		<p class="beat__statement large"><Words text={groundContent.statement} /></p>
 	</div>
 
-	<div
-		class="statement"
-		data-beat="0.6,1"
-	>
-		<p class="large"><Words text={groundContent.statement} /></p>
-		<p class="small">
-			<a
-				class="link"
-				href={groundContent.href}
-				target="_blank"
-				rel="noreferrer"><Words text={groundContent.linkLabel || groundContent.href} /></a
-			>
-		</p>
-	</div>
+	{
+		[
+			{ beat: jsri, timing: '0.48,0.73' },
+			{ beat: psi, timing: '0.77,1' },
+		].map(
+			({ beat, timing }) =>
+				beat && (
+					<div
+						class="beat"
+						data-beat={timing}
+					>
+						<p class="large beat__founded">
+							<Words text={beat.statement} />
+						</p>
+						{beat.href && (
+							<p class="small">
+								<a
+									class="link"
+									href={beat.href}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Words text={beat.linkLabel} />
+								</a>
+							</p>
+						)}
+					</div>
+				)
+		)
+	}
 </Chapter>
 
 <style>
-	.ground,
-	.statement {
-		grid-column: 1 / span 9;
+	.beat {
+		grid-column: 1 / span 8;
 		align-self: start;
 		display: grid;
 		gap: 1.5rem;
 		padding-top: 4vh;
 	}
 
-	.ground .title {
+	.beat .title {
 		margin-left: -0.04em;
-		max-width: 9em;
 	}
 
-	.statement {
-		grid-column: 1 / span 7;
+	.beat__statement {
+		max-width: 18em;
 	}
 
-	.statement .large {
+	.beat__founded {
 		max-width: 19em;
 	}
 
@@ -68,8 +84,7 @@ const role = groundContent.role
 	}
 
 	@media (max-width: 800px) {
-		.ground,
-		.statement {
+		.beat {
 			grid-column: 1 / -1;
 		}
 	}

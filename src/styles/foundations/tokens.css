@@ -3,7 +3,8 @@
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	/* IBM Plex Sans Arabic, subset to the glyphs of her name. */
+	/* IBM Plex Sans Arabic, subset to the letters of her name and the Arabic
+	   section headings (re-subset if either changes). */
 	src: url('/fonts/plex-arabic-name.woff2') format('woff2');
 }
 

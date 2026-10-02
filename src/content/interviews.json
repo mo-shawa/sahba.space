@@ -1,6 +1,94 @@
 {
 	"interviews": [
 		{
+			"outlet": "Space+",
+			"format": "Interview",
+			"topic": "“There’s no distinction between missile and rocket”",
+			"date": "Aug 2025",
+			"url": "https://open.substack.com/pub/itsspaceplus/p/theres-no-distinction-between-missile",
+			"linkLabel": "Read the interview",
+			"image": "/images/interviews/space-plus.png",
+			"imageAlt": "Space+ video interview with Sahba El-Shawa",
+			"imageFocus": "78% 50%"
+		},
+		{
+			"outlet": "Pod Ad Astra",
+			"format": "Podcast",
+			"topic": "Why the Space Sector is Complicit",
+			"date": "Episode 15 · Dec 2023",
+			"url": "https://open.spotify.com/episode/6SoxBYYpBcEq49l2xTaujQ",
+			"linkLabel": "Listen on Spotify",
+			"image": "/images/interviews/pod-ad-astra.png",
+			"imageAlt": "Pod Ad Astra episode artwork with Sahba El-Shawa and Giuliana Rotola",
+			"imageFocus": ""
+		},
+		{
+			"outlet": "Space Generation Advisory Council",
+			"format": "Panel",
+			"topic": "Space for Climate Action",
+			"date": "July 2023",
+			"url": "https://www.youtube.com/watch?v=4jjckV3FIfY",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/sgac-space-for-climate-action.jpg",
+			"imageAlt": "SGAC Space for Climate Action panel",
+			"imageFocus": ""
+		},
+		{
+			"outlet": "Women Adore Tech",
+			"format": "Video interview",
+			"topic": "",
+			"date": "May 2023",
+			"url": "https://www.youtube.com/watch?v=ds4G2EFPt5o",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/women-adore-tech.jpg",
+			"imageAlt": "Women Adore Tech interview with Sahba El-Shawa",
+			"imageFocus": ""
+		},
+		{
+			"outlet": "Kainaat Astronomy",
+			"format": "Video interview",
+			"topic": "A Palestinian Perspective: The Role of Space Companies in War",
+			"date": "Nov 2023",
+			"url": "https://www.youtube.com/watch?v=itsTC7igvME",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/kainaat-astronomy.jpg",
+			"imageAlt": "Kainaat Astronomy, A Palestinian Perspective, with Sahba El-Shawa",
+			"imageFocus": ""
+		},
+		{
+			"outlet": "Ignited Thinkers",
+			"format": "Video interview",
+			"topic": "Space Champion Interview",
+			"date": "Jan 2023",
+			"url": "https://www.youtube.com/watch?v=b2mUm8bPGFI",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/ignited-thinkers.webp",
+			"imageAlt": "Ignited Thinkers Space Champion Interview artwork",
+			"imageFocus": "50% 45%"
+		},
+		{
+			"outlet": "More to Space Than Air",
+			"format": "Podcast",
+			"topic": "",
+			"date": "Interview #14 · June 2023",
+			"url": "https://www.youtube.com/watch?v=VwwLrNHMKB4",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/more-to-space-than-air.jpg",
+			"imageAlt": "More to Space Than Air interview artwork",
+			"imageFocus": ""
+		},
+		{
+			"outlet": "Friends of Europe",
+			"format": "Podcast",
+			"topic": "Dark Matter Podcast: on space and security",
+			"date": "May 2023",
+			"url": "https://www.youtube.com/watch?v=WS2tZPkULaU",
+			"linkLabel": "Watch on YouTube",
+			"image": "/images/interviews/dark-matter-podcast.jpg",
+			"imageAlt": "Dark Matter Podcast artwork with Sahba El-Shawa",
+			"imageFocus": "72% 50%"
+		},
+		{
 			"outlet": "Diaries of Space Explorers",
 			"format": "Podcast",
 			"topic": "Sustainability and Accessibility of the Space Sector",
@@ -36,7 +124,7 @@
 		{
 			"outlet": "Roya TV Jordan",
 			"format": "TV interview · Arabic",
-			"topic": "",
+			"topic": "Closing of Jordan’s first rover and spacesuit design competitions, in Wadi Rum",
 			"date": "",
 			"url": "https://roya.tv/videos/87948",
 			"linkLabel": "Watch the interview",
@@ -54,17 +142,6 @@
 			"image": "/images/interviews/quantuminsider.webp",
 			"imageAlt": "The Quantum Insider article header, Quantum Applications for SETI: A Perspective",
 			"imageFocus": "50% 70%"
-		},
-		{
-			"outlet": "Ignited Thinkers",
-			"format": "Video interview",
-			"topic": "Space Champion Interview",
-			"date": "",
-			"url": "https://www.youtube.com/watch?v=b2mUm8bPGFI",
-			"linkLabel": "Watch on YouTube",
-			"image": "/images/interviews/ignited-thinkers.webp",
-			"imageAlt": "Ignited Thinkers Space Champion Interview artwork",
-			"imageFocus": "50% 45%"
 		}
 	]
 }

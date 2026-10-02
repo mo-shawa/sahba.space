@@ -4,9 +4,11 @@ import type { Interview } from '../../data/siteContent'
 
 interface Props {
 	entry: Interview
+	/** Hidden until the reader asks for the full list. */
+	extra?: boolean
 }
 
-const { entry } = Astro.props
+const { entry, extra } = Astro.props
 // The desktop hover preview loads a single, larger rendition on demand.
 const preview = await getImage({ src: entry.image, width: 640, format: 'webp' })
 const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefined
@@ -15,6 +17,7 @@ const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefi
 <li
 	class="interview"
 	data-reveal
+	data-extra={extra || undefined}
 >
 	<a
 		class="interview__link"
@@ -46,10 +49,6 @@ const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefi
 		display: grid;
 		grid-template-columns: subgrid;
 		border-top: 1px solid var(--rule);
-	}
-
-	.interview:last-child {
-		border-bottom: 1px solid var(--rule);
 	}
 
 	.interview__link {

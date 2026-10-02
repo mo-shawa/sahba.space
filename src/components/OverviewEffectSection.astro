@@ -1,36 +1,35 @@
 ---
 import Chapter from './common/Chapter.astro'
 import Words from './common/Words.astro'
-import { education, overviewEffect } from '../data/siteContent'
+import { earthContent, education } from '../data/siteContent'
 
-const related = overviewEffect.related
 const phd = education.find((entry) => entry.degree === 'PhD')
 ---
 
 <Chapter
 	name="earth"
 	length={3}
-	labelledby="overview-title"
+	labelledby="earth-title"
 >
 	<div
 		class="intro"
 		data-beat="0.12,0.52"
 	>
-		<p class="small soft"><Words text={overviewEffect.label} /></p>
+		<p class="small soft"><Words text={earthContent.label} /></p>
 		<h2
-			id="overview-title"
+			id="earth-title"
 			class="title"
 		>
-			<Words text={overviewEffect.title} />
+			<Words text={earthContent.title} />
 		</h2>
-		<p class="intro__definition medium"><Words text={overviewEffect.definition} /></p>
+		<p class="intro__statement medium"><Words text={earthContent.statement} /></p>
 	</div>
 
 	<div
-		class="research"
+		class="now"
 		data-beat="0.56,1"
 	>
-		<p class="large"><Words text={overviewEffect.body} /></p>
+		{earthContent.current && <p class="large"><Words text={earthContent.current} /></p>}
 		{
 			phd && (
 				<p class="small soft">
@@ -39,32 +38,38 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 			)
 		}
 		{
-			related && (
-				<p class="small">
-					<a
-						class="link"
-						href={`#pub-${related.id}`}
-					>
-						<Words text={`Related paper: ${related.title}`} />
-					</a>
-				</p>
+			earthContent.related.length > 0 && (
+				<ul class="now__papers small">
+					{earthContent.related.map((paper) => (
+						// prettier-ignore
+						<li data-fade><a class="link" href={`#pub-${paper.id}`}>{paper.title} ({paper.venue.short} {paper.year})</a></li>
+					))}
+				</ul>
 			)
 		}
 	</div>
 
 	<div
-		class="jordan"
-		data-jordan
+		class="place place--west"
+		data-place-label="palestine"
 		aria-hidden="true"
 	>
-		<span class="jordan__line"></span>
-		<span class="jordan__label small">Jordan</span>
+		<span class="place__label small">Palestine</span>
+		<span class="place__line"></span>
+	</div>
+	<div
+		class="place"
+		data-place-label="jordan"
+		aria-hidden="true"
+	>
+		<span class="place__line"></span>
+		<span class="place__label small">Jordan</span>
 	</div>
 </Chapter>
 
 <style>
 	.intro,
-	.research {
+	.now {
 		grid-column: 1 / span 6;
 		align-self: center;
 		display: grid;
@@ -73,18 +78,21 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 
 	.intro .title {
 		margin-left: -0.04em;
+		max-width: 8em;
 	}
 
-	.intro__definition {
-		max-width: 22em;
+	.intro__statement {
+		max-width: 26em;
 		color: var(--night-ink-soft);
 	}
 
-	.research .large {
+	.now .large {
 		max-width: 17em;
 	}
 
-	.research .small:last-child {
+	.now__papers {
+		display: grid;
+		gap: 0.6rem;
 		max-width: 30em;
 	}
 
@@ -92,8 +100,8 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 		color: var(--night-ink-soft);
 	}
 
-	/* Tracks the Jordan cluster on the globe; positioned every frame. */
-	.jordan {
+	/* Track Palestine and Jordan on the globe; positioned every frame. */
+	.place {
 		position: fixed;
 		left: 0;
 		top: 0;
@@ -106,21 +114,26 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 		will-change: transform, opacity;
 	}
 
-	.jordan__line {
-		width: 3.5rem;
+	.place__line {
+		width: 3rem;
 		height: 1px;
 		background: var(--signal-night);
 	}
 
-	.jordan__label {
+	.place__label {
 		color: var(--night-ink);
+		white-space: nowrap;
 	}
 
 	@media (max-width: 800px) {
 		.intro,
-		.research {
+		.now {
 			grid-column: 1 / -1;
 			align-self: end;
+		}
+
+		.place__line {
+			width: 1.75rem;
 		}
 	}
 </style>

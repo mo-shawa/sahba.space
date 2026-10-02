@@ -36,6 +36,8 @@ function buildBeats(element: HTMLElement) {
 	element.querySelectorAll<HTMLElement>('[data-beat]').forEach((beat) => {
 		const [enter, exit] = (beat.dataset.beat ?? '0,1').split(',').map(Number)
 		const words = beat.querySelectorAll('.w > span')
+		// Small print, such as a list of links, fades rather than rising word by word.
+		const fades = beat.querySelectorAll('[data-fade]')
 		const duration = 0.07
 
 		if (enter > 0) {
@@ -45,6 +47,14 @@ function buildBeats(element: HTMLElement) {
 				{ yPercent: 0, duration, stagger: 0.004, ease: 'power3.out' },
 				enter - duration
 			)
+			if (fades.length) {
+				timeline.fromTo(
+					fades,
+					{ autoAlpha: 0, y: 12 },
+					{ autoAlpha: 1, y: 0, duration, stagger: 0.008, ease: 'power2.out' },
+					enter - duration * 0.5
+				)
+			}
 		}
 		if (exit < 1) {
 			timeline.fromTo(
@@ -59,6 +69,14 @@ function buildBeats(element: HTMLElement) {
 				},
 				exit - duration
 			)
+			if (fades.length) {
+				timeline.fromTo(
+					fades,
+					{ autoAlpha: 1, y: 0 },
+					{ autoAlpha: 0, y: -12, duration, ease: 'power2.in', immediateRender: false },
+					exit - duration
+				)
+			}
 		}
 	})
 	return timeline
@@ -103,7 +121,10 @@ function initializeHomePage() {
 	/** The whole scene as a pure function of scroll position. */
 	const frame: CosmosFrame = { intro: 0, stage: 0, earthTurn: 0, groundTravel: 0 }
 	const earthChapter = byName('earth')
-	const jordanLabel = document.querySelector<HTMLElement>('[data-jordan]')
+	const placeLabels = {
+		palestine: document.querySelector<HTMLElement>('[data-place-label="palestine"]'),
+		jordan: document.querySelector<HTMLElement>('[data-place-label="jordan"]'),
+	}
 
 	function compose(y: number) {
 		const earth = earthChapter
@@ -136,14 +157,20 @@ function initializeHomePage() {
 		)
 	}
 
-	function placeJordanLabel(y: number) {
-		if (!jordanLabel || !cosmos || !earthChapter) return
+	/** Labels track Palestine (pointing left) and Jordan (pointing right) on the globe. */
+	function positionPlaceLabels(y: number) {
+		if (!cosmos || !earthChapter) return
 		const p = progress(earthChapter, y)
 		const pinned = y >= earthChapter.start && y <= earthChapter.start + earthChapter.length
-		const opacity = pinned && cosmos.jordan.visible ? span(p, 0.8, 0.9) : 0
-		jordanLabel.style.opacity = String(opacity)
-		if (opacity > 0) {
-			jordanLabel.style.transform = `translate3d(${cosmos.jordan.x + 6}px, ${cosmos.jordan.y}px, 0) translateY(-50%)`
+		for (const key of ['palestine', 'jordan'] as const) {
+			const element = placeLabels[key]
+			const point = cosmos.labels[key]
+			if (!element) continue
+			const opacity = pinned && point.visible ? span(p, 0.8, 0.9) : 0
+			element.style.opacity = String(opacity)
+			if (opacity === 0) continue
+			const shift = key === 'palestine' ? 'translateX(-100%) translateX(-6px)' : 'translateX(6px)'
+			element.style.transform = `translate3d(${point.x}px, ${point.y}px, 0) ${shift} translateY(-50%)`
 		}
 	}
 
@@ -172,7 +199,7 @@ function initializeHomePage() {
 		compose(y)
 		if (cosmos && chapterVisible(y)) {
 			cosmos.render(frame, delta)
-			placeJordanLabel(y)
+			positionPlaceLabels(y)
 		}
 	})
 	gsap.ticker.lagSmoothing(0)
@@ -180,6 +207,7 @@ function initializeHomePage() {
 	introduceName()
 	revealOnScroll()
 	initializeNavigation(lenis)
+	initializeShowMore()
 	initializeFilters()
 	initializePreview()
 
@@ -248,6 +276,8 @@ function initializeNavigation(lenis: Lenis | null) {
 	const scrollTo = (hash: string) => {
 		const target = hash === '#top' ? 0 : document.querySelector<HTMLElement>(hash)
 		if (target === null) return
+		const list = target && target.closest<HTMLElement>('[data-collapsible]')
+		if (list && target.closest('[data-extra]')) openList(list)
 		if (lenis) lenis.scrollTo(target, { duration: 1.6, force: true })
 		else if (target === 0) window.scrollTo({ top: 0 })
 		else target.scrollIntoView()
@@ -304,6 +334,40 @@ function initializeNavigation(lenis: Lenis | null) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Long lists that open on request                                             */
+/* -------------------------------------------------------------------------- */
+
+function openList(list: HTMLElement, focus = false) {
+	if (list.hasAttribute('data-open')) return
+	const extras = list.querySelectorAll<HTMLElement>('[data-extra]')
+	list.toggleAttribute('data-open', true)
+
+	const button = document.querySelector<HTMLButtonElement>(`[data-more="${list.id}"]`)
+	button?.setAttribute('aria-expanded', 'true')
+	if (button) button.hidden = true
+
+	// The button is gone, so keyboard focus continues at the first new item.
+	const first = extras[0]
+	if (focus && first) {
+		const target = first.querySelector<HTMLElement>('a') ?? first
+		if (target === first) first.tabIndex = -1
+		target.focus({ preventScroll: true })
+	}
+
+	if (!reducedMotion) {
+		gsap.from(extras, { opacity: 0, duration: 0.8, stagger: 0.04, ease: 'power2.out' })
+	}
+	ScrollTrigger.refresh()
+}
+
+function initializeShowMore() {
+	document.querySelectorAll<HTMLButtonElement>('[data-more]').forEach((button) => {
+		const list = document.getElementById(button.dataset.more!)
+		if (list) button.addEventListener('click', () => openList(list, true))
+	})
+}
+
+/* -------------------------------------------------------------------------- */
 /* Publications filter                                                         */
 /* -------------------------------------------------------------------------- */
 
@@ -315,6 +379,8 @@ function initializeFilters() {
 
 	buttons.forEach((button) =>
 		button.addEventListener('click', () => {
+			const list = document.getElementById('publication-list')
+			if (list) openList(list)
 			const venue = button.dataset.filter
 			buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)))
 			years.forEach((year) => {

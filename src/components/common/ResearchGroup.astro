@@ -4,14 +4,17 @@ import type { Publication } from '../../data/siteContent'
 interface Props {
 	year: number
 	publications: Publication[]
+	/** Hidden until the reader asks for the full list. */
+	extra?: boolean
 }
 
-const { year, publications } = Astro.props
+const { year, publications, extra } = Astro.props
 ---
 
 <li
 	class="year"
 	data-year-group
+	data-extra={extra || undefined}
 >
 	<h3 class="year__label numeric">{year}</h3>
 	<ol class="year__rows">
@@ -35,9 +38,7 @@ const { year, publications } = Astro.props
 								{venue.short}
 							</abbr>
 						</p>
-						<p class="pub__authors small">
-							El-Shawa, S{publication.coAuthored ? ', et al.' : ''}
-						</p>
+						<p class="pub__authors small">{publication.authors}</p>
 					</li>
 				)
 			})
@@ -78,10 +79,6 @@ const { year, publications } = Astro.props
 		padding-block: 1.1rem 1.2rem;
 		scroll-margin-top: 30vh;
 		transition: background-color 300ms var(--ease-out);
-	}
-
-	.pub[hidden] {
-		display: none;
 	}
 
 	.pub + .pub:not([hidden]),

@@ -1,10 +1,16 @@
 {
 	"recognition": [
 		{
-			"year": "2021",
-			"title": "Women in Aerospace Young Professional Award",
-			"organization": "Women in Aerospace Europe",
-			"url": "https://www.wia-europe.org/2021/10/13/wia-e-grants-awards-winners-announced/"
+			"year": "2025",
+			"title": "Named one of 17 UN Young Leaders for the SDGs",
+			"organization": "United Nations Youth Office",
+			"url": "https://www.un.org/youthaffairs/en/meet-2025-cohort-young-leaders-sdgs"
+		},
+		{
+			"year": "2023",
+			"title": "IAF Emerging Space Leaders Award",
+			"organization": "International Astronautical Federation",
+			"url": ""
 		},
 		{
 			"year": "2022",
@@ -17,6 +23,12 @@
 			"title": "Selected as an Alternate Astronaut",
 			"organization": "Space for Humanity",
 			"url": "https://spaceforhumanity.org/"
+		},
+		{
+			"year": "2021",
+			"title": "Women in Aerospace Young Professional Award",
+			"organization": "Women in Aerospace Europe",
+			"url": "https://www.wia-europe.org/2021/10/13/wia-e-grants-awards-winners-announced/"
 		}
 	]
 }

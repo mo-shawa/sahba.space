@@ -1,25 +1,30 @@
-// Rasterises Natural Earth land (via the world-atlas package) into a compact
-// equirectangular bitmask used to place the particle Earth's continents.
+// Rasterises Natural Earth data (via the world-atlas package) into the compact
+// grids that shape the particle Earth:
 //
-//   node scripts/generate-earth-mask.mjs
+// - a world land mask (0.5° cells) for the continents, and
+// - a fine grid (0.025° cells, about 2.5 km) over the Levant marking Palestine
+//   and Jordan, which glow on the globe. Gaza would vanish at 0.5°.
+//
+//   npm run earth-mask
 //
 // Output: src/data/earthMask.ts
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { feature } from 'topojson-client'
 
-const WIDTH = 720 // 0.5° per cell
-const HEIGHT = 360
-const JORDAN_ID = '400' // ISO 3166-1 numeric
-
 const load = (file) =>
 	JSON.parse(readFileSync(new URL(`../node_modules/world-atlas/${file}`, import.meta.url)))
 
 const land = feature(load('land-50m.json'), 'land')
-const countries = feature(load('countries-50m.json'), 'countries')
-const jordan = countries.features.find((country) => country.id === JORDAN_ID)
-
-if (!jordan) throw new Error('Jordan not found in countries-50m.json')
+const countries = feature(load('countries-10m.json'), 'countries')
+const country = (id, name) => {
+	const found = countries.features.find((c) => c.id === id)
+	if (!found) throw new Error(`${name} (${id}) not found in countries-10m.json`)
+	return found
+}
+// ISO 3166-1 numeric codes.
+const palestine = country('275', 'Palestine')
+const jordan = country('400', 'Jordan')
 
 /** Collects every ring of a (Multi)Polygon geometry or FeatureCollection. */
 function ringsOf(geojson) {
@@ -59,74 +64,108 @@ function unwrap(ring) {
 	return out
 }
 
-/** Even-odd scanline fill in lon/lat space, sampled at cell centres. */
-function rasterise(sourceRings) {
+/**
+ * Even-odd scanline fill in lon/lat space, sampled at cell centres, over a
+ * grid whose top-left corner is (west, north). Wraps around the globe when
+ * the grid spans all 360°.
+ */
+function rasterise(sourceRings, { west, north, step, width, height }) {
 	const rings = sourceRings.map(unwrap)
-	const mask = new Uint8Array(WIDTH * HEIGHT)
-	for (let row = 0; row < HEIGHT; row++) {
-		const lat = 90 - (row + 0.5) * (180 / HEIGHT)
+	const wraps = Math.round(width * step) === 360
+	const mask = new Uint8Array(width * height)
+	for (let row = 0; row < height; row++) {
+		const lat = north - (row + 0.5) * step
 		const crossings = []
 		for (const ring of rings) {
 			for (let i = 0; i < ring.length - 1; i++) {
 				const [x1, y1] = ring[i]
 				const [x2, y2] = ring[i + 1]
 				if (y1 === y2) continue
-				if ((lat >= Math.min(y1, y2)) && (lat < Math.max(y1, y2))) {
+				if (lat >= Math.min(y1, y2) && lat < Math.max(y1, y2)) {
 					crossings.push(x1 + ((lat - y1) / (y2 - y1)) * (x2 - x1))
 				}
 			}
 		}
 		crossings.sort((a, b) => a - b)
 		for (let i = 0; i + 1 < crossings.length; i += 2) {
-			const start = Math.ceil((crossings[i] + 180) / (360 / WIDTH) - 0.5)
-			const end = Math.floor((crossings[i + 1] + 180) / (360 / WIDTH) - 0.5)
+			const start = Math.ceil((crossings[i] - west) / step - 0.5)
+			const end = Math.floor((crossings[i + 1] - west) / step - 0.5)
 			for (let col = start; col <= end; col++) {
-				mask[row * WIDTH + (((col % WIDTH) + WIDTH) % WIDTH)] = 1
+				const c = wraps ? ((col % width) + width) % width : col
+				if (c >= 0 && c < width) mask[row * width + c] = 1
 			}
 		}
 	}
 	return mask
 }
 
-const landMask = rasterise(ringsOf(land))
-const jordanMask = rasterise(ringsOf(jordan))
-
-// Pack two bits per cell: bit 0 = land, bit 1 = Jordan.
-const packed = new Uint8Array(Math.ceil((WIDTH * HEIGHT) / 4))
-for (let i = 0; i < WIDTH * HEIGHT; i++) {
-	const value = landMask[i] | (jordanMask[i] << 1)
-	packed[i >> 2] |= value << ((i & 3) * 2)
+/** Packs 2-bit cells, four per byte. */
+function pack(cells) {
+	const packed = new Uint8Array(Math.ceil(cells.length / 4))
+	cells.forEach((value, i) => (packed[i >> 2] |= value << ((i & 3) * 2)))
+	return Buffer.from(packed).toString('base64')
 }
 
-const landCells = landMask.reduce((sum, v) => sum + v, 0)
-const jordanCells = jordanMask.reduce((sum, v) => sum + v, 0)
+const world = { west: -180, north: 90, step: 0.5, width: 720, height: 360 }
+const landMask = rasterise(ringsOf(land), world)
+
+// Lat 29–34°N, lon 34–40°E covers both countries with a margin.
+const levant = { west: 34, north: 34, step: 0.025, width: 240, height: 200 }
+const palestineMask = rasterise(ringsOf(palestine), levant)
+const jordanMask = rasterise(ringsOf(jordan), levant)
+const highlight = palestineMask.map((p, i) => (p ? 1 : jordanMask[i] ? 2 : 0))
+
+const count = (mask, value = 1) => mask.reduce((sum, v) => sum + (v === value ? 1 : 0), 0)
+const centroid = (value) => {
+	let lat = 0
+	let lon = 0
+	let n = 0
+	highlight.forEach((v, i) => {
+		if (v !== value) return
+		lat += levant.north - (Math.floor(i / levant.width) + 0.5) * levant.step
+		lon += levant.west + ((i % levant.width) + 0.5) * levant.step
+		n++
+	})
+	return { lat: Number((lat / n).toFixed(3)), lon: Number((lon / n).toFixed(3)) }
+}
 
 writeFileSync(
 	new URL('../src/data/earthMask.ts', import.meta.url),
-	`// Generated by scripts/generate-earth-mask.mjs from Natural Earth 1:50m
-// (public domain, via the world-atlas package). Do not edit by hand.
+	`// Generated by scripts/generate-earth-mask.mjs from Natural Earth (public
+// domain, via the world-atlas package). Do not edit by hand.
 //
-// Equirectangular grid, ${WIDTH}×${HEIGHT} cells (0.5°), row 0 at 90°N, column 0 at 180°W.
-// Two bits per cell: bit 0 = land, bit 1 = Jordan.
+// Grids are equirectangular, row 0 at the north edge, 2 bits per cell.
 
-export const EARTH_MASK_WIDTH = ${WIDTH}
-export const EARTH_MASK_HEIGHT = ${HEIGHT}
-export const EARTH_MASK = '${Buffer.from(packed).toString('base64')}'
+/** World land mask, 0.5° cells. Cell value 1 = land. */
+export const LAND = {
+	west: ${world.west},
+	north: ${world.north},
+	step: ${world.step},
+	width: ${world.width},
+	height: ${world.height},
+	data: '${pack(landMask)}',
+}
+
+/** Fine grid over the Levant, 0.025° cells. 1 = Palestine, 2 = Jordan. */
+export const HIGHLIGHT = {
+	west: ${levant.west},
+	north: ${levant.north},
+	step: ${levant.step},
+	width: ${levant.width},
+	height: ${levant.height},
+	data: '${pack(highlight)}',
+}
+
+/** Where to anchor each country's label (mean of its cells). */
+export const HIGHLIGHT_CENTRES = {
+	palestine: ${JSON.stringify(centroid(1))},
+	jordan: ${JSON.stringify(centroid(2))},
+}
 `
 )
 
 console.log(
-	`land: ${((landCells / (WIDTH * HEIGHT)) * 100).toFixed(1)}% of cells, Jordan: ${jordanCells} cells`
+	`land: ${((count(landMask) / landMask.length) * 100).toFixed(1)}% of cells; ` +
+		`Palestine: ${count(highlight, 1)} cells; Jordan: ${count(highlight, 2)} cells`
 )
-
-// Quick visual sanity check in the terminal.
-const preview = []
-for (let row = 0; row < HEIGHT; row += 8) {
-	let line = ''
-	for (let col = 0; col < WIDTH; col += 4) {
-		const i = row * WIDTH + col
-		line += jordanMask[i] ? 'J' : landMask[i] ? '#' : '.'
-	}
-	preview.push(line)
-}
-console.log(preview.join('\n'))
+console.log('centres', centroid(1), centroid(2))

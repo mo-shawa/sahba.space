@@ -69,9 +69,10 @@ content:
           format: markdown
           media: false
           switcher: false
-      - name: overview
-        label: Overview Effect chapter
+      - name: earth
+        label: Earth chapter
         type: object
+        description: The night scene where the galaxy becomes Earth and turns to Palestine and Jordan.
         fields:
           - name: label
             label: Small label
@@ -81,27 +82,28 @@ content:
             label: Title
             type: string
             required: true
-          - name: definition
-            label: Definition
-            type: text
-            required: true
-          - name: body
+          - name: statement
             label: Research statement
             type: text
             required: true
-          - name: relatedPaper
-            label: Related paper
+          - name: current
+            label: Current role
+            type: text
+          - name: relatedPapers
+            label: Related papers
             type: string
-            description: The exact title of a paper under Publications to link to. Leave empty for no link.
-      - name: jsri
-        label: Jordan Space Research Initiative chapter
+            list: true
+            description: Exact titles of papers under Publications to link to.
+      - name: ground
+        label: Desert chapter
         type: object
+        description: The night scene over the desert landscape.
         fields:
-          - name: role
+          - name: label
             label: Small label
             type: string
             required: true
-          - name: organization
+          - name: title
             label: Title
             type: string
             required: true
@@ -109,12 +111,38 @@ content:
             label: Statement
             type: text
             required: true
-          - name: url
-            label: Link
-            type: string
-          - name: linkLabel
-            label: Link text
-            type: string
+          - name: jsri
+            label: Jordan Space Research Initiative
+            type: object
+            fields:
+              - name: statement
+                label: Statement
+                type: text
+                required: true
+              - name: url
+                label: Link
+                type: string
+              - name: linkLabel
+                label: Link text
+                type: string
+          - name: psi
+            label: Palestine Space Institute
+            type: object
+            fields:
+              - name: statement
+                label: Statement
+                type: text
+                required: true
+              - name: url
+                label: Link
+                type: string
+              - name: linkLabel
+                label: Link text
+                type: string
+      - name: vision
+        label: Closing statement
+        type: text
+        description: Appears over the distant Earth, just before the contact details.
       - name: quote
         label: Quote above Interviews
         type: object
@@ -242,6 +270,11 @@ content:
             required: true
             options:
               format: yyyy-MM-dd
+          - name: showDay
+            label: Show the day
+            type: boolean
+            default: true
+            description: Turn off if you only know the month; any day of that month can be picked above.
           - name: host
             label: Event or host
             type: string
@@ -249,7 +282,7 @@ content:
           - name: title
             label: Talk title
             type: string
-            required: true
+            description: Optional. Without a title, the description is shown in its place.
           - name: context
             label: Description
             type: text
@@ -302,10 +335,11 @@ content:
             label: Venue detail
             type: string
             description: Optional, e.g. Elsevier Journal
-          - name: coAuthored
-            label: Co-authored
-            type: boolean
-            description: Adds "et al." after her name.
+          - name: authors
+            label: Authors
+            type: string
+            required: true
+            description: As they should appear, e.g. El-Shawa, S, et al. or El-Shawa, S and Persaud, D
           - name: detail
             label: Volume, pages
             type: string
@@ -379,7 +413,7 @@ content:
             label: Testimonial
             type: rich-text
             required: true
-            description: Make one sentence bold to give it emphasis.
+            description: Make one sentence bold. It's shown large, with the full testimonial a click away.
             options:
               format: markdown
               media: false

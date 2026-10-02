@@ -1,0 +1,54 @@
+---
+/**
+ * Reveals the rest of a long list. The list carries `data-collapsible` and its
+ * later items `data-extra`; without JavaScript every item simply shows.
+ */
+interface Props {
+	/** The list's id. */
+	controls: string
+	label: string
+	count: number
+}
+
+const { controls, label, count } = Astro.props
+---
+
+<button
+	type="button"
+	class="more small"
+	aria-expanded="false"
+	aria-controls={controls}
+	data-more={controls}
+>
+	{label} <span class="numeric">{count}</span>
+</button>
+
+<style>
+	.more {
+		display: none;
+		grid-column: 1 / -1;
+		justify-self: start;
+		white-space: nowrap;
+		padding: 0.45rem 0.8rem 0.5rem;
+		border: 1px solid var(--rule);
+		border-radius: 0.25rem;
+		transition: border-color 250ms var(--ease-out);
+	}
+
+	:global(html.js) .more:not([hidden]) {
+		display: inline-block;
+	}
+
+	.more .numeric {
+		color: var(--ink-soft);
+		margin-left: 0.2rem;
+	}
+
+	.more:hover {
+		border-color: var(--ink);
+	}
+
+	:global(html.js [data-collapsible]:not([data-open]) [data-extra]) {
+		display: none;
+	}
+</style>
