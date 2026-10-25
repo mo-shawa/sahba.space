@@ -110,6 +110,14 @@ const home = load(
 			jsri: z.object({ statement: text, url: optionalUrl, linkLabel: optional }),
 			psi: z.object({ statement: text, url: optionalUrl, linkLabel: optional }),
 		}),
+		moon: z.object({
+			label: text,
+			title: text,
+			statement: text,
+			highlights: z.array(text).optional().default([]),
+			closing: optional,
+			talk: optional,
+		}),
 		vision: optional,
 		quote: z.object({ text: text, source: text }),
 		contact: z.object({
@@ -165,6 +173,16 @@ export const groundContent = {
 		href: beat.url,
 		linkLabel: beat.linkLabel || beat.url,
 	})),
+}
+
+/** The Moon chapter: outreach. Its talk link is looked up from Lectures by title. */
+export const moonContent = {
+	label: home.moon.label,
+	title: home.moon.title,
+	statement: home.moon.statement,
+	highlights: home.moon.highlights,
+	closing: home.moon.closing,
+	talkTitle: home.moon.talk,
 }
 
 export const visionStatement = home.vision

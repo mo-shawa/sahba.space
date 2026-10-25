@@ -1,6 +1,7 @@
-// One particle cloud, three bodies. Every particle knows where it sits in the
-// galaxy, on Earth and in a desert landscape; uStage blends between them:
-//   0 = galaxy, 1 = Earth, 2 = ground, 3 = Earth again (a distant dot).
+// One particle cloud, four bodies. Every particle knows where it sits in the
+// galaxy, on Earth, in a desert landscape and on the Moon; uStage blends
+// between them: 0 = galaxy, 1 = Earth, 2 = ground, 3 = Moon, 4 = Earth again
+// (a distant dot).
 
 uniform float uTime;
 uniform float uStage;
@@ -12,6 +13,7 @@ uniform float uLens;
 uniform float uDustScale;
 uniform mat3 uGalaxyRotation;
 uniform mat3 uEarthRotation;
+uniform mat3 uMoonRotation;
 uniform vec3 uSun;
 
 attribute vec3 aGalaxy;
@@ -20,6 +22,7 @@ attribute vec3 aGround;
 attribute vec3 aGalaxyColor;
 attribute vec4 aSeed;     // x: stagger, y: size/twinkle, z/w: drift direction
 attribute vec2 aSurface;  // x: earth kind (0 ocean, 1 land, 2 Jordan, 3 air, 4 dust), y: ground light
+attribute vec4 aMoon;     // xyz: place on the Moon, w: how bright the ground is there
 
 varying vec3 vColor;
 
@@ -61,6 +64,22 @@ vec3 groundColor() {
     return mix(shade, sand, aSurface.y);
 }
 
+// Dust stays behind as stars; everything else becomes the Moon.
+vec3 moonPosition() {
+    return aSurface.x > 3.5 ? earthPosition() : uMoonRotation * aMoon.xyz;
+}
+
+vec3 moonColor() {
+    if (aSurface.x > 3.5) return vec3(0.6, 0.62, 0.72) * 0.55;
+    vec3 normal = uMoonRotation * aMoon.xyz;
+    float light = smoothstep(-0.1, 0.5, dot(normal, uSun));
+    return vec3(0.97, 0.95, 0.9) * aMoon.w * (0.03 + light * 1.9);
+}
+
+float moonSize() {
+    return aSurface.x > 3.5 ? 0.8 : 0.68;
+}
+
 float earthSize() {
     float kind = aSurface.x;
     return kind > 3.5 ? 0.8 : (kind < 0.5 ? 0.42 : 0.55);
@@ -89,10 +108,14 @@ void main() {
         from = earthPosition(); fromColor = earthColor(); fromSize = earthSize();
         to = aGround; toColor = groundColor(); toSize = 1.0;
         t = uStage - 1.0;
-    } else {
+    } else if (uStage < 3.0) {
         from = aGround; fromColor = groundColor(); fromSize = 1.0;
-        to = earthPosition(); toColor = earthColor(); toSize = earthSize();
+        to = moonPosition(); toColor = moonColor(); toSize = moonSize();
         t = uStage - 2.0;
+    } else {
+        from = moonPosition(); fromColor = moonColor(); fromSize = moonSize();
+        to = earthPosition(); toColor = earthColor(); toSize = earthSize();
+        t = uStage - 3.0;
     }
 
     float w = stagger(t);
@@ -115,7 +138,7 @@ void main() {
     float twinkle = 0.78 + 0.22 * sin(uTime * (0.6 + aSeed.y * 1.8) + aSeed.y * 40.0);
     // Fade anything that drifts right up to the lens instead of drawing huge
     // quads, and let the far landscape dissolve into the night.
-    float ground = uStage < 1.0 ? 0.0 : (uStage < 2.0 ? w : 1.0 - w);
+    float ground = uStage < 1.0 ? 0.0 : (uStage < 2.0 ? w : (uStage < 3.0 ? 1.0 - w : 0.0));
     float fade = smoothstep(0.03, 0.35, depth) * (1.0 - smoothstep(5.5, 8.0, depth) * ground);
     vColor = mix(fromColor, toColor, w) * twinkle * fade;
 }

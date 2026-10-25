@@ -101,13 +101,6 @@ function initializeHomePage() {
 	const byName = (name: string) => chapters.find((c) => c.name === name)
 	root.classList.add('beats-ready')
 
-	// Reversed paper sections, where the nav switches to light text on ink.
-	const inkSections = Array.from(document.querySelectorAll<HTMLElement>('.paper--ink'), (element) => ({
-		element,
-		start: 0,
-		end: 0,
-	}))
-
 	const measure = () => {
 		chapters.forEach((chapter) => {
 			chapter.start = chapter.element.getBoundingClientRect().top + window.scrollY
@@ -116,10 +109,6 @@ function initializeHomePage() {
 			// minus innerHeight, which grows when a phone's toolbar collapses.
 			const stage = chapter.element.firstElementChild as HTMLElement | null
 			chapter.length = Math.max(chapter.height - (stage?.offsetHeight ?? window.innerHeight), 1)
-		})
-		inkSections.forEach((section) => {
-			section.start = section.element.getBoundingClientRect().top + window.scrollY
-			section.end = section.start + section.element.offsetHeight
 		})
 	}
 	measure()
@@ -133,7 +122,7 @@ function initializeHomePage() {
 		chapter ? clamp((y - chapter.start) / chapter.length) : 0
 
 	/** The whole scene as a pure function of scroll position. */
-	const frame: CosmosFrame = { intro: 0, stage: 0, earthTurn: 0, groundTravel: 0 }
+	const frame: CosmosFrame = { intro: 0, stage: 0, earthTurn: 0, groundTravel: 0, moonTurn: 0 }
 	const earthChapter = byName('earth')
 	const placeLabels = {
 		palestine: document.querySelector<HTMLElement>('[data-place-label="palestine"]'),
@@ -147,29 +136,33 @@ function initializeHomePage() {
 		const pEarth = progress(earth, y)
 		const pGround = progress(ground, y)
 		const pHome = progress(home, y)
+		const moon = byName('moon')
+		const pMoon = progress(moon, y)
 		// Morphs begin as the chapter slides into view, so they're never missed.
 		const arriving = (chapter: Chapter | undefined) =>
 			!!chapter && y >= chapter.start - window.innerHeight
 
 		// The galaxy finishes winding just before About slides over it.
 		frame.intro = reducedMotion ? 1 : span(progress(byName('cosmos'), y), 0.1, 0.9)
-		if (arriving(home)) frame.stage = 2 + span(pHome, 0, 0.6)
+		if (arriving(home)) frame.stage = 3 + span(pHome, 0, 0.6)
+		else if (arriving(moon)) frame.stage = 2 + span(pMoon, 0, 0.45)
 		else if (arriving(ground)) frame.stage = 1 + span(pGround, 0, 0.45)
 		else if (arriving(earth)) frame.stage = span(pEarth, 0, 0.4)
 		else frame.stage = 0
 		frame.earthTurn = arriving(ground) ? 1 : span(pEarth, 0.25, 0.9)
 		frame.groundTravel = span(pGround, 0.35, 1)
+		frame.moonTurn = span(pMoon, 0.2, 1)
 
 		if (reducedMotion) frame.stage = Math.round(frame.stage)
 
 		chapters.forEach((chapter) => chapter.timeline.progress(progress(chapter, y)))
 
-		// The nav reads dark on paper and light over the night chapters and ink sections.
+		// The nav reads dark on paper and light over the night chapters.
 		const probe = y + 30
-		const onNight = chapters.some((c) => probe >= c.start && probe < c.start + c.height)
-		const onInk = inkSections.some((s) => probe >= s.start && probe < s.end)
-		root.classList.toggle('on-paper', !onNight && !onInk)
-		root.classList.toggle('on-ink', onInk)
+		root.classList.toggle(
+			'on-paper',
+			!chapters.some((c) => probe >= c.start && probe < c.start + c.height)
+		)
 	}
 
 	/** Labels track Palestine (pointing left) and Jordan (pointing right) on the globe. */

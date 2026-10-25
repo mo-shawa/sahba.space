@@ -1,0 +1,134 @@
+---
+import Chapter from './common/Chapter.astro'
+import Words from './common/Words.astro'
+import { lectures, moonContent } from '../data/siteContent'
+
+const talk = moonContent.talkTitle
+	? lectures.find((lecture) => lecture.title.toLowerCase() === moonContent.talkTitle.toLowerCase())
+	: undefined
+const talkShort = talk?.title.split(':')[0]
+
+// "Organizer of … · 2019, 2020, 2021": the years sit apart, in the soft colour.
+const highlights = moonContent.highlights.map((line) => {
+	const [text, years] = line.split(' · ')
+	return { text, years: years ?? '' }
+})
+---
+
+<Chapter
+	name="moon"
+	length={3.2}
+	labelledby="moon-title"
+>
+	<div
+		class="intro"
+		data-beat="0.12,0.46"
+	>
+		<p class="small soft"><Words text={moonContent.label} /></p>
+		<h2
+			id="moon-title"
+			class="title"
+		>
+			<Words text={moonContent.title} />
+		</h2>
+		<p class="intro__statement medium"><Words text={moonContent.statement} /></p>
+	</div>
+
+	{
+		highlights.length > 0 && (
+			<ul
+				class="highlights"
+				data-beat="0.5,0.74"
+			>
+				{highlights.map((item) => (
+					<li class="highlight">
+						<span class="medium">
+							<Words text={item.text} />
+						</span>
+						{item.years && (
+							<span class="small soft numeric">
+								<Words text={item.years} />
+							</span>
+						)}
+					</li>
+				))}
+			</ul>
+		)
+	}
+
+	{
+		moonContent.closing && (
+			<div
+				class="closing"
+				data-beat="0.78,1"
+			>
+				<p class="large">
+					<Words text={moonContent.closing} />
+				</p>
+				{talk && (
+					<p
+						class="small"
+						data-fade
+					>
+						{/* prettier-ignore */}
+						<a class="link" href={talk.href} target="_blank" rel="noreferrer" title={talk.title}>{talkShort}</a>
+						<span class="soft"> · {talk.host}, {talk.date}</span>
+					</p>
+				)}
+			</div>
+		)
+	}
+</Chapter>
+
+<style>
+	.intro,
+	.highlights,
+	.closing {
+		grid-column: 1 / span 6;
+		align-self: center;
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.intro .title {
+		margin-left: -0.04em;
+		max-width: 8em;
+	}
+
+	.intro__statement {
+		max-width: 26em;
+		color: var(--night-ink-soft);
+	}
+
+	/* No rules: only words animate in a beat, so borders would show through the
+	   other beats. Spacing does the separating. */
+	.highlights {
+		gap: 1.4rem;
+	}
+
+	.highlight {
+		display: grid;
+		gap: 0.3rem;
+	}
+
+	.closing .large {
+		max-width: 18em;
+	}
+
+	.closing .small {
+		max-width: 34em;
+	}
+
+	.soft {
+		color: var(--night-ink-soft);
+	}
+
+	@media (max-width: 800px) {
+		.intro,
+		.highlights,
+		.closing {
+			grid-column: 1 / -1;
+			align-self: end;
+		}
+	}
+</style>

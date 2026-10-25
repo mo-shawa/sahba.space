@@ -40,6 +40,18 @@
 			"linkLabel": "palestinespace.org"
 		}
 	},
+	"moon": {
+		"label": "Outreach",
+		"title": "Under a shared Moon",
+		"statement": "She is passionate about outreach and education, and has organized space design competitions for students around the world including Canada, Europe, and the Middle East.",
+		"highlights": [
+			"Organizer of Canadian Space Settlement Design Competition · 2019, 2020, 2021",
+			"Organizer of Middle East Space Design Competition for Jordan and Palestine · 2020, 2021",
+			"Organizer of European Space Design Competition in France in collaboration with the International Space University · 2020"
+		],
+		"closing": "Her 2025 talk on A'wna, the Palestinian concept of community and collaboration, places it in the context of PSI and JSRI's work.",
+		"talk": "A'wna Under a Shared Moon: Justice and Community in the Work of the Palestine Space Institute and Jordan Space Research Initiative"
+	},
 	"vision": "Guided by a vision of space exploration rooted in justice, sustainability, and collective responsibility, Sahba is committed to reshaping how space technologies are developed and applied. Her work bridges technical innovation with critical policy and ethical frameworks, striving for a future where space serves the needs of people and the planet.",
 	"quote": {
 		"text": "If you don’t find the opportunities that you want, you can create them for yourself and for other people.",

@@ -29,12 +29,14 @@ import starsVertexShader from '../shaders/stars.vertex.glsl?raw'
 export interface CosmosFrame {
 	/** 0 = loose starfield (top of page) → 1 = fully wound galaxy */
 	intro: number
-	/** 0 = galaxy, 1 = Earth, 2 = ground, 3 = Earth again, far away */
+	/** 0 = galaxy, 1 = Earth, 2 = ground, 3 = the Moon, 4 = Earth again, far away */
 	stage: number
 	/** 0..1: Earth turns until Jordan faces the viewer */
 	earthTurn: number
 	/** 0..1: the camera drifts low over the ground */
 	groundTravel: number
+	/** 0..1: the Moon turns slowly while its chapter is on screen */
+	moonTurn: number
 }
 
 export interface ScreenPoint {
@@ -111,6 +113,41 @@ const randomLatLon = () => ({
 	lon: Math.random() * 360 - 180,
 })
 
+/**
+ * The Moon's near side, as seen from Earth: approximate centres and radii (in
+ * degrees) of the maria, the dark basalt plains, and of bright young craters.
+ * Longitude 0 faces Earth; east (Crisium) is on the right.
+ */
+const MARIA = [
+	[25, -60, 20],
+	[5, -55, 15],
+	[42, -45, 13],
+	[33, -16, 15],
+	[28, 17, 9],
+	[8.5, 31, 10],
+	[17, 59, 6],
+	[-8, 51, 8],
+	[-15, 35, 4.5],
+	[-21, -17, 9],
+	[-24, -39, 4.5],
+	[13, 4, 4],
+	[7, -31, 8],
+	[-10, -23, 5],
+	// Mare Frigoris: a thin band across the north.
+	[56, -42, 6],
+	[57, -24, 6],
+	[57, -6, 6],
+	[56, 12, 6],
+	[55, 30, 5],
+] as const
+const CRATERS = [
+	[-43.3, -11.2, 2, 0.55], // Tycho
+	[9.6, -20, 1.6, 0.35], // Copernicus
+	[23.7, -47.4, 1.1, 0.5], // Aristarchus
+	[8, -38, 1, 0.3], // Kepler
+] as const
+const TYCHO = { lat: -43.3, lon: -11.2 }
+
 /** Small seeded value noise, enough for a procedural landscape. */
 function createNoise(seed = 7) {
 	const hash = (x: number, z: number) => {
@@ -182,6 +219,61 @@ function createTerrain() {
 	}
 }
 
+/**
+ * The Moon's brightness, baked once into a 2° latitude/longitude grid:
+ * grey highlands, dark maria, bright craters and Tycho's rays. Returns a fast
+ * sampler, like the desert's height grid.
+ */
+function createMoonAlbedo() {
+	const noise = createNoise(23)
+	const feature = (lat: number, lon: number, outer: number, inner: number) => ({
+		centre: fromLatLon(lat, lon, new Vector3()),
+		outer: Math.cos(MathUtils.degToRad(outer)),
+		inner: Math.cos(MathUtils.degToRad(inner)),
+	})
+	const maria = MARIA.map(([lat, lon, radius]) => feature(lat, lon, radius, radius * 0.6))
+	const craters = CRATERS.map(([lat, lon, radius, gain]) => ({ ...feature(lat, lon, radius * 2.5, radius * 0.5), gain }))
+	const tycho = fromLatLon(TYCHO.lat, TYCHO.lon, new Vector3())
+	const rayReach = Math.cos(MathUtils.degToRad(45))
+	const v = new Vector3()
+
+	const step = 2
+	const columns = 360 / step + 1
+	const rows = 180 / step + 1
+	const grid = new Float32Array(columns * rows)
+	for (let row = 0; row < rows; row++) {
+		const lat = 90 - row * step
+		for (let col = 0; col < columns; col++) {
+			const lon = -180 + col * step
+			fromLatLon(lat, lon, v)
+			let mare = 0
+			for (const m of maria) mare = Math.max(mare, MathUtils.smoothstep(v.dot(m.centre), m.outer, m.inner))
+			let albedo = MathUtils.lerp(0.82, 0.3, mare) * (0.82 + 0.36 * noise(lat * 0.09 + 9, lon * 0.09, 4))
+			for (const c of craters) albedo += c.gain * MathUtils.smoothstep(v.dot(c.centre), c.outer, c.inner)
+			const towardTycho = v.dot(tycho)
+			if (towardTycho > rayReach) {
+				const bearing = Math.atan2(lon - TYCHO.lon, lat - TYCHO.lat)
+				const ray = Math.pow(Math.abs(Math.sin(bearing * 7 + noise(bearing * 3, 1.7, 2) * 4)), 40)
+				albedo += ray * 0.35 * ((towardTycho - rayReach) / (1 - rayReach))
+			}
+			grid[row * columns + col] = MathUtils.clamp(albedo, 0.15, 1.2)
+		}
+	}
+
+	return (lat: number, lon: number) => {
+		const u = (lon + 180) / step
+		const w = (90 - lat) / step
+		const c = Math.min(Math.floor(u), columns - 2)
+		const r = Math.min(Math.floor(w), rows - 2)
+		const fu = u - c
+		const fw = w - r
+		const i = r * columns + c
+		const top = grid[i] + (grid[i + 1] - grid[i]) * fu
+		const bottom = grid[i + columns] + (grid[i + columns + 1] - grid[i + columns]) * fu
+		return top + (bottom - top) * fw
+	}
+}
+
 function buildParticles(count: number) {
 	const galaxy = new Float32Array(count * 3)
 	const galaxyColor = new Float32Array(count * 3)
@@ -189,6 +281,9 @@ function buildParticles(count: number) {
 	const ground = new Float32Array(count * 3)
 	const seed = new Float32Array(count * 4)
 	const surface = new Float32Array(count * 2)
+	// The Moon: a point on its surface and how bright the ground is there.
+	const moon = new Float32Array(count * 4)
+	const moonAlbedo = createMoonAlbedo()
 
 	const isLand = decodeGrid(LAND)
 	const region = decodeGrid(HIGHLIGHT)
@@ -303,6 +398,17 @@ function buildParticles(count: number) {
 		seed[i4 + 3] = Math.random()
 		surface[i2] = kind
 		surface[i2 + 1] = light
+
+		/* Moon: particles settle more often where the ground is bright, as they
+		   crowd onto land on Earth, so the maria read as darker and sparser. */
+		let spot = randomLatLon()
+		let albedo = moonAlbedo(spot.lat, spot.lon)
+		for (let tries = 1; tries < 6 && Math.random() >= albedo / 0.95; tries++) {
+			spot = randomLatLon()
+			albedo = moonAlbedo(spot.lat, spot.lon)
+		}
+		fromLatLon(spot.lat, spot.lon, v)
+		moon.set([v.x, v.y, v.z, albedo], i4)
 	}
 
 	const geometry = new BufferGeometry()
@@ -314,6 +420,7 @@ function buildParticles(count: number) {
 	geometry.setAttribute('aGround', new BufferAttribute(ground, 3))
 	geometry.setAttribute('aSeed', new BufferAttribute(seed, 4))
 	geometry.setAttribute('aSurface', new BufferAttribute(surface, 2))
+	geometry.setAttribute('aMoon', new BufferAttribute(moon, 4))
 	return geometry
 }
 
@@ -399,6 +506,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			uBrightness: { value: 1 },
 			uGalaxyRotation: { value: new Matrix3() },
 			uEarthRotation: { value: new Matrix3() },
+			uMoonRotation: { value: new Matrix3() },
 			uDustScale: { value: 1 },
 			uSun: { value: new Vector3() },
 		},
@@ -493,6 +601,14 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			? frame(front, 70, 0.3, upright, long, 0.5)
 			: frame(front, 70, 0.62, upright, long)
 		const sun = new Vector3(0.65, 0.35, 0.7).normalize()
+		// Lit almost from the front, a little from the right: a nearly full Moon,
+		// so the maria show across the whole face.
+		const moonSun = new Vector3(0.38, 0.22, 0.9).normalize()
+		const moonShot = portrait
+			? squarish
+				? frame(front, fill(0.42), 0, upright, long, 0.52)
+				: frame(front, fill(0.6), 0, upright, long, 0.38)
+			: frame(front, fill(0.5), 0.38, upright, long)
 
 		shots = [
 			{ ...galaxy, sun, stars: 0.9 },
@@ -506,6 +622,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 				stars: 1,
 				fov: portrait ? 70 : 55,
 			},
+			{ ...moonShot, sun: moonSun, stars: 1 },
 			{ ...far, sun, stars: 1 },
 		]
 	}
@@ -626,7 +743,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		adapt(delta)
 
 		const intro = MathUtils.clamp(state.intro, 0, 1)
-		const stage = MathUtils.clamp(state.stage, 0, 3)
+		const stage = MathUtils.clamp(state.stage, 0, 4)
 
 		// Camera: starfield → galaxy is driven by intro; later shots by stage.
 		let starLevel: number
@@ -640,7 +757,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			starLevel = MathUtils.lerp(fieldShot.stars, shot.stars, intro)
 			fov = shot.fov
 		} else {
-			const index = Math.min(Math.floor(stage), 2)
+			const index = Math.min(Math.floor(stage), 3)
 			const t = ease(stage - index)
 			const a = shots[index]
 			const b = shots[index + 1]
@@ -648,7 +765,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			target.lerpVectors(a.target, b.target, t)
 			// Drift forward over the ground while it's on screen.
 			const travel = ease(MathUtils.clamp(state.groundTravel, 0, 1))
-			const onGround = stage < 2 ? t : 1 - t
+			const onGround = stage < 2 ? t : stage < 3 ? 1 - t : 0
 			if (stage >= 1) {
 				position.z -= travel * 1.1 * onGround
 				position.y -= travel * 0.12 * onGround
@@ -699,6 +816,13 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		)
 		rotation.makeRotationFromQuaternion(quaternion)
 		material.uniforms.uEarthRotation.value.setFromMatrix4(rotation)
+
+		// Moon: the near side faces us, turning a few degrees as its chapter plays.
+		const moonTurn = ease(MathUtils.clamp(state.moonTurn, 0, 1))
+		rotation.makeRotationFromEuler(
+			euler.set(MathUtils.degToRad(6), MathUtils.degToRad(-14 + moonTurn * 20), MathUtils.degToRad(-4))
+		)
+		material.uniforms.uMoonRotation.value.setFromMatrix4(rotation)
 		material.uniforms.uDustScale.value = Math.max(1, camera.position.length() / 3)
 
 		const swirlRatio = MathUtils.lerp(800, 16, 1 - Math.pow(2, -10 * intro))

@@ -140,6 +140,35 @@ content:
               - name: linkLabel
                 label: Link text
                 type: string
+      - name: moon
+        label: Moon chapter
+        type: object
+        description: The night scene where the particles become the Moon, between Testimonials and Lectures.
+        fields:
+          - name: label
+            label: Small label
+            type: string
+            required: true
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: statement
+            label: Statement
+            type: text
+            required: true
+          - name: highlights
+            label: Lines in the second beat
+            type: string
+            list: true
+            description: Short lines, e.g. competitions she organized.
+          - name: closing
+            label: Closing line
+            type: text
+          - name: talk
+            label: Talk to link
+            type: string
+            description: Exact title of a talk under Lectures; its link and date appear under the closing line.
       - name: vision
         label: Closing statement
         type: text
