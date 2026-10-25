@@ -105,7 +105,8 @@ const year = new Date().getFullYear()
 	}
 
 	.contact__email {
-		font-size: clamp(2.4rem, 7.2vw, 8.5rem);
+		/* Sized to the address's length, so it holds one line at every width. */
+		font-size: clamp(1.5rem, 5.8vw, 6.9rem);
 		font-weight: 480;
 		font-stretch: 105%;
 		line-height: 0.9;
@@ -151,6 +152,10 @@ const year = new Date().getFullYear()
 
 		.vision {
 			align-self: end;
+		}
+
+		.contact__email {
+			font-size: 7.4vw;
 		}
 	}
 </style>

@@ -1,7 +1,8 @@
 // One particle cloud, four bodies. Every particle knows where it sits in the
 // galaxy, on Earth, in a desert landscape and on the Moon; uStage blends
-// between them: 0 = galaxy, 1 = Earth, 2 = ground, 3 = Moon, 4 = Earth again
-// (a distant dot).
+// between them: 0 = galaxy, 1 = Earth, 2 = ground, 3 = close on the Moon,
+// 4 = pulled back to show the Moon orbiting Earth. From 3 on, about half the
+// particles are the Moon and the rest Earth; only the camera moves between them.
 
 uniform float uTime;
 uniform float uStage;
@@ -14,11 +15,14 @@ uniform float uDustScale;
 uniform mat3 uGalaxyRotation;
 uniform mat3 uEarthRotation;
 uniform mat3 uMoonRotation;
+uniform vec3 uMoonCenter;
+uniform float uMoonGlow;
+uniform float uEarthGlow;
 uniform vec3 uSun;
 
 attribute vec3 aGalaxy;
 attribute vec3 aEarth;
-attribute vec3 aGround;
+attribute vec4 aGround;   // xyz: place in the desert, w: fade toward the landscape's edges
 attribute vec3 aGalaxyColor;
 attribute vec4 aSeed;     // x: stagger, y: size/twinkle, z/w: drift direction
 attribute vec2 aSurface;  // x: earth kind (0 ocean, 1 land, 2 Jordan, 3 air, 4 dust), y: ground light
@@ -61,28 +65,46 @@ vec3 groundColor() {
     // Low sun: warm sandstone in the light, violet in the shade.
     vec3 shade = vec3(0.1, 0.07, 0.16);
     vec3 sand = vec3(1.0, 0.7, 0.46) * 1.3;
-    return mix(shade, sand, aSurface.y);
+    return mix(shade, sand, aSurface.y) * aGround.w;
 }
 
-// Dust stays behind as stars; everything else becomes the Moon.
-vec3 moonPosition() {
-    return aSurface.x > 3.5 ? earthPosition() : uMoonRotation * aMoon.xyz;
+const float MOON_RADIUS = 0.27;
+
+// The Moon takes about half of the ocean, land and air particles; Palestine,
+// Jordan and the starry dust stay with Earth.
+bool onMoon() {
+    float kind = aSurface.x;
+    if ((kind > 1.5 && kind < 2.5) || kind > 3.5) return false;
+    return fract(aSeed.z * 13.17 + aSeed.w * 7.31) < 0.55;
 }
 
 vec3 moonColor() {
-    if (aSurface.x > 3.5) return vec3(0.6, 0.62, 0.72) * 0.55;
     vec3 normal = uMoonRotation * aMoon.xyz;
     float light = smoothstep(-0.1, 0.5, dot(normal, uSun));
     return vec3(0.97, 0.95, 0.9) * aMoon.w * (0.03 + light * 1.9);
 }
 
 float moonSize() {
-    return aSurface.x > 3.5 ? 0.8 : 0.68;
+    // The camera comes as close to the Moon as it does to Earth, relative to size.
+    return 0.82 * MOON_RADIUS;
 }
 
 float earthSize() {
     float kind = aSurface.x;
     return kind > 3.5 ? 0.8 : (kind < 0.5 ? 0.42 : 0.55);
+}
+
+vec3 systemPosition() {
+    return onMoon() ? uMoonCenter + uMoonRotation * aMoon.xyz * MOON_RADIUS : earthPosition();
+}
+
+vec3 systemColor() {
+    if (onMoon()) return moonColor() * uMoonGlow;
+    return earthColor() * (aSurface.x > 3.5 ? 1.0 : uEarthGlow);
+}
+
+float systemSize() {
+    return onMoon() ? moonSize() : earthSize();
 }
 
 // Staggered, eased local progress for this particle within a transition.
@@ -106,16 +128,17 @@ void main() {
         t = uStage;
     } else if (uStage < 2.0) {
         from = earthPosition(); fromColor = earthColor(); fromSize = earthSize();
-        to = aGround; toColor = groundColor(); toSize = 1.0;
+        to = aGround.xyz; toColor = groundColor(); toSize = 1.0;
         t = uStage - 1.0;
     } else if (uStage < 3.0) {
-        from = aGround; fromColor = groundColor(); fromSize = 1.0;
-        to = moonPosition(); toColor = moonColor(); toSize = moonSize();
+        from = aGround.xyz; fromColor = groundColor(); fromSize = 1.0;
+        to = systemPosition(); toColor = systemColor(); toSize = systemSize();
         t = uStage - 2.0;
     } else {
-        from = moonPosition(); fromColor = moonColor(); fromSize = moonSize();
-        to = earthPosition(); toColor = earthColor(); toSize = earthSize();
-        t = uStage - 3.0;
+        // Close on the Moon, then pulled back: the same bodies, nothing morphs.
+        from = systemPosition(); fromColor = systemColor(); fromSize = systemSize();
+        to = from; toColor = fromColor; toSize = fromSize;
+        t = 0.0;
     }
 
     float w = stagger(t);
@@ -126,7 +149,10 @@ void main() {
     vec3 drift = normalize(vec3(cos(aSeed.z * 6.2832), aSeed.w - 0.5, sin(aSeed.z * 6.2832)));
     position += drift * flight * (0.35 + aSeed.x * 0.5);
     float swirl = flight * (1.2 + aSeed.w);
-    position.xz = mat2(cos(swirl), -sin(swirl), sin(swirl), cos(swirl)) * position.xz;
+    // Swirl around the body the particle is heading for, so nothing bound for
+    // the Moon (off to the side of Earth) is flung out of frame on the way.
+    vec2 pivot = uStage >= 2.0 && onMoon() ? uMoonCenter.xz : vec2(0.0);
+    position.xz = pivot + mat2(cos(swirl), -sin(swirl), sin(swirl), cos(swirl)) * (position.xz - pivot);
 
     vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * viewPosition;

@@ -51,6 +51,16 @@ ColorManagement.enabled = false
 // The globe turns until this point faces the viewer: between Palestine and Jordan.
 const HOMELAND = { lat: 31.6, lon: 36 }
 
+/**
+ * The Moon in the last two scenes, in Earth radii (stylised, not to scale): it
+ * starts on the far right of its orbit, which is tilted toward the viewer so
+ * the Moon passes above and below Earth, never behind it. Periods in seconds.
+ */
+const MOON = { radius: 0.27, orbit: 3.4, tilt: MathUtils.degToRad(28), orbitPeriod: 60, spinPeriod: 90 }
+
+/** An angle brought into -π..π, so unwinding it never takes more than half a turn. */
+const wrapAngle = (angle: number) => angle - Math.PI * 2 * Math.round(angle / (Math.PI * 2))
+
 const palette = {
 	core: new Color('#ffc978'),
 	inner: new Color('#ffe6c4'),
@@ -132,10 +142,10 @@ const MARIA = [
 	[55, 30, 5],
 ] as const
 const CRATERS = [
-	[-43.3, -11.2, 2, 0.55], // Tycho
-	[9.6, -20, 1.6, 0.35], // Copernicus
-	[23.7, -47.4, 1.1, 0.5], // Aristarchus
-	[8, -38, 1, 0.3], // Kepler
+	[-43.3, -11.2, 2, 0.25], // Tycho
+	[9.6, -20, 1.6, 0.15], // Copernicus
+	[23.7, -47.4, 1.1, 0.22], // Aristarchus
+	[8, -38, 1, 0.12], // Kepler
 ] as const
 const TYCHO = { lat: -43.3, lon: -11.2 }
 
@@ -184,7 +194,7 @@ function createTerrain() {
 		return dunes + plateau * cap - 0.45
 	}
 
-	const bounds = { x0: -13, x1: 13, z0: -9, z1: 2.5 }
+	const bounds = { x0: -13, x1: 13, z0: -9, z1: 3.2 }
 	const columns = 520
 	const rows = 230
 	const grid = new Float32Array(columns * rows)
@@ -222,7 +232,10 @@ function createMoonAlbedo() {
 		outer: Math.cos(MathUtils.degToRad(outer)),
 		inner: Math.cos(MathUtils.degToRad(inner)),
 	})
-	const maria = MARIA.map(([lat, lon, radius]) => feature(lat, lon, radius, radius * 0.6))
+	const maria = MARIA.map(([lat, lon, radius]) => ({
+		centre: fromLatLon(lat, lon, new Vector3()),
+		radius: MathUtils.degToRad(radius),
+	}))
 	const craters = CRATERS.map(([lat, lon, radius, gain]) => ({ ...feature(lat, lon, radius * 2.5, radius * 0.5), gain }))
 	const tycho = fromLatLon(TYCHO.lat, TYCHO.lon, new Vector3())
 	const rayReach = Math.cos(MathUtils.degToRad(45))
@@ -237,15 +250,21 @@ function createMoonAlbedo() {
 		for (let col = 0; col < columns; col++) {
 			const lon = -180 + col * step
 			fromLatLon(lat, lon, v)
+			// Maria are irregular, soft-edged plains that run into each other, not
+			// round spots: warp each one's edge with noise and blend it out wide.
+			const warp = 0.75 + 0.5 * noise(lat * 0.12 - 3, lon * 0.12 + 5, 3)
 			let mare = 0
-			for (const m of maria) mare = Math.max(mare, MathUtils.smoothstep(v.dot(m.centre), m.outer, m.inner))
-			let albedo = MathUtils.lerp(0.82, 0.3, mare) * (0.82 + 0.36 * noise(lat * 0.09 + 9, lon * 0.09, 4))
+			for (const m of maria) {
+				const angle = Math.acos(MathUtils.clamp(v.dot(m.centre), -1, 1))
+				mare = Math.max(mare, 1 - MathUtils.smoothstep(angle, m.radius * warp * 0.5, m.radius * warp * 1.15))
+			}
+			let albedo = MathUtils.lerp(0.82, 0.37, mare) * (0.86 + 0.28 * noise(lat * 0.09 + 9, lon * 0.09, 4))
 			for (const c of craters) albedo += c.gain * MathUtils.smoothstep(v.dot(c.centre), c.outer, c.inner)
 			const towardTycho = v.dot(tycho)
 			if (towardTycho > rayReach) {
 				const bearing = Math.atan2(lon - TYCHO.lon, lat - TYCHO.lat)
 				const ray = Math.pow(Math.abs(Math.sin(bearing * 7 + noise(bearing * 3, 1.7, 2) * 4)), 40)
-				albedo += ray * 0.35 * ((towardTycho - rayReach) / (1 - rayReach))
+				albedo += ray * 0.14 * ((towardTycho - rayReach) / (1 - rayReach))
 			}
 			grid[row * columns + col] = MathUtils.clamp(albedo, 0.15, 1.2)
 		}
@@ -269,7 +288,8 @@ function buildParticles(count: number) {
 	const galaxy = new Float32Array(count * 3)
 	const galaxyColor = new Float32Array(count * 3)
 	const earth = new Float32Array(count * 3)
-	const ground = new Float32Array(count * 3)
+	// Ground: position, and how much of the particle's light survives the edge fade.
+	const ground = new Float32Array(count * 4)
 	const seed = new Float32Array(count * 4)
 	const surface = new Float32Array(count * 2)
 	// The Moon: a point on its surface and how bright the ground is there.
@@ -358,16 +378,19 @@ function buildParticles(count: number) {
 		earth[i3 + 1] = v.y
 		earth[i3 + 2] = v.z
 
-		/* Ground: sampled densest near the camera so it reads evenly on screen. */
+		/* Ground: sampled densest near the camera so it reads evenly on screen.
+		   It runs wider than any frame and back under the camera, and every edge
+		   fades out, so while the camera arrives it never reads as a slab. */
 		let light = 0
 		if (kind === 4) {
 			// Dust stays in the sky as stars.
-			ground[i3] = earth[i3]
-			ground[i3 + 1] = Math.abs(earth[i3 + 1]) + 0.5
-			ground[i3 + 2] = earth[i3 + 2] - 4
+			ground.set([earth[i3], Math.abs(earth[i3 + 1]) + 0.5, earth[i3 + 2] - 4, 1], i4)
 		} else {
-			const distance = 0.3 + 6.8 * Math.pow(Math.random(), 1.5)
-			const x = (Math.random() * 2 - 1) * (1 + distance * 0.95)
+			const distance =
+				Math.random() < 0.1 ? -0.8 + 1.3 * Math.random() : 0.5 + 6.6 * Math.pow(Math.random(), 1.5)
+			const halfWidth = 1.4 + Math.max(distance, 0) * 1.1
+			const across = Math.random() * 2 - 1
+			const x = Math.sign(across) * Math.pow(Math.abs(across), 1.3) * halfWidth
 			const z = 1.9 - distance
 			let y = height(x, z)
 			const dx = (height(x + e, z) - height(x - e, z)) / (2 * e)
@@ -378,9 +401,9 @@ function buildParticles(count: number) {
 			normal.set(-dx, 1, -dz).normalize()
 			light = 0.22 + 0.78 * MathUtils.clamp(normal.dot(sunlight) * 1.2, 0, 1)
 			light *= 0.8 + 0.2 * MathUtils.clamp(y + 0.45, 0, 1)
-			ground[i3] = x
-			ground[i3 + 1] = y
-			ground[i3 + 2] = z
+			const sides = 1 - MathUtils.smoothstep(Math.abs(x) / halfWidth, 0.68, 1)
+			const near = MathUtils.smoothstep(distance, -0.8, 0.5)
+			ground.set([x, y, z, sides * near], i4)
 		}
 
 		seed[i4] = Math.random()
@@ -408,7 +431,7 @@ function buildParticles(count: number) {
 	geometry.setAttribute('aGalaxy', new BufferAttribute(galaxy, 3))
 	geometry.setAttribute('aGalaxyColor', new BufferAttribute(galaxyColor, 3))
 	geometry.setAttribute('aEarth', new BufferAttribute(earth, 3))
-	geometry.setAttribute('aGround', new BufferAttribute(ground, 3))
+	geometry.setAttribute('aGround', new BufferAttribute(ground, 4))
 	geometry.setAttribute('aSeed', new BufferAttribute(seed, 4))
 	geometry.setAttribute('aSurface', new BufferAttribute(surface, 2))
 	geometry.setAttribute('aMoon', new BufferAttribute(moon, 4))
@@ -498,6 +521,9 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			uGalaxyRotation: { value: new Matrix3() },
 			uEarthRotation: { value: new Matrix3() },
 			uMoonRotation: { value: new Matrix3() },
+			uMoonCenter: { value: new Vector3(MOON.orbit, 0, 0) },
+			uMoonGlow: { value: 1 },
+			uEarthGlow: { value: 1 },
 			uDustScale: { value: 1 },
 			uSun: { value: new Vector3() },
 		},
@@ -588,18 +614,32 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 				? frame(front, fill(0.5), 0, upright, long, 0.52)
 				: frame(front, fill(0.72), 0, upright, long, 0.38)
 			: frame(front, fill(0.6), 0.36, upright, long)
-		const far = portrait
-			? frame(front, 70, 0.3, upright, long, 0.5)
-			: frame(front, 70, 0.62, upright, long)
 		const sun = new Vector3(0.65, 0.35, 0.7).normalize()
 		// Lit almost from the front, a little from the right: a nearly full Moon,
 		// so the maria show across the whole face.
 		const moonSun = new Vector3(0.38, 0.22, 0.9).normalize()
-		const moonShot = portrait
-			? squarish
-				? frame(front, fill(0.42), 0, upright, long, 0.52)
-				: frame(front, fill(0.6), 0, upright, long, 0.38)
-			: frame(front, fill(0.5), 0.38, upright, long)
+		// Close on the Moon where its orbit starts; Earth is out of frame to the left.
+		const moonHome = new Vector3(MOON.orbit, 0, 0)
+		const around = (shot: ReturnType<typeof frame>, point: Vector3) => ({
+			...shot,
+			position: shot.position.clone().add(point),
+			target: shot.target.clone().add(point),
+		})
+		const moonShot = around(
+			portrait
+				? squarish
+					? frame(front, fill(0.42) * MOON.radius, 0, upright, long, 0.52)
+					: frame(front, fill(0.6) * MOON.radius, 0, upright, long, 0.38)
+				: frame(front, fill(0.5) * MOON.radius, 0.38, upright, long),
+			moonHome
+		)
+		// Pulled back to show the whole system: the orbit's width fills a share of the frame.
+		const span = 2 * (MOON.orbit + MOON.radius)
+		const fit = (share: number) =>
+			span / (share * 2 * Math.tan(MathUtils.degToRad(long / 2)) * aspect())
+		const system = portrait
+			? frame(front, fit(0.86), 0, upright, long, 0.5)
+			: frame(front, fit(0.36), 0.56, upright, long, 0.3)
 
 		shots = [
 			{ ...galaxy, sun, stars: 0.9 },
@@ -614,7 +654,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 				fov: portrait ? 70 : 55,
 			},
 			{ ...moonShot, sun: moonSun, stars: 1 },
-			{ ...far, sun, stars: 1 },
+			{ ...system, sun, stars: 1 },
 		]
 	}
 
@@ -710,6 +750,16 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 	const euler = new Euler()
 	const ease = (t: number) => t * t * (3 - 2 * t)
 	let elapsed = 0
+	// Runs only while the Earth–Moon system is in full view (see render).
+	let systemClock = 0
+	const yAxis = new Vector3(0, 1, 0)
+	const xAxis = new Vector3(1, 0, 0)
+	const spin = new Quaternion()
+	const tilt = new Quaternion().setFromAxisAngle(xAxis, MOON.tilt)
+	const untilt = tilt.clone().invert()
+	const orbit = new Quaternion()
+	const lock = new Quaternion()
+	const moonFace = new Quaternion()
 
 	// Earth orientations: approaching from the west, then Jordan facing us.
 	const fromWest = new Quaternion().setFromEuler(
@@ -790,20 +840,45 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		material.uniforms.uGalaxyRotation.value.setFromMatrix4(rotation)
 
 		// Earth: swings round until Jordan faces us.
+		// The Earth–Moon system: Earth turns once every 90s, starting with the
+		// Levant facing us; the Moon orbits once a minute, keeping one face to
+		// Earth. Both run on a clock that starts once the system is in full
+		// view, and unwind with the scroll (never more than half a turn) if the
+		// reader heads back up; the clock resets once they're out of view.
+		if (stage >= 3.999) {
+			if (!reducedMotion) systemClock += delta
+		} else if (stage < 3.6) systemClock = 0
+		const reveal = ease(MathUtils.clamp((stage - 3.6) / 0.4, 0, 1))
+		const turn = (period: number) => wrapAngle((systemClock / period) * Math.PI * 2) * reveal
+
 		quaternion.slerpQuaternions(
 			fromWest,
 			facingJordan,
 			ease(MathUtils.clamp(state.earthTurn, 0, 1))
 		)
+		quaternion.multiply(spin.setFromAxisAngle(yAxis, turn(MOON.spinPeriod)))
 		rotation.makeRotationFromQuaternion(quaternion)
 		material.uniforms.uEarthRotation.value.setFromMatrix4(rotation)
 
-		// Moon: the near side faces us, turning a few degrees as its chapter plays.
+		// Moon: the near side faces us, turning a few degrees as its chapter plays,
+		// then carried round its tilted orbit.
 		const moonTurn = ease(MathUtils.clamp(state.moonTurn, 0, 1))
-		rotation.makeRotationFromEuler(
+		moonFace.setFromEuler(
 			euler.set(MathUtils.degToRad(6), MathUtils.degToRad(-14 + moonTurn * 20), MathUtils.degToRad(-4))
 		)
+		orbit.setFromAxisAngle(yAxis, turn(MOON.orbitPeriod)).premultiply(tilt)
+		material.uniforms.uMoonCenter.value.set(MOON.orbit, 0, 0).applyQuaternion(orbit)
+		lock.copy(orbit).multiply(untilt).multiply(moonFace)
+		rotation.makeRotationFromQuaternion(lock)
 		material.uniforms.uMoonRotation.value.setFromMatrix4(rotation)
+
+		// Earth stays hidden while the camera is on the Moon, and appears as it
+		// pulls back; both bodies dim as they shrink, so neither burns out.
+		// The Moon holds half the particles in a small disc, so its light falls
+		// with its apparent area as the camera backs away.
+		const away = MathUtils.clamp(stage - 3, 0, 1)
+		material.uniforms.uEarthGlow.value = MathUtils.smoothstep(stage, 3.15, 3.7) * 1.15
+		material.uniforms.uMoonGlow.value = MathUtils.lerp(0.11, 1.3, (1 - away) ** 2)
 		material.uniforms.uDustScale.value = Math.max(1, camera.position.length() / 3)
 
 		const swirlRatio = MathUtils.lerp(800, 16, 1 - Math.pow(2, -10 * intro))
