@@ -178,6 +178,35 @@ function initializeHomePage() {
 		}
 	}
 
+	/** The visor button follows the astronaut's helmet once it has formed. */
+	const visorButton = document.querySelector<HTMLButtonElement>('[data-visor]')
+	const homeChapter = byName('home')
+	if (visorButton && cosmos) {
+		visorButton.addEventListener('click', () => {
+			const open = visorButton.getAttribute('aria-pressed') !== 'true'
+			visorButton.setAttribute('aria-pressed', String(open))
+			cosmos.setVisor(open)
+		})
+		const hover = (on: boolean) => () => cosmos.setVisorHover(on)
+		visorButton.addEventListener('pointerenter', hover(true))
+		visorButton.addEventListener('pointerleave', hover(false))
+		visorButton.addEventListener('focus', hover(true))
+		visorButton.addEventListener('blur', hover(false))
+	}
+
+	function positionVisor(y: number) {
+		if (!visorButton || !cosmos || !homeChapter) return
+		const { x, y: top, radius, visible } = cosmos.helmet
+		// The helmet is only measured while the scene renders, so check the scroll too.
+		const active = visible && y >= homeChapter.start - 1 && chapterVisible(y)
+		if (visorButton.disabled === active) visorButton.disabled = !active
+		if (!active) return
+		const size = radius * 2
+		visorButton.style.width = `${size}px`
+		visorButton.style.height = `${size}px`
+		visorButton.style.transform = `translate3d(${x - radius}px, ${top - radius}px, 0)`
+	}
+
 	/** Only draw while some chapter is on screen; paper sections cover the rest. */
 	const chapterVisible = (y: number) =>
 		chapters.some(
@@ -220,6 +249,7 @@ function initializeHomePage() {
 			cosmos.render(frame, delta)
 			positionPlaceLabels(y)
 		}
+		positionVisor(y)
 	})
 	gsap.ticker.lagSmoothing(0)
 
