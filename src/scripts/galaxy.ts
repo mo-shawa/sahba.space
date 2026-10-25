@@ -40,7 +40,8 @@ export interface CosmosFrame {
 }
 
 export interface Cosmos {
-	render: (frame: CosmosFrame, delta: number) => void
+	/** `moving`: the page is scrolling, so resolution changes wait until it stops. */
+	render: (frame: CosmosFrame, delta: number, moving?: boolean) => void
 	resize: () => void
 }
 
@@ -688,10 +689,17 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 	}
 
 	// If frames run long, render fewer pixels (then fewer particles) until the
-	// frame rate recovers. Soft glows hide the lower resolution well.
-	const quality = { frames: 0, time: 0, slow: 0, fast: 0, drawn: count }
+	// frame rate recovers. Soft glows hide the lower resolution well. Changing
+	// the resolution reallocates the canvas and costs a frame, so it waits for
+	// a pause in scrolling; the particle count can change at any time.
+	const quality = { frames: 0, time: 0, slow: 0, fast: 0, drawn: count, pendingRatio: 0 }
 
-	function adapt(delta: number) {
+	function adapt(delta: number, moving: boolean) {
+		if (quality.pendingRatio && !moving) {
+			pixelRatio = quality.pendingRatio
+			quality.pendingRatio = 0
+			applyPixelRatio()
+		}
 		quality.frames++
 		quality.time += delta
 		if (quality.frames < 45) return
@@ -703,9 +711,9 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			quality.fast = 0
 			if (++quality.slow < 2) return
 			quality.slow = 0
-			if (pixelRatio > 0.75) {
-				pixelRatio = Math.max(0.75, pixelRatio - 0.25)
-				applyPixelRatio()
+			const current = quality.pendingRatio || pixelRatio
+			if (current > 0.75) {
+				quality.pendingRatio = Math.max(0.75, current - 0.25)
 			} else if (quality.drawn > count * 0.4) {
 				quality.drawn = Math.floor(quality.drawn * 0.75)
 				particles.setDrawRange(0, quality.drawn)
@@ -717,9 +725,8 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			if (quality.drawn < count) {
 				quality.drawn = Math.min(count, Math.floor(quality.drawn / 0.75))
 				particles.setDrawRange(0, quality.drawn)
-			} else if (pixelRatio < maxPixelRatio) {
-				pixelRatio = Math.min(maxPixelRatio, pixelRatio + 0.25)
-				applyPixelRatio()
+			} else if ((quality.pendingRatio || pixelRatio) < maxPixelRatio) {
+				quality.pendingRatio = Math.min(maxPixelRatio, (quality.pendingRatio || pixelRatio) + 0.25)
 			}
 		}
 	}
@@ -767,9 +774,9 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		new Euler(MathUtils.degToRad(HOMELAND.lat * 0.75), -MathUtils.degToRad(HOMELAND.lon), 0, 'XYZ')
 	)
 
-	function render(state: CosmosFrame, delta: number) {
+	function render(state: CosmosFrame, delta: number, moving = false) {
 		if (!reducedMotion) elapsed += delta
-		adapt(delta)
+		adapt(delta, moving)
 
 		const intro = MathUtils.clamp(state.intro, 0, 1)
 		const stage = MathUtils.clamp(state.stage, 0, 4)

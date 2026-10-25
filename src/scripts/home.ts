@@ -20,8 +20,8 @@ interface Chapter {
 	height: number
 	/** Scroll distance while the stage is pinned */
 	length: number
-	/** Text choreography, scrubbed by the chapter's progress. */
-	timeline: gsap.core.Timeline
+	/** Text choreography, set from the chapter's progress. */
+	beats: Beat[]
 }
 
 const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
@@ -29,57 +29,124 @@ const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
 const span = (value: number, a: number, b: number) => clamp((value - a) / (b - a))
 
 /** Each [data-beat="enter,exit"] rises from its masks at `enter` and leaves at `exit`. */
-function buildBeats(element: HTMLElement) {
-	const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
-	timeline.set({}, {}, 1) // normalise duration to 1
+/*
+ * Chapter text. Each [data-beat="enter,exit"] rises in word by word from a
+ * mask as the chapter's progress passes `enter`, and leaves upward at `exit`;
+ * small print ([data-fade]) fades instead. Everything is a function of
+ * progress, written only when it changes, and nothing carries a transform
+ * unless it is moving: a resting word has none, and a hidden beat is hidden
+ * as a whole. Hundreds of standing transforms inside sticky stages made every
+ * hover check during a scroll cost several milliseconds.
+ */
+interface Beat {
+	element: HTMLElement
+	enter: number
+	exit: number
+	words: HTMLElement[]
+	fades: HTMLElement[]
+	/** Last written value per word (yPercent) and per fade (opacity), to skip repeats. */
+	wordState: Float32Array
+	fadeState: Float32Array
+	shown: boolean | null
+}
 
-	element.querySelectorAll<HTMLElement>('[data-beat]').forEach((beat) => {
-		const [enter, exit] = (beat.dataset.beat ?? '0,1').split(',').map(Number)
-		const words = beat.querySelectorAll('.w > span')
-		// Small print, such as a list of links, fades rather than rising word by word.
-		const fades = beat.querySelectorAll('[data-fade]')
-		const duration = 0.07
+const BEAT = { duration: 0.07, enterStagger: 0.004, exitStagger: 0.003, fadeStagger: 0.008 }
+// GSAP's curves, which the beats were tuned with: powerN is x^(N+1).
+const power3Out = (t: number) => 1 - (1 - t) ** 4
+const power3In = (t: number) => t ** 4
+const power2Out = (t: number) => 1 - (1 - t) ** 3
+const power2In = (t: number) => t ** 3
 
-		if (enter > 0) {
-			timeline.fromTo(
-				words,
-				{ yPercent: 130 },
-				{ yPercent: 0, duration, stagger: 0.004, ease: 'power3.out' },
-				enter - duration
-			)
-			if (fades.length) {
-				timeline.fromTo(
-					fades,
-					{ autoAlpha: 0, y: 12 },
-					{ autoAlpha: 1, y: 0, duration, stagger: 0.008, ease: 'power2.out' },
-					enter - duration * 0.5
-				)
-			}
+function readBeats(chapter: HTMLElement): Beat[] {
+	return Array.from(chapter.querySelectorAll<HTMLElement>('[data-beat]'), (element) => {
+		const [enter, exit] = (element.dataset.beat ?? '0,1').split(',').map(Number)
+		const words = Array.from(element.querySelectorAll<HTMLElement>('.w > span'))
+		const fades = Array.from(element.querySelectorAll<HTMLElement>('[data-fade]'))
+		const beat: Beat = {
+			element,
+			enter,
+			exit,
+			words,
+			fades,
+			wordState: new Float32Array(words.length).fill(NaN),
+			fadeState: new Float32Array(fades.length).fill(NaN),
+			shown: null,
 		}
-		if (exit < 1) {
-			timeline.fromTo(
-				words,
-				{ yPercent: 0 },
-				{
-					yPercent: -130,
-					duration,
-					stagger: 0.003,
-					ease: 'power3.in',
-					immediateRender: false,
-				},
-				exit - duration
-			)
-			if (fades.length) {
-				timeline.fromTo(
-					fades,
-					{ autoAlpha: 1, y: 0 },
-					{ autoAlpha: 0, y: -12, duration, ease: 'power2.in', immediateRender: false },
-					exit - duration
-				)
-			}
-		}
+		// Until the first frame places it, a later beat starts hidden.
+		if (enter > 0) showBeat(beat, false)
+		return beat
 	})
-	return timeline
+}
+
+function showBeat(beat: Beat, shown: boolean) {
+	if (beat.shown === shown) return
+	beat.shown = shown
+	beat.element.style.opacity = shown ? '' : '0'
+	beat.element.style.pointerEvents = shown ? '' : 'none'
+}
+
+/** Where word `i` sits (yPercent) at chapter progress p: 130 below, 0 in place, -130 gone. */
+function wordAt(beat: Beat, i: number, p: number) {
+	const { duration, enterStagger, exitStagger } = BEAT
+	if (beat.exit < 1) {
+		const leave = (p - (beat.exit - duration + i * exitStagger)) / duration
+		if (leave > 0) return -130 * power3In(Math.min(leave, 1))
+	}
+	if (beat.enter <= 0) return 0
+	const arrive = (p - (beat.enter - duration + i * enterStagger)) / duration
+	return 130 * (1 - power3Out(Math.min(Math.max(arrive, 0), 1)))
+}
+
+/** Opacity of small print `i` at progress p (its lift follows the same curve). */
+function fadeAt(beat: Beat, i: number, p: number) {
+	const { duration, fadeStagger } = BEAT
+	if (beat.exit < 1) {
+		const leave = (p - (beat.exit - duration)) / duration
+		if (leave > 0) return -power2In(Math.min(leave, 1))
+	}
+	if (beat.enter <= 0) return 1
+	const arrive = (p - (beat.enter - duration * 0.5 + i * fadeStagger)) / duration
+	return power2Out(Math.min(Math.max(arrive, 0), 1))
+}
+
+function placeBeats(beats: Beat[], p: number) {
+	for (const beat of beats) {
+		let moving = false
+		let visible = false
+		for (let i = 0; i < beat.words.length; i++) {
+			const y = wordAt(beat, i, p)
+			if (y > -130 && y < 130) visible = true
+			if (y !== 0 && Math.abs(y) !== 130) moving = true
+		}
+		for (let i = 0; i < beat.fades.length; i++) {
+			const f = fadeAt(beat, i, p)
+			const alpha = f >= 0 ? f : 1 + f
+			if (alpha > 0) visible = true
+			if (alpha > 0 && alpha < 1) moving = true
+		}
+		if (!beat.words.length && !beat.fades.length) visible = true
+
+		showBeat(beat, visible)
+		// A hidden or resting beat clears its words; only a moving one sets them.
+		for (let i = 0; i < beat.words.length; i++) {
+			const y = visible && moving ? wordAt(beat, i, p) : 0
+			if (beat.wordState[i] === y) continue
+			beat.wordState[i] = y
+			beat.words[i].style.transform = y === 0 ? '' : `translateY(${y}%)`
+		}
+		for (let i = 0; i < beat.fades.length; i++) {
+			const f = visible ? fadeAt(beat, i, p) : 1
+			if (beat.fadeState[i] === f) continue
+			beat.fadeState[i] = f
+			const style = beat.fades[i].style
+			// Positive: arriving (lifting from below); negative: leaving upward.
+			const alpha = f >= 0 ? f : 1 + f
+			const lift = f >= 0 ? 12 * (1 - f) : 12 * f
+			style.opacity = alpha === 1 ? '' : String(alpha)
+			style.visibility = alpha === 0 ? 'hidden' : ''
+			style.transform = lift === 0 ? '' : `translateY(${lift}px)`
+		}
+	}
 }
 
 /** While a list animates its height, the page measures once at the end, not every frame. */
@@ -104,7 +171,7 @@ function initializeHomePage() {
 			start: 0,
 			height: 0,
 			length: 1,
-			timeline: buildBeats(element),
+			beats: readBeats(element),
 		})
 	)
 	const byName = (name: string) => chapters.find((c) => c.name === name)
@@ -162,7 +229,7 @@ function initializeHomePage() {
 
 		if (reducedMotion) frame.stage = Math.round(frame.stage)
 
-		chapters.forEach((chapter) => chapter.timeline.progress(progress(chapter, y)))
+		chapters.forEach((chapter) => placeBeats(chapter.beats, progress(chapter, y)))
 
 		// The nav reads dark on paper and light over the night chapters.
 		const probe = y + 30
@@ -188,6 +255,7 @@ function initializeHomePage() {
 
 	let last = performance.now()
 	let y = window.scrollY
+	let lastY = y
 	let settling = false
 	gsap.ticker.add(() => {
 		const now = performance.now()
@@ -209,15 +277,18 @@ function initializeHomePage() {
 			y = window.scrollY
 			settling = false
 		}
+		const moving = y !== lastY
+		lastY = y
 		compose(y)
 		if (cosmos && chapterVisible(y)) {
-			cosmos.render(frame, delta)
+			cosmos.render(frame, delta, moving)
 		}
 	})
 	gsap.ticker.lagSmoothing(0)
 
 	introduceName()
 	revealOnScroll()
+	warmImages()
 	initializeNavigation(lenis)
 	initializeShowMore()
 	initializeFilters()
@@ -232,6 +303,44 @@ function initializeHomePage() {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Images: fetched and decoded while the page is idle, not mid-scroll           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The page's images are lazy, so the first paint stays light. Once it has
+ * loaded and settled, they all come in at low priority, one after another, and
+ * are decoded off the main thread, so none arrives while someone is scrolling.
+ * The interview previews (shown on hover) are warmed the same way.
+ */
+function warmImages() {
+	const idle = (callback: () => void) =>
+		'requestIdleCallback' in window ? requestIdleCallback(callback, { timeout: 2500 }) : setTimeout(callback, 1200)
+
+	const start = () =>
+		idle(async () => {
+			const images = Array.from(document.images).filter((image) => image.loading === 'lazy')
+			const previews = Array.from(
+				document.querySelectorAll<HTMLElement>('[data-preview]'),
+				(link) => link.dataset.preview!
+			)
+			for (const image of images) {
+				image.fetchPriority = 'low'
+				image.loading = 'eager'
+				await image.decode().catch(() => {})
+			}
+			for (const source of previews) {
+				const image = new Image()
+				image.fetchPriority = 'low'
+				image.src = source
+				await image.decode().catch(() => {})
+			}
+		})
+
+	if (document.readyState === 'complete') start()
+	else window.addEventListener('load', start, { once: true })
+}
+
+/* -------------------------------------------------------------------------- */
 /* Intro: the one letter-level moment                                          */
 /* -------------------------------------------------------------------------- */
 
@@ -239,14 +348,23 @@ function introduceName() {
 	if (skipIntro || reducedMotion || window.scrollY > window.innerHeight * 0.5) return
 	const letters = document.querySelectorAll('.hero__name .ch')
 	const rest = document.querySelectorAll('.hero__role .w > span, .hero__arabic .w > span')
+	// Once in place, the letters drop their transforms (see placeBeats).
 	gsap.from(letters, {
 		yPercent: 130,
 		duration: 1.6,
 		stagger: 0.035,
 		ease: 'expo.out',
 		delay: 0.15,
+		clearProps: 'transform',
 	})
-	gsap.from(rest, { yPercent: 130, duration: 1.2, stagger: 0.03, ease: 'expo.out', delay: 0.7 })
+	gsap.from(rest, {
+		yPercent: 130,
+		duration: 1.2,
+		stagger: 0.03,
+		ease: 'expo.out',
+		delay: 0.7,
+		clearProps: 'transform',
+	})
 }
 
 /* -------------------------------------------------------------------------- */
@@ -265,7 +383,7 @@ function revealOnScroll() {
 			start: 'top 85%',
 			once: true,
 			onEnter: () =>
-				gsap.to(words, { yPercent: 0, duration: 1.3, stagger: 0.06, ease: 'expo.out' }),
+				gsap.to(words, { yPercent: 0, duration: 1.3, stagger: 0.06, ease: 'expo.out', clearProps: 'transform' }),
 		})
 	})
 
@@ -711,10 +829,16 @@ function initializePreview() {
 		{ passive: true }
 	)
 
-	gsap.ticker.add(() => {
+	// Follows the cursor only while it's showing, and stops once it has caught up.
+	// Eases by time, not by frame, so it trails the same on 60Hz and 120Hz screens.
+	gsap.ticker.add((_time, deltaMs) => {
 		if (!active && frame.style.opacity === '0') return
-		position.x += (target.x - position.x) * 0.16
-		position.y += (target.y - position.y) * 0.16
+		const dx = target.x - position.x
+		const dy = target.y - position.y
+		if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) return
+		const follow = 1 - Math.pow(0.84, deltaMs / (1000 / 60))
+		position.x += dx * follow
+		position.y += dy * follow
 		frame.style.transform = `translate3d(${position.x + 24}px, ${position.y}px, 0) translateY(-50%)`
 	})
 }

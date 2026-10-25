@@ -73,8 +73,9 @@ const collapsed = interviews.length - shown >= 3
 </section>
 
 <style>
+	/* The last paper section before the contact chapter: room before the night. */
 	.interviews {
-		padding-block: var(--section) 0;
+		padding-block: var(--section) clamp(4rem, 10vw, 9rem);
 	}
 
 	/* Closing rule under the last visible row, inside the page margins. */
