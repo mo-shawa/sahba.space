@@ -1,11 +1,9 @@
 ---
 import Chapter from './common/Chapter.astro'
 import Words from './common/Words.astro'
-import { lectures, moonContent } from '../data/siteContent'
+import { moonContent } from '../data/siteContent'
 
-const talk = moonContent.talkTitle
-	? lectures.find((lecture) => lecture.title.toLowerCase() === moonContent.talkTitle.toLowerCase())
-	: undefined
+const talk = moonContent.talk
 const talkShort = talk?.title.split(':')[0]
 
 // "Organizer of … · 2019, 2020, 2021": the years sit apart, in the soft colour.
@@ -117,10 +115,6 @@ const highlights = moonContent.highlights.map((line) => {
 
 	.closing .medium {
 		max-width: 26em;
-	}
-
-	.soft {
-		color: var(--night-ink-soft);
 	}
 
 	@media (max-width: 800px) {

@@ -16,6 +16,7 @@ uniform mat3 uGalaxyRotation;
 uniform mat3 uEarthRotation;
 uniform mat3 uMoonRotation;
 uniform vec3 uMoonCenter;
+uniform float uMoonRadius; // in Earth radii
 uniform float uMoonGlow;
 uniform float uEarthGlow;
 uniform vec3 uSun;
@@ -25,7 +26,7 @@ attribute vec3 aEarth;
 attribute vec4 aGround;   // xyz: place in the desert, w: fade toward the landscape's edges
 attribute vec3 aGalaxyColor;
 attribute vec4 aSeed;     // x: stagger, y: size/twinkle, z/w: drift direction
-attribute vec2 aSurface;  // x: earth kind (0 ocean, 1 land, 2 Jordan, 3 air, 4 dust), y: ground light
+attribute vec2 aSurface;  // x: earth kind (0 ocean, 1 land, 2 Palestine/Jordan, 3 air, 4 dust), y: ground light
 attribute vec4 aMoon;     // xyz: place on the Moon, w: how bright the ground is there
 
 varying vec3 vColor;
@@ -68,8 +69,6 @@ vec3 groundColor() {
     return mix(shade, sand, aSurface.y) * aGround.w;
 }
 
-const float MOON_RADIUS = 0.27;
-
 // The Moon takes about half of the ocean, land and air particles; Palestine,
 // Jordan and the starry dust stay with Earth.
 bool onMoon() {
@@ -86,7 +85,7 @@ vec3 moonColor() {
 
 float moonSize() {
     // The camera comes as close to the Moon as it does to Earth, relative to size.
-    return 0.82 * MOON_RADIUS;
+    return 0.82 * uMoonRadius;
 }
 
 float earthSize() {
@@ -95,7 +94,7 @@ float earthSize() {
 }
 
 vec3 systemPosition() {
-    return onMoon() ? uMoonCenter + uMoonRotation * aMoon.xyz * MOON_RADIUS : earthPosition();
+    return onMoon() ? uMoonCenter + uMoonRotation * aMoon.xyz * uMoonRadius : earthPosition();
 }
 
 vec3 systemColor() {

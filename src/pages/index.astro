@@ -2,11 +2,11 @@
 import AboutSection from '../components/AboutSection.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import ContactSection from '../components/ContactSection.astro'
+import CosmosCanvas from '../components/CosmosCanvas.astro'
 import HeroSection from '../components/HeroSection.astro'
 import InterviewsSection from '../components/InterviewsSection.astro'
 import LeadershipSection from '../components/LeadershipSection.astro'
 import LecturesSection from '../components/LecturesSection.astro'
-import LoadingOverlay from '../components/LoadingOverlay.astro'
 import MissionSection from '../components/MissionSection.astro'
 import MoonSection from '../components/MoonSection.astro'
 import Navigation from '../components/Navigation.astro'
@@ -20,7 +20,7 @@ import { siteMeta } from '../data/siteContent'
 	title={siteMeta.title}
 	description={siteMeta.description}
 >
-	<LoadingOverlay />
+	<CosmosCanvas />
 	<Navigation />
 	<main id="main">
 		<!-- Night chapters (particles) alternate with paper sections. -->

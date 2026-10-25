@@ -28,7 +28,9 @@ import { aboutContent } from '../data/siteContent'
 				sizes="(max-width: 800px) 75vw, 30vw"
 				loading="lazy"
 			/>
-			<figcaption class="small soft">{aboutContent.portraitCaption}</figcaption>
+			{aboutContent.portraitCaption && (
+				<figcaption class="small soft">{aboutContent.portraitCaption}</figcaption>
+			)}
 		</figure>
 
 		<div

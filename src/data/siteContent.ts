@@ -175,16 +175,6 @@ export const groundContent = {
 	})),
 }
 
-/** The Moon chapter: outreach. Its talk link is looked up from Lectures by title. */
-export const moonContent = {
-	label: home.moon.label,
-	title: home.moon.title,
-	statement: home.moon.statement,
-	highlights: home.moon.highlights,
-	closing: home.moon.closing,
-	talkTitle: home.moon.talk,
-}
-
 export const visionStatement = home.vision
 
 export const featuredQuote = home.quote
@@ -297,7 +287,6 @@ export const leadershipItems: LeadershipItem[] = load(
 ).leadership.map((item) => ({ organization: item.organization, href: item.url, roles: item.roles }))
 
 export interface Venue {
-	id: string
 	name: string
 	short: string
 	detail: string
@@ -350,7 +339,7 @@ export const publications: Publication[] = publicationRows.map((row) => {
 	const short = row.venueShort || row.venue
 	let venue = venues.find((v) => v.name === row.venue)
 	if (!venue) {
-		venue = { id: slug(short), name: row.venue, short, detail: row.venueDetail }
+		venue = { name: row.venue, short, detail: row.venueDetail }
 		venues.push(venue)
 	}
 	return {
@@ -365,8 +354,12 @@ export const publications: Publication[] = publicationRows.map((row) => {
 	}
 })
 
-const findPaper = (title: string) =>
-	publications.find((publication) => publication.title.toLowerCase() === title.toLowerCase())
+/** A paper by its exact title; a title that matches nothing is noted in the build log and skipped. */
+const findPaper = (title: string) => {
+	const paper = publications.find((publication) => publication.title.toLowerCase() === title.toLowerCase())
+	if (!paper) console.warn(`home.json: earth.relatedPapers names "${title}", which isn't in publications.json`)
+	return paper
+}
 
 export const earthContent = {
 	label: home.earth.label,
@@ -417,6 +410,23 @@ export const lectures: Lecture[] = load(
 	}))
 	// Newest first, whatever order they were added in.
 	.sort((a, b) => b.dateTime.localeCompare(a.dateTime))
+
+/** A talk by its exact title; a title that matches nothing is noted in the build log and skipped. */
+function findLecture(title: string) {
+	const lecture = lectures.find((entry) => entry.title.toLowerCase() === title.toLowerCase())
+	if (!lecture) console.warn(`home.json: moon.talk names "${title}", which isn't in lectures.json`)
+	return lecture
+}
+
+/** The Moon chapter: outreach. Its talk is looked up from Lectures by exact title. */
+export const moonContent = {
+	label: home.moon.label,
+	title: home.moon.title,
+	statement: home.moon.statement,
+	highlights: home.moon.highlights,
+	closing: home.moon.closing,
+	talk: home.moon.talk ? findLecture(home.moon.talk) : undefined,
+}
 
 export interface Interview {
 	outlet: string

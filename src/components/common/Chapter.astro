@@ -49,6 +49,10 @@ const { name, length, id, labelledby } = Astro.props
 		grid-row: 1;
 	}
 
+	.chapter :global(.soft) {
+		color: var(--night-ink-soft);
+	}
+
 	/* Underline the masked words, so links vanish with them. */
 	.chapter :global(.link:has(.w)) {
 		background: none;

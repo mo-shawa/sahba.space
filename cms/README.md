@@ -32,4 +32,4 @@ Changes appear on the site a minute or two after saving.
 
 ## Self-hosting later
 
-Pages CMS can also be self-hosted (a Node app with Postgres and a GitHub App). `cms/pages-cms/.env.example` lists the variables it needs. The content files and `.pages.yml` work unchanged with either.
+Pages CMS can also be self-hosted (a Node app with Postgres and a GitHub App; see [its docs](https://pagescms.org/docs/)). The content files and `.pages.yml` work unchanged with either.
