@@ -9,9 +9,10 @@ interface Props {
 }
 
 const { entry, extra } = Astro.props
-// The desktop hover preview loads a single, larger rendition on demand.
+// The desktop hover preview loads a single, larger rendition on demand, in the
+// image's own shape (no cropping anywhere).
 const preview = await getImage({ src: entry.image, width: 640, format: 'webp' })
-const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefined
+const ratio = (entry.image.width / entry.image.height).toFixed(3)
 ---
 
 <li
@@ -25,14 +26,13 @@ const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefi
 		target="_blank"
 		rel="noreferrer"
 		data-preview={preview.src}
-		data-preview-position={entry.imageFocus || undefined}
+		data-preview-ratio={ratio}
 	>
 		<Image
 			class="interview__thumb"
 			src={entry.image}
 			alt=""
-			width={160}
-			style={focus}
+			width={200}
 			loading="lazy"
 		/>
 		<span class="interview__outlet medium">{entry.outlet}</span>
@@ -94,7 +94,7 @@ const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefi
 
 	@media (max-width: 800px) {
 		.interview__link {
-			grid-template-columns: 4.5rem 1fr;
+			grid-template-columns: 6rem 1fr;
 			column-gap: 1rem;
 			row-gap: 0.2rem;
 			align-items: start;
@@ -104,9 +104,8 @@ const focus = entry.imageFocus ? `object-position: ${entry.imageFocus}` : undefi
 			display: block;
 			grid-column: 1;
 			grid-row: 1 / span 4;
-			width: 4.5rem;
-			aspect-ratio: 1;
-			object-fit: cover;
+			width: 6rem;
+			height: auto;
 		}
 
 		.interview__outlet,

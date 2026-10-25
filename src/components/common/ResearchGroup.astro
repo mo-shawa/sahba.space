@@ -23,12 +23,17 @@ const { year, publications, extra } = Astro.props
 				const venue = publication.venue
 				return (
 					<li
-						class="pub"
+						class:list={['pub', publication.href && 'pub--link']}
 						id={`pub-${publication.id}`}
-						data-venue={venue.id}
+						data-group={publication.group}
 					>
 						<p class="pub__title">
-							{publication.title}
+							{publication.href ? (
+								// prettier-ignore
+								<a class="pub__link" href={publication.href} target="_blank" rel="noreferrer">{publication.title}</a>
+							) : (
+								publication.title
+							)}
 							{publication.detail && (
 								<span class="pub__detail small">{publication.detail}</span>
 							)}
@@ -119,6 +124,66 @@ const { year, publications, extra } = Astro.props
 
 	.pub:target .pub__title {
 		color: var(--signal);
+	}
+
+	/* A paper with a link: the whole row opens it. On hover an ink panel sweeps
+	   across from the left, inverting what it covers, and the title steps in. */
+	.pub--link {
+		position: relative;
+		isolation: isolate;
+		background: var(--paper);
+	}
+
+	.pub--link::before {
+		content: '';
+		position: absolute;
+		inset: 0 -0.75rem;
+		z-index: 1;
+		background: var(--paper);
+		mix-blend-mode: difference;
+		pointer-events: none;
+		transform: scaleX(0);
+		transform-origin: right center;
+		transition: transform 700ms var(--ease-out);
+	}
+
+	.pub__link {
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.15em;
+		text-decoration-color: var(--rule-strong);
+		transition: text-decoration-color 300ms var(--ease-out);
+	}
+
+	.pub__link::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+	}
+
+	.pub--link .pub__title {
+		transition: transform 700ms var(--ease-out);
+	}
+
+	@media (hover: hover) {
+		.pub--link:hover::before {
+			transform: scaleX(1);
+			transform-origin: left center;
+		}
+
+		.pub--link:hover .pub__title {
+			transform: translateX(0.75rem);
+		}
+
+		.pub--link:hover .pub__link {
+			text-decoration-color: transparent;
+		}
+	}
+
+	.pub--link:has(.pub__link:focus-visible)::before {
+		transform: scaleX(1);
+		transform-origin: left center;
 	}
 
 	@media (max-width: 800px) {

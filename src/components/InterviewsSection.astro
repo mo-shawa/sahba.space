@@ -12,7 +12,7 @@ const collapsed = interviews.length - shown >= 3
 
 <section
 	id="interviews"
-	class="interviews paper"
+	class="interviews paper paper--ink"
 	aria-labelledby="interviews-title"
 >
 	<SectionTitle
@@ -101,20 +101,23 @@ const collapsed = interviews.length - shown >= 3
 		grid-column: 3 / span 8;
 	}
 
+	/* Each image keeps its own shape: the height follows the hovered row's ratio. */
 	.preview {
+		--width: clamp(15rem, 21vw, 21rem);
 		position: fixed;
 		left: 0;
 		top: 0;
 		z-index: 5;
-		width: clamp(12rem, 18vw, 17rem);
-		aspect-ratio: 4 / 5;
+		width: var(--width);
+		height: calc(var(--width) / var(--ratio, 1.6));
 		overflow: hidden;
 		pointer-events: none;
 		opacity: 0;
 		transform: translate3d(-50%, -50%, 0) scale(0.92);
 		transition:
 			opacity 300ms var(--ease-out),
-			scale 500ms var(--ease-out);
+			scale 500ms var(--ease-out),
+			height 500ms var(--ease-out);
 	}
 
 	.preview img {

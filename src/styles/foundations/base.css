@@ -128,6 +128,18 @@ p {
 	color: var(--ink);
 }
 
+/* Paper printed in reverse: the same tokens swapped, so every component inside
+   inverts with it. Breaks up long runs of paper between the night chapters. */
+.paper--ink {
+	--paper: #111210;
+	--paper-deep: #1d1e1b;
+	--ink: #eceae4;
+	--ink-soft: #a3a19a;
+	--rule: rgba(236, 234, 228, 0.16);
+	--rule-strong: rgba(236, 234, 228, 0.3);
+	--signal: var(--signal-night);
+}
+
 /* ---------- Type ---------- */
 
 .small {

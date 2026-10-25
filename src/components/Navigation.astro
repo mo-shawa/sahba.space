@@ -74,6 +74,12 @@ import { navigationItems, person } from '../data/siteContent'
 		opacity: 1;
 	}
 
+	/* Over a reversed (ink) section: light text on an ink backing. */
+	:global(html.on-ink:not(.menu-open)) .nav::before {
+		background: var(--ink);
+		opacity: 1;
+	}
+
 	.nav > :global(*) {
 		pointer-events: auto;
 	}

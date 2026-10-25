@@ -101,6 +101,13 @@ function initializeHomePage() {
 	const byName = (name: string) => chapters.find((c) => c.name === name)
 	root.classList.add('beats-ready')
 
+	// Reversed paper sections, where the nav switches to light text on ink.
+	const inkSections = Array.from(document.querySelectorAll<HTMLElement>('.paper--ink'), (element) => ({
+		element,
+		start: 0,
+		end: 0,
+	}))
+
 	const measure = () => {
 		chapters.forEach((chapter) => {
 			chapter.start = chapter.element.getBoundingClientRect().top + window.scrollY
@@ -109,6 +116,10 @@ function initializeHomePage() {
 			// minus innerHeight, which grows when a phone's toolbar collapses.
 			const stage = chapter.element.firstElementChild as HTMLElement | null
 			chapter.length = Math.max(chapter.height - (stage?.offsetHeight ?? window.innerHeight), 1)
+		})
+		inkSections.forEach((section) => {
+			section.start = section.element.getBoundingClientRect().top + window.scrollY
+			section.end = section.start + section.element.offsetHeight
 		})
 	}
 	measure()
@@ -153,12 +164,12 @@ function initializeHomePage() {
 
 		chapters.forEach((chapter) => chapter.timeline.progress(progress(chapter, y)))
 
-		// The nav reads dark on paper and light over the night chapters.
+		// The nav reads dark on paper and light over the night chapters and ink sections.
 		const probe = y + 30
-		root.classList.toggle(
-			'on-paper',
-			!chapters.some((c) => probe >= c.start && probe < c.start + c.height)
-		)
+		const onNight = chapters.some((c) => probe >= c.start && probe < c.start + c.height)
+		const onInk = inkSections.some((s) => probe >= s.start && probe < s.end)
+		root.classList.toggle('on-paper', !onNight && !onInk)
+		root.classList.toggle('on-ink', onInk)
 	}
 
 	/** Labels track Palestine (pointing left) and Jordan (pointing right) on the globe. */
@@ -400,12 +411,12 @@ function initializeFilters() {
 		button.addEventListener('click', () => {
 			const list = document.getElementById('publication-list')
 			if (list) openList(list)
-			const venue = button.dataset.filter
+			const group = button.dataset.filter
 			buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)))
 			years.forEach((year) => {
 				let shown = 0
-				year.querySelectorAll<HTMLElement>('[data-venue]').forEach((row) => {
-					const match = venue === 'all' || row.dataset.venue === venue
+				year.querySelectorAll<HTMLElement>('[data-group]').forEach((row) => {
+					const match = group === 'all' || row.dataset.group === group
 					row.hidden = !match
 					if (match) shown++
 				})
@@ -432,7 +443,7 @@ function initializePreview() {
 	document.querySelectorAll<HTMLElement>('[data-preview]').forEach((link) => {
 		link.addEventListener('pointerenter', (event) => {
 			image.src = link.dataset.preview!
-			image.style.objectPosition = link.dataset.previewPosition ?? ''
+			frame.style.setProperty('--ratio', link.dataset.previewRatio ?? '1.6')
 			if (!active) {
 				position.x = target.x = event.clientX
 				position.y = target.y = event.clientY

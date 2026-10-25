@@ -22,7 +22,8 @@ The particle scenes, layout and styling stay in code; the editor only touches co
 
 - **Add an interview:** Interviews → add an item at the top → fill in the outlet, format, link and an image → Save. The first six show on the page; the rest open with a "More interviews" button.
 - **Add a talk:** Lectures → add an item → pick the date (they sort themselves) → Save. If you only know the month, turn off "Show the day".
-- **Add a paper:** Publications → add an item → year, title, venue and authors (papers group by year automatically) → Save. The most recent years show first; earlier ones open with a button.
+- **Add a paper:** Publications → add an item → year, title, venue, authors, which work it belongs to (PSI, PhD, JSRI or Other, which the filters use) and a link to the paper → Save. Papers group by year automatically; the most recent years show first and earlier ones open with a button. Without a link, the row is plain text.
+- **Remove a link:** clear the link field (Education, Awards, Leadership, Publications) and the text stays, unlinked. In the biography, select the linked words and clear the link with the editor's link button.
 - **Edit your bio:** Home & about → Biography. Use the link button for links.
 - **Edit the night scenes:** Home & about → Earth chapter, Desert chapter and Closing statement. Keep them short; each line is revealed as you scroll.
 - **Emphasise a line in a testimonial:** make that sentence bold. It's shown large, with the full testimonial a click away.

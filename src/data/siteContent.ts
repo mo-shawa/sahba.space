@@ -209,8 +209,11 @@ export interface Degree {
 	degree: string
 	field: string
 	institution: string
+	/** Empty when the CMS has no link: the row shows plain text. */
 	href: string
 	note: string
+	/** The institution, with the note if there is one. */
+	place: string
 }
 
 export const education: Degree[] = load(
@@ -221,12 +224,17 @@ export const education: Degree[] = load(
 		),
 	}),
 	educationFile
-).education.map((entry) => ({ ...entry, href: entry.url }))
+).education.map((entry) => ({
+	...entry,
+	href: entry.url,
+	place: entry.note ? `${entry.institution}, ${entry.note.toLowerCase()}` : entry.institution,
+}))
 
 export interface Recognition {
 	year: string
 	title: string
 	detail: string
+	/** Empty when the CMS has no link: the row shows plain text. */
 	href: string
 }
 
@@ -277,13 +285,25 @@ export interface Venue {
 	detail: string
 }
 
+/** The body of work a paper belongs to; the publications filter groups by it. */
+export const paperGroups = [
+	{ id: 'psi', label: 'PSI', name: 'Palestine Space Institute' },
+	{ id: 'phd', label: 'PhD', name: 'PhD research' },
+	{ id: 'jsri', label: 'JSRI', name: 'Jordan Space Research Initiative' },
+	{ id: 'other', label: 'Other', name: 'Other work' },
+] as const
+export type PaperGroup = (typeof paperGroups)[number]['id']
+
 export interface Publication {
 	id: string
 	year: number
 	venue: Venue
+	group: PaperGroup
 	title: string
 	authors: string
 	detail: string
+	/** Empty when the CMS has no link. */
+	href: string
 }
 
 const publicationRows = load(
@@ -296,8 +316,10 @@ const publicationRows = load(
 				venue: text,
 				venueShort: optional,
 				venueDetail: optional,
+				group: z.enum(['PSI', 'PhD', 'JSRI', 'Other']).optional().default('Other'),
 				authors: z.string().trim().optional().default('El-Shawa, S'),
 				detail: optional,
+				url: optionalUrl,
 			})
 		),
 	}),
@@ -305,7 +327,7 @@ const publicationRows = load(
 ).publications
 
 /** Venues are derived from the papers, in order of first appearance. */
-export const venues: Venue[] = []
+const venues: Venue[] = []
 export const publications: Publication[] = publicationRows.map((row) => {
 	const short = row.venueShort || row.venue
 	let venue = venues.find((v) => v.name === row.venue)
@@ -317,9 +339,11 @@ export const publications: Publication[] = publicationRows.map((row) => {
 		id: slug(row.title),
 		year: row.year,
 		venue,
+		group: row.group.toLowerCase() as PaperGroup,
 		title: row.title,
 		authors: row.authors,
 		detail: row.detail,
+		href: row.url,
 	}
 })
 
@@ -385,7 +409,6 @@ export interface Interview {
 	linkLabel: string
 	image: ImageMetadata
 	imageAlt: string
-	imageFocus: string
 }
 
 export const interviews: Interview[] = load(
@@ -401,7 +424,6 @@ export const interviews: Interview[] = load(
 				linkLabel: optional,
 				image: text,
 				imageAlt: optional,
-				imageFocus: optional,
 			})
 		),
 	}),
@@ -415,7 +437,6 @@ export const interviews: Interview[] = load(
 	linkLabel: entry.linkLabel || 'Open',
 	image: image(entry.image),
 	imageAlt: entry.imageAlt,
-	imageFocus: entry.imageFocus,
 }))
 
 export interface Testimonial {

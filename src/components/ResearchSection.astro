@@ -2,15 +2,12 @@
 import ResearchGroup from './common/ResearchGroup.astro'
 import SectionTitle from './common/SectionTitle.astro'
 import ShowMore from './common/ShowMore.astro'
-import {
-	publications,
-	researchProfileLink,
-	venues,
-} from '../data/siteContent'
+import { paperGroups, publications, researchProfileLink } from '../data/siteContent'
 
 const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a)
-const countFor = (venueId: string) =>
-	publications.filter((publication) => publication.venue.id === venueId).length
+const groups = paperGroups
+	.map((group) => ({ ...group, count: publications.filter((p) => p.group === group.id).length }))
+	.filter((group) => group.count > 0)
 const inYear = (year: number) => publications.filter((p) => p.year === year)
 
 // Open on the most recent years, at least eight papers; the rest wait behind a
@@ -48,7 +45,7 @@ const collapsed = earlier >= 4
 		<div
 			class="filters"
 			role="group"
-			aria-label="Filter publications by venue"
+			aria-label="Filter publications by the work they belong to"
 			data-filters
 		>
 			<button
@@ -60,15 +57,15 @@ const collapsed = earlier >= 4
 				All <span class="numeric">{publications.length}</span>
 			</button>
 			{
-				venues.map((venue) => (
+				groups.map((group) => (
 					<button
 						type="button"
 						class="filter small"
 						aria-pressed="false"
-						data-filter={venue.id}
-						title={venue.name}
+						data-filter={group.id}
+						title={group.name}
 					>
-						{venue.short} <span class="numeric">{countFor(venue.id)}</span>
+						{group.label} <span class="numeric">{group.count}</span>
 					</button>
 				))
 			}

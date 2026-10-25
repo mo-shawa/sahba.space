@@ -22,14 +22,18 @@ import { education, recognition } from '../data/siteContent'
 					>
 						<span class="facts__key">{entry.degree}</span>
 						<span class="facts__main">{entry.field}</span>
-						<a
-							class="facts__meta"
-							href={entry.href}
-							target="_blank"
-							rel="noreferrer"
-						>
-							{entry.note ? `${entry.institution}, ${entry.note.toLowerCase()}` : entry.institution}
-						</a>
+						{entry.href ? (
+							<a
+								class="facts__meta"
+								href={entry.href}
+								target="_blank"
+								rel="noreferrer"
+							>
+								{entry.place}
+							</a>
+						) : (
+							<span class="facts__meta">{entry.place}</span>
+						)}
 					</li>
 				))
 			}
@@ -54,14 +58,18 @@ import { education, recognition } from '../data/siteContent'
 						data-reveal
 					>
 						<span class="facts__key numeric">{item.year}</span>
-						<a
-							class="facts__main"
-							href={item.href}
-							target="_blank"
-							rel="noreferrer"
-						>
-							{item.title}
-						</a>
+						{item.href ? (
+							<a
+								class="facts__main"
+								href={item.href}
+								target="_blank"
+								rel="noreferrer"
+							>
+								{item.title}
+							</a>
+						) : (
+							<span class="facts__main">{item.title}</span>
+						)}
 						<span class="facts__meta">{item.detail}</span>
 					</li>
 				))
