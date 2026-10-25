@@ -71,6 +71,13 @@ const collapsed = earlier >= 4
 			}
 		</div>
 
+		<!-- Follows the pointer from row to row; see initializePublicationHover. -->
+		<div
+			class="pub-bar"
+			aria-hidden="true"
+			data-pub-bar
+		></div>
+
 		<ol
 			class="index"
 			id="publication-list"
@@ -152,6 +159,21 @@ const collapsed = earlier >= 4
 
 	.research__more {
 		grid-column: 3 / -1;
+	}
+
+	/* An ink bar across the whole page, inverting what it covers (the section
+	   is the blend group). Placed over the hovered row by script. */
+	.pub-bar {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1;
+		height: 0;
+		background: var(--paper);
+		mix-blend-mode: difference;
+		pointer-events: none;
+		visibility: hidden;
 	}
 
 	.index {

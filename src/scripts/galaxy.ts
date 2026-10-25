@@ -54,9 +54,9 @@ const HOMELAND = { lat: 31.6, lon: 36 }
 /**
  * The Moon in the last two scenes, in Earth radii (stylised, not to scale): it
  * starts on the far right of its orbit, which is tilted toward the viewer so
- * the Moon passes above and below Earth, never behind it. Periods in seconds.
+ * the Moon passes above and below Earth, never behind it. Period in seconds.
  */
-const MOON = { radius: 0.27, orbit: 3.4, tilt: MathUtils.degToRad(28), orbitPeriod: 60, spinPeriod: 90 }
+const MOON = { radius: 0.27, orbit: 3.4, tilt: MathUtils.degToRad(32), period: 60 }
 
 /** An angle brought into -π..π, so unwinding it never takes more than half a turn. */
 const wrapAngle = (angle: number) => angle - Math.PI * 2 * Math.round(angle / (Math.PI * 2))
@@ -386,8 +386,10 @@ function buildParticles(count: number) {
 			// Dust stays in the sky as stars.
 			ground.set([earth[i3], Math.abs(earth[i3 + 1]) + 0.5, earth[i3 + 2] - 4, 1], i4)
 		} else {
+			// A few run back under and well behind the camera, out to where it
+			// starts its approach, so the landscape has no near edge in view.
 			const distance =
-				Math.random() < 0.1 ? -0.8 + 1.3 * Math.random() : 0.5 + 6.6 * Math.pow(Math.random(), 1.5)
+				Math.random() < 0.15 ? 0.5 - 7 * Math.pow(Math.random(), 1.5) : 0.5 + 6.6 * Math.pow(Math.random(), 1.5)
 			const halfWidth = 1.4 + Math.max(distance, 0) * 1.1
 			const across = Math.random() * 2 - 1
 			const x = Math.sign(across) * Math.pow(Math.abs(across), 1.3) * halfWidth
@@ -402,7 +404,7 @@ function buildParticles(count: number) {
 			light = 0.22 + 0.78 * MathUtils.clamp(normal.dot(sunlight) * 1.2, 0, 1)
 			light *= 0.8 + 0.2 * MathUtils.clamp(y + 0.45, 0, 1)
 			const sides = 1 - MathUtils.smoothstep(Math.abs(x) / halfWidth, 0.68, 1)
-			const near = MathUtils.smoothstep(distance, -0.8, 0.5)
+			const near = MathUtils.smoothstep(distance, -6.5, -3.5)
 			ground.set([x, y, z, sides * near], i4)
 		}
 
@@ -633,13 +635,10 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 				: frame(front, fill(0.5) * MOON.radius, 0.38, upright, long),
 			moonHome
 		)
-		// Pulled back to show the whole system: the orbit's width fills a share of the frame.
-		const span = 2 * (MOON.orbit + MOON.radius)
-		const fit = (share: number) =>
-			span / (share * 2 * Math.tan(MathUtils.degToRad(long / 2)) * aspect())
-		const system = portrait
-			? frame(front, fit(0.86), 0, upright, long, 0.5)
-			: frame(front, fit(0.36), 0.56, upright, long, 0.3)
+		// Pulled far back: a small Earth, as before, with the Moon in orbit around it.
+		const far = portrait
+			? frame(front, 70, 0.3, upright, long, 0.5)
+			: frame(front, 70, 0.62, upright, long)
 
 		shots = [
 			{ ...galaxy, sun, stars: 0.9 },
@@ -654,7 +653,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 				fov: portrait ? 70 : 55,
 			},
 			{ ...moonShot, sun: moonSun, stars: 1 },
-			{ ...system, sun, stars: 1 },
+			{ ...far, sun, stars: 1 },
 		]
 	}
 
@@ -754,7 +753,6 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 	let systemClock = 0
 	const yAxis = new Vector3(0, 1, 0)
 	const xAxis = new Vector3(1, 0, 0)
-	const spin = new Quaternion()
 	const tilt = new Quaternion().setFromAxisAngle(xAxis, MOON.tilt)
 	const untilt = tilt.clone().invert()
 	const orbit = new Quaternion()
@@ -840,23 +838,21 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		material.uniforms.uGalaxyRotation.value.setFromMatrix4(rotation)
 
 		// Earth: swings round until Jordan faces us.
-		// The Earth–Moon system: Earth turns once every 90s, starting with the
-		// Levant facing us; the Moon orbits once a minute, keeping one face to
-		// Earth. Both run on a clock that starts once the system is in full
-		// view, and unwind with the scroll (never more than half a turn) if the
-		// reader heads back up; the clock resets once they're out of view.
+		// The Moon orbits Earth once a minute, keeping one face toward it, on a
+		// clock that starts once the system is in full view. If the reader heads
+		// back up, the orbit unwinds with the scroll (never more than half a
+		// turn) and the clock resets once the system is out of view.
 		if (stage >= 3.999) {
 			if (!reducedMotion) systemClock += delta
 		} else if (stage < 3.6) systemClock = 0
 		const reveal = ease(MathUtils.clamp((stage - 3.6) / 0.4, 0, 1))
-		const turn = (period: number) => wrapAngle((systemClock / period) * Math.PI * 2) * reveal
+		const orbitAngle = wrapAngle((systemClock / MOON.period) * Math.PI * 2) * reveal
 
 		quaternion.slerpQuaternions(
 			fromWest,
 			facingJordan,
 			ease(MathUtils.clamp(state.earthTurn, 0, 1))
 		)
-		quaternion.multiply(spin.setFromAxisAngle(yAxis, turn(MOON.spinPeriod)))
 		rotation.makeRotationFromQuaternion(quaternion)
 		material.uniforms.uEarthRotation.value.setFromMatrix4(rotation)
 
@@ -866,7 +862,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		moonFace.setFromEuler(
 			euler.set(MathUtils.degToRad(6), MathUtils.degToRad(-14 + moonTurn * 20), MathUtils.degToRad(-4))
 		)
-		orbit.setFromAxisAngle(yAxis, turn(MOON.orbitPeriod)).premultiply(tilt)
+		orbit.setFromAxisAngle(yAxis, orbitAngle).premultiply(tilt)
 		material.uniforms.uMoonCenter.value.set(MOON.orbit, 0, 0).applyQuaternion(orbit)
 		lock.copy(orbit).multiply(untilt).multiply(moonFace)
 		rotation.makeRotationFromQuaternion(lock)
@@ -877,8 +873,8 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		// The Moon holds half the particles in a small disc, so its light falls
 		// with its apparent area as the camera backs away.
 		const away = MathUtils.clamp(stage - 3, 0, 1)
-		material.uniforms.uEarthGlow.value = MathUtils.smoothstep(stage, 3.15, 3.7) * 1.15
-		material.uniforms.uMoonGlow.value = MathUtils.lerp(0.11, 1.3, (1 - away) ** 2)
+		material.uniforms.uEarthGlow.value = MathUtils.smoothstep(stage, 3.15, 3.7) * 2
+		material.uniforms.uMoonGlow.value = MathUtils.lerp(0.05, 1.3, (1 - away) ** 2)
 		material.uniforms.uDustScale.value = Math.max(1, camera.position.length() / 3)
 
 		const swirlRatio = MathUtils.lerp(800, 16, 1 - Math.pow(2, -10 * intro))

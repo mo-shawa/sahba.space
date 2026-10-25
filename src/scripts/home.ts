@@ -221,6 +221,8 @@ function initializeHomePage() {
 	initializeNavigation(lenis)
 	initializeShowMore()
 	initializeFilters()
+	initializePublicationHover()
+	initializeDisclosures()
 	initializePreview()
 
 	document.fonts?.ready.then(() => {
@@ -349,17 +351,24 @@ function initializeNavigation(lenis: Lenis | null) {
 /* Long lists that open on request                                             */
 /* -------------------------------------------------------------------------- */
 
-/** `quiet` leaves the fade-in and re-measuring to the caller (the filters animate it themselves). */
+/**
+ * Opens a long list. The list grows to its full height while the new items
+ * rise in, and the "show more" button folds away, spacing included, so
+ * nothing below jumps. `quiet` leaves the list itself to the caller (the
+ * filters animate it) and only folds the button.
+ */
 function openList(list: HTMLElement, focus = false, quiet = false) {
 	if (list.hasAttribute('data-open')) return
-	const extras = list.querySelectorAll<HTMLElement>('[data-extra]')
+	const extras = Array.from(list.querySelectorAll<HTMLElement>('[data-extra]'))
+	const startHeight = list.offsetHeight
 	list.toggleAttribute('data-open', true)
+	if (list.id === 'publication-list') resetPublicationHover()
 
 	const button = document.querySelector<HTMLButtonElement>(`[data-more="${list.id}"]`)
+	const holder = button?.parentElement ?? null
 	button?.setAttribute('aria-expanded', 'true')
-	if (button) button.hidden = true
 
-	// The button is gone, so keyboard focus continues at the first new item.
+	// The button is going, so keyboard focus continues at the first new item.
 	const first = extras[0]
 	if (focus && first) {
 		const target = first.querySelector<HTMLElement>('a') ?? first
@@ -367,11 +376,42 @@ function openList(list: HTMLElement, focus = false, quiet = false) {
 		target.focus({ preventScroll: true })
 	}
 
-	if (quiet) return
-	if (!reducedMotion) {
-		gsap.from(extras, { opacity: 0, duration: 0.8, stagger: 0.04, ease: 'power2.out' })
+	const done = () => {
+		if (holder) holder.hidden = true
+		gsap.set([list, holder, ...extras].filter(Boolean), {
+			clearProps: 'height,overflow,opacity,transform,paddingTop,paddingBottom,marginTop',
+		})
 	}
-	ScrollTrigger.refresh()
+	if (reducedMotion) {
+		done()
+		if (!quiet) relayout()
+		return
+	}
+
+	const fold = gsap.timeline({ defaults: { ease: 'power3.inOut' } })
+	if (holder) {
+		// Fold the button and the gap above it, whatever the layout around it.
+		const gap = parseFloat(getComputedStyle(holder.parentElement!).rowGap) || 0
+		fold.to(holder, { height: 0, paddingTop: 0, paddingBottom: 0, marginTop: -gap, opacity: 0, overflow: 'hidden', duration: 0.5 }, 0)
+	}
+	if (quiet) {
+		fold.eventCallback('onComplete', done)
+		return
+	}
+
+	holdLayout(true)
+	const endHeight = list.offsetHeight
+	fold.fromTo(list, { height: startHeight, overflow: 'hidden' }, { height: endHeight, duration: 0.75 }, 0)
+	fold.fromTo(
+		extras,
+		{ opacity: 0, y: 16 },
+		{ opacity: 1, y: 0, duration: 0.6, stagger: 0.04, ease: 'power3.out' },
+		0.15
+	)
+	fold.eventCallback('onComplete', () => {
+		done()
+		holdLayout(false)
+	})
 }
 
 function initializeShowMore() {
@@ -421,6 +461,7 @@ function initializeFilters() {
 
 	function filterTo(filter: string) {
 		finish()
+		resetPublicationHover()
 		if (reducedMotion) {
 			apply(filter)
 			relayout()
@@ -495,6 +536,138 @@ function initializeFilters() {
 			filterTo(button.dataset.filter ?? 'all')
 		})
 	)
+}
+
+/* -------------------------------------------------------------------------- */
+/* Publications: one ink bar travels from row to row                           */
+/* -------------------------------------------------------------------------- */
+
+let resetPublicationHover = () => {}
+
+/**
+ * The bar rises in from the edge the pointer came through, glides between
+ * rows as it moves, and leaves through the edge it exits by, so it reads as
+ * one dark band moving down or up the list.
+ */
+function initializePublicationHover() {
+	const bar = document.querySelector<HTMLElement>('[data-pub-bar]')
+	const section = bar?.parentElement?.closest<HTMLElement>('section')
+	if (!bar || !section) return
+	const rows = Array.from(document.querySelectorAll<HTMLElement>('.pub--link'))
+	const duration = reducedMotion ? 0 : 0.5
+	let current: HTMLElement | null = null
+
+	const fromTop = (row: HTMLElement, y: number) => {
+		const box = row.getBoundingClientRect()
+		return y < box.top + box.height / 2
+	}
+
+	function enter(row: HTMLElement, viaTop: boolean) {
+		const box = row.getBoundingClientRect()
+		const y = box.top - section!.getBoundingClientRect().top
+		if (current) {
+			gsap.to(bar!, { y, height: box.height, scaleY: 1, duration, ease: 'power3.out', overwrite: true })
+		} else {
+			gsap.set(bar!, { y, height: box.height, scaleY: 0, autoAlpha: 1, transformOrigin: viaTop ? 'top' : 'bottom' })
+			gsap.to(bar!, { scaleY: 1, duration, ease: 'power3.out', overwrite: true })
+		}
+		current = row
+	}
+
+	function leave(viaTop: boolean) {
+		if (!current) return
+		current = null
+		gsap.set(bar!, { transformOrigin: viaTop ? 'top' : 'bottom' })
+		gsap.to(bar!, {
+			scaleY: 0,
+			duration,
+			ease: 'power3.out',
+			overwrite: true,
+			onComplete: () => void gsap.set(bar!, { autoAlpha: 0 }),
+		})
+	}
+
+	resetPublicationHover = () => {
+		current = null
+		gsap.killTweensOf(bar)
+		gsap.set(bar, { autoAlpha: 0, scaleY: 0 })
+	}
+
+	for (const row of rows) {
+		row.addEventListener('pointerenter', (event) => {
+			if (event.pointerType === 'mouse') enter(row, fromTop(row, event.clientY))
+		})
+		row.addEventListener('pointerleave', (event) => {
+			if (event.pointerType !== 'mouse') return
+			// Moving onto another paper: its pointerenter carries the bar there.
+			const next = (event.relatedTarget as Element | null)?.closest('.pub--link')
+			if (!next) leave(fromTop(row, event.clientY))
+		})
+		row.addEventListener('focusin', () => enter(row, true))
+		row.addEventListener('focusout', (event) => {
+			if (!(event.relatedTarget as Element | null)?.closest('.pub--link')) leave(false)
+		})
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Disclosures (the full testimonials) open and close smoothly                 */
+/* -------------------------------------------------------------------------- */
+
+function initializeDisclosures() {
+	if (reducedMotion) return
+	document.querySelectorAll<HTMLDetailsElement>('details[data-expand]').forEach((details) => {
+		const summary = details.querySelector('summary')
+		const body = details.querySelector<HTMLElement>('[data-expand-body]')
+		if (!summary || !body) return
+		let running: gsap.core.Timeline | null = null
+
+		summary.addEventListener('click', (event) => {
+			event.preventDefault()
+			running?.progress(1)
+			const opening = !details.open
+			const parts = body.children.length ? Array.from(body.children) : [body]
+			const settle = () => {
+				gsap.set([body, ...parts], { clearProps: 'height,overflow,marginTop,opacity,transform' })
+				running = null
+				holdLayout(false)
+			}
+			holdLayout(true)
+
+			if (opening) {
+				details.open = true
+				const height = body.offsetHeight
+				const margin = getComputedStyle(body).marginTop
+				running = gsap
+					.timeline({ onComplete: settle })
+					.fromTo(
+						body,
+						{ height: 0, marginTop: 0, overflow: 'hidden' },
+						{ height, marginTop: margin, duration: 0.65, ease: 'power3.inOut' }
+					)
+					.fromTo(
+						parts,
+						{ opacity: 0, y: 14 },
+						{ opacity: 1, y: 0, duration: 0.55, stagger: 0.07, ease: 'power3.out' },
+						0.18
+					)
+			} else {
+				running = gsap
+					.timeline({
+						onComplete: () => {
+							details.open = false
+							settle()
+						},
+					})
+					.to(parts, { opacity: 0, duration: 0.25, ease: 'power1.out' })
+					.to(
+						body,
+						{ height: 0, marginTop: 0, overflow: 'hidden', duration: 0.55, ease: 'power3.inOut' },
+						0.1
+					)
+			}
+		})
+	})
 }
 
 /* -------------------------------------------------------------------------- */

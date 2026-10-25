@@ -24,12 +24,18 @@ const { testimonial } = Astro.props
 		</blockquote>
 		{
 			testimonial.hasMore && (
-				<details class="voice__more">
+				<details
+					class="voice__more"
+					data-expand
+				>
 					<summary class="small">
 						<span class="voice__open">Read the full testimonial</span>
 						<span class="voice__close">Close</span>
 					</summary>
-					<blockquote class="voice__quote">
+					<blockquote
+						class="voice__quote"
+						data-expand-body
+					>
 						<RichTextInline html={testimonial.quoteHtml} />
 					</blockquote>
 				</details>
