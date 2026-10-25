@@ -16,7 +16,7 @@ The particle scenes, layout and styling stay in code; the editor only touches co
 1. Sign in at [app.pagescms.org](https://app.pagescms.org) with GitHub and install the Pages CMS GitHub App on `mo-shawa/sahba.space` (this repository only).
 2. Open the repository in Pages CMS and check that the sections load.
 3. Under **Collaborators**, invite Sahba by email. She doesn't need a GitHub account; she signs in from the email link.
-4. When you're ready for her saves to go live on their own, connect the repository in Cloudflare: **Workers & Pages → sahba-space → Settings → Builds → Connect**, branch `main`, build command `npm run build`, deploy command `npx wrangler deploy`. Until then, publish manually with `npm run deploy`.
+4. Publishing is automatic: the repository is connected to Cloudflare Workers Builds (since 2026-10-26), so every save to `main` rebuilds and deploys the site. If a save breaks validation, the build fails and the live site stays as it was; the error is in **Workers & Pages → sahba-space → Builds**.
 
 ## For Sahba
 
@@ -28,7 +28,7 @@ The particle scenes, layout and styling stay in code; the editor only touches co
 - **Edit the night scenes:** Home & about → Earth chapter, Desert chapter and Closing statement. Keep them short; each line is revealed as you scroll.
 - **Emphasise a line in a testimonial:** make that sentence bold. It's shown large, with the full testimonial a click away.
 
-Changes appear on the site a minute or two after saving, once publishing is connected.
+Changes appear on the site a minute or two after saving.
 
 ## Self-hosting later
 
