@@ -105,7 +105,10 @@ function initializeHomePage() {
 		chapters.forEach((chapter) => {
 			chapter.start = chapter.element.getBoundingClientRect().top + window.scrollY
 			chapter.height = chapter.element.offsetHeight
-			chapter.length = Math.max(chapter.height - window.innerHeight, 1)
+			// The pinned distance is the track minus the sticky stage (100svh), not
+			// minus innerHeight, which grows when a phone's toolbar collapses.
+			const stage = chapter.element.firstElementChild as HTMLElement | null
+			chapter.length = Math.max(chapter.height - (stage?.offsetHeight ?? window.innerHeight), 1)
 		})
 	}
 	measure()
@@ -137,7 +140,8 @@ function initializeHomePage() {
 		const arriving = (chapter: Chapter | undefined) =>
 			!!chapter && y >= chapter.start - window.innerHeight
 
-		frame.intro = reducedMotion ? 1 : span(progress(byName('cosmos'), y), 0.08, 0.7)
+		// The galaxy finishes winding just before About slides over it.
+		frame.intro = reducedMotion ? 1 : span(progress(byName('cosmos'), y), 0.1, 0.9)
 		if (arriving(home)) frame.stage = 2 + span(pHome, 0, 0.6)
 		else if (arriving(ground)) frame.stage = 1 + span(pGround, 0, 0.45)
 		else if (arriving(earth)) frame.stage = span(pEarth, 0, 0.4)
@@ -189,13 +193,28 @@ function initializeHomePage() {
 	lenis?.on('scroll', ScrollTrigger.update)
 
 	let last = performance.now()
+	let y = window.scrollY
+	let settling = false
 	gsap.ticker.add(() => {
 		const now = performance.now()
 		const delta = Math.min((now - last) / 1000, 0.1)
 		last = now
 
 		lenis?.raf(now)
-		const y = window.scrollY
+		// Lenis glides in fractions of a pixel, but the browser rounds its scroll
+		// position to device pixels, which would turn the end of every glide into
+		// steps. Follow Lenis instead, and finish its last fraction of a pixel
+		// (which it snaps) at the same rate rather than in one jump.
+		if (lenis?.isScrolling === 'smooth') {
+			y = lenis.animatedScroll
+			settling = true
+		} else if (settling && Math.abs(window.scrollY - y) < 1) {
+			y += (window.scrollY - y) * (1 - Math.exp(-6 * delta))
+			if (Math.abs(window.scrollY - y) < 0.002) settling = false
+		} else {
+			y = window.scrollY
+			settling = false
+		}
 		compose(y)
 		if (cosmos && chapterVisible(y)) {
 			cosmos.render(frame, delta)

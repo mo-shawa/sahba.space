@@ -55,13 +55,15 @@ const { item } = Astro.props
 	}
 
 	.org__name a {
-		transition: color 300ms var(--ease-out);
-	}
-
-	.org__name a:hover {
 		text-decoration: underline;
 		text-decoration-thickness: 1px;
 		text-underline-offset: 0.12em;
+		text-decoration-color: var(--rule-strong);
+		transition: text-decoration-color 300ms var(--ease-out);
+	}
+
+	.org__name a:hover {
+		text-decoration-color: currentColor;
 	}
 
 	.org__roles {

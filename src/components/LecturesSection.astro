@@ -123,10 +123,16 @@ import { lectures } from '../data/siteContent'
 		max-width: 22em;
 	}
 
-	.talk__title a:hover {
+	.talk__title a {
 		text-decoration: underline;
 		text-decoration-thickness: 1px;
 		text-underline-offset: 0.12em;
+		text-decoration-color: var(--rule-strong);
+		transition: text-decoration-color 300ms var(--ease-out);
+	}
+
+	.talk__title a:hover {
+		text-decoration-color: currentColor;
 	}
 
 	.talk__context {
