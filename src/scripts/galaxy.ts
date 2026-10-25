@@ -8,27 +8,19 @@ import {
 	MathUtils,
 	Matrix3,
 	Matrix4,
-	Mesh,
-	NormalBlending,
 	PerspectiveCamera,
-	PlaneGeometry,
 	Points,
 	Quaternion,
 	Scene,
 	ShaderMaterial,
-	TextureLoader,
 	Vector3,
 	WebGLRenderer,
 } from 'three'
-import visorFace from '../assets/astronaut/visor-face.jpg?url'
 import { HIGHLIGHT, HIGHLIGHT_CENTRES, LAND } from '../data/earthMask'
 import fragmentShader from '../shaders/fragment.glsl?raw'
 import vertexShader from '../shaders/vertex.glsl?raw'
 import starsFragmentShader from '../shaders/stars.fragment.glsl?raw'
 import starsVertexShader from '../shaders/stars.vertex.glsl?raw'
-import visorFragmentShader from '../shaders/visor.fragment.glsl?raw'
-import visorVertexShader from '../shaders/visor.vertex.glsl?raw'
-import { AstronautPart, createAstronaut, HELMET, type AstronautPoint } from './astronaut'
 
 /**
  * Everything the page can ask of the scene for one frame. Each value is a pure
@@ -57,12 +49,6 @@ export interface Cosmos {
 	resize: () => void
 	/** Where Palestine and Jordan are on screen after the last render, in CSS pixels. */
 	labels: { palestine: ScreenPoint; jordan: ScreenPoint }
-	/** The astronaut's helmet on screen after the last render; `visible` once it has formed. */
-	helmet: ScreenPoint & { radius: number }
-	/** Raise or lower the visor, which shows her face beneath. */
-	setVisor: (open: boolean) => void
-	/** Brighten the visor while it's pointed at or focused. */
-	setVisorHover: (on: boolean) => void
 }
 
 // The palette is authored as display colours and written straight into
@@ -203,11 +189,6 @@ function buildParticles(count: number) {
 	const ground = new Float32Array(count * 3)
 	const seed = new Float32Array(count * 4)
 	const surface = new Float32Array(count * 2)
-	// The last chapter's astronaut: local position + part (0 = not part of it), and a lit colour.
-	const astro = new Float32Array(count * 4)
-	const astroColor = new Float32Array(count * 3)
-	const astronaut = createAstronaut()
-	const point: AstronautPoint = { position: new Vector3(), color: new Color(), part: AstronautPart.Suit }
 
 	const isLand = decodeGrid(LAND)
 	const region = decodeGrid(HIGHLIGHT)
@@ -322,14 +303,6 @@ function buildParticles(count: number) {
 		seed[i4 + 3] = Math.random()
 		surface[i2] = kind
 		surface[i2 + 1] = light
-
-		// About one particle in seven leaves the ground at the end to form the
-		// astronaut; Palestine, Jordan and the starry dust stay with Earth.
-		if ((kind === 0 || kind === 1 || kind === 3) && Math.random() < 0.15) {
-			astronaut.sample(point)
-			astro.set([point.position.x, point.position.y, point.position.z, point.part], i4)
-			astroColor.set([point.color.r, point.color.g, point.color.b], i3)
-		}
 	}
 
 	const geometry = new BufferGeometry()
@@ -341,8 +314,6 @@ function buildParticles(count: number) {
 	geometry.setAttribute('aGround', new BufferAttribute(ground, 3))
 	geometry.setAttribute('aSeed', new BufferAttribute(seed, 4))
 	geometry.setAttribute('aSurface', new BufferAttribute(surface, 2))
-	geometry.setAttribute('aAstro', new BufferAttribute(astro, 4))
-	geometry.setAttribute('aAstroColor', new BufferAttribute(astroColor, 3))
 	return geometry
 }
 
@@ -430,33 +401,11 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 			uEarthRotation: { value: new Matrix3() },
 			uDustScale: { value: 1 },
 			uSun: { value: new Vector3() },
-			uAstro: { value: new Matrix4() },
-			uVisor: { value: 0 },
-			uVisorGlow: { value: 0 },
 		},
 	})
 	const points = new Points(particles, material)
 	points.frustumCulled = false
 	scene.add(points)
-
-	// Her face behind the visor: drawn first, so the visor's gold particles add
-	// over it. The photo loads the first time someone raises the visor.
-	const faceMaterial = new ShaderMaterial({
-		vertexShader: visorVertexShader,
-		fragmentShader: visorFragmentShader,
-		transparent: true,
-		depthWrite: false,
-		depthTest: false,
-		blending: NormalBlending,
-		uniforms: { uFace: { value: null }, uOpacity: { value: 0 } },
-	})
-	const face = new Mesh(new PlaneGeometry(0.44, 0.44), faceMaterial)
-	face.matrixAutoUpdate = false
-	face.frustumCulled = false
-	face.renderOrder = -1
-	face.visible = false
-	scene.add(face)
-	const faceLocal = new Matrix4().makeTranslation(HELMET.center.x, HELMET.center.y - 0.01, HELMET.center.z + 0.05)
 
 	const starsMaterial = new ShaderMaterial({
 		vertexShader: starsVertexShader,
@@ -510,14 +459,6 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 
 	let shots: Shot[] = []
 	let fieldShot: Shot
-	/**
-	 * Where the astronaut floats, relative to the camera: screen placement
-	 * (-1..1 across and up) and height as a share of the last shot's frame.
-	 * It travels with the camera, so it can gather in view as the camera pulls
-	 * away from the ground.
-	 */
-	const astronautLayout = { across: 0, up: 0, height: 0 }
-	const ASTRONAUT_DISTANCE = 9
 
 	function composeShots() {
 		const portrait = aspect() < 0.9
@@ -548,17 +489,10 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 				? frame(front, fill(0.5), 0, upright, long, 0.52)
 				: frame(front, fill(0.72), 0, upright, long, 0.38)
 			: frame(front, fill(0.6), 0.36, upright, long)
-		// The distant Earth sits high on the right; the astronaut floats nearer,
-		// below it on wide screens and beside it on tall ones, a hand raised toward it.
 		const far = portrait
-			? frame(front, 70, 0.32, upright, long, 0.52)
-			: frame(front, 70, 0.78, upright, long, 0.46)
+			? frame(front, 70, 0.3, upright, long, 0.5)
+			: frame(front, 70, 0.62, upright, long)
 		const sun = new Vector3(0.65, 0.35, 0.7).normalize()
-
-		Object.assign(
-			astronautLayout,
-			portrait ? { across: -0.4, up: 0.5, height: 0.24 } : { across: 0.58, up: -0.14, height: 0.44 }
-		)
 
 		shots = [
 			{ ...galaxy, sun, stars: 0.9 },
@@ -687,30 +621,6 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 	const anchorWorld = new Vector3()
 	const toCamera = new Vector3()
 
-	const astronautMatrix = new Matrix4()
-	const astronautTurn = new Quaternion()
-	const astronautScale = new Vector3()
-	const astronautPosition = new Vector3()
-	const cameraBasis = new Matrix4()
-	const cameraTurn = new Quaternion()
-	const forward = new Vector3()
-	const right = new Vector3()
-	const screenUp = new Vector3()
-	const helmet = { x: 0, y: 0, radius: 0, visible: false }
-	const helmetEdge = new Vector3()
-	const visor = { open: 0, target: 0, glow: 0, hover: 0 }
-	let faceRequested = false
-
-	function setVisor(open: boolean) {
-		visor.target = open ? 1 : 0
-		if (open && !faceRequested) {
-			faceRequested = true
-			new TextureLoader().load(visorFace, (texture) => {
-				faceMaterial.uniforms.uFace.value = texture
-			})
-		}
-	}
-
 	function render(state: CosmosFrame, delta: number) {
 		if (!reducedMotion) elapsed += delta
 		adapt(delta)
@@ -802,55 +712,7 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		starsMaterial.uniforms.uBrightness.value = starLevel
 		stars.rotation.y = elapsed * 0.004
 
-		// The astronaut floats a fixed distance in front of the camera (before the
-		// pointer's parallax), sized for the last shot's lens, drifting slowly and
-		// turned a little toward Earth.
-		forward.subVectors(target, position).normalize()
-		right.crossVectors(forward, up).normalize()
-		screenUp.crossVectors(right, forward)
-		const halfHeight = ASTRONAUT_DISTANCE * Math.tan(MathUtils.degToRad(shots[3].fov / 2))
-		const scale = astronautLayout.height * halfHeight
-		astronautPosition
-			.copy(position)
-			.addScaledVector(forward, ASTRONAUT_DISTANCE)
-			.addScaledVector(right, astronautLayout.across * halfHeight * aspect())
-			.addScaledVector(screenUp, (astronautLayout.up + Math.sin(elapsed * 0.45) * 0.012) * halfHeight)
-		cameraTurn.setFromRotationMatrix(cameraBasis.makeBasis(right, screenUp, forward.negate()))
-		astronautTurn
-			.setFromEuler(
-				euler.set(
-					0.12 + Math.sin(elapsed * 0.19) * 0.04,
-					0.38 + Math.sin(elapsed * 0.13 + 1) * 0.09,
-					-0.14 + Math.sin(elapsed * 0.17 + 2) * 0.05
-				)
-			)
-			.premultiply(cameraTurn)
-		astronautScale.setScalar(scale)
-		astronautMatrix.compose(astronautPosition, astronautTurn, astronautScale)
-		material.uniforms.uAstro.value.copy(astronautMatrix)
-
-		// Visor: an interaction rather than scroll, so it eases over time.
-		const settle = reducedMotion ? 1 : 1 - Math.exp(-delta * 4)
-		visor.open += (visor.target - visor.open) * settle
-		visor.glow += (visor.hover - visor.glow) * settle
-		const faceLoaded = faceMaterial.uniforms.uFace.value !== null
-		material.uniforms.uVisor.value = visor.open
-		material.uniforms.uVisorGlow.value = visor.glow
-		faceMaterial.uniforms.uOpacity.value = faceLoaded ? visor.open * 0.45 : 0
-		face.visible = faceLoaded && visor.open > 0.002 && stage > 2.5
-		face.matrix.multiplyMatrices(astronautMatrix, faceLocal)
-
 		renderer.render(scene, camera)
-
-		anchorWorld.copy(HELMET.center).applyMatrix4(astronautMatrix)
-		helmetEdge.copy(anchorWorld).addScaledVector(screenUp, HELMET.radius * scale)
-		anchorWorld.project(camera)
-		helmetEdge.project(camera)
-		helmet.x = (anchorWorld.x * 0.5 + 0.5) * canvas.clientWidth
-		helmet.y = (-anchorWorld.y * 0.5 + 0.5) * canvas.clientHeight
-		helmet.radius = Math.abs(helmetEdge.y - anchorWorld.y) * 0.5 * canvas.clientHeight
-		// Particles arrive staggered; the helmet is whole by the end of the morph.
-		helmet.visible = stage > 2.97
 
 		for (const key of ['palestine', 'jordan'] as const) {
 			const label = labels[key]
@@ -866,12 +728,5 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 	window.addEventListener('resize', () => resize())
 	resize(true)
 
-	return {
-		render,
-		resize: () => resize(true),
-		labels,
-		helmet,
-		setVisor,
-		setVisorHover: (on: boolean) => (visor.hover = on ? 1 : 0),
-	}
+	return { render, resize: () => resize(true), labels }
 }

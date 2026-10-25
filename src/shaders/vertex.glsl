@@ -1,7 +1,6 @@
 // One particle cloud, three bodies. Every particle knows where it sits in the
 // galaxy, on Earth and in a desert landscape; uStage blends between them:
 //   0 = galaxy, 1 = Earth, 2 = ground, 3 = Earth again (a distant dot).
-// At 3, about one particle in seven forms an astronaut instead of Earth.
 
 uniform float uTime;
 uniform float uStage;
@@ -14,9 +13,6 @@ uniform float uDustScale;
 uniform mat3 uGalaxyRotation;
 uniform mat3 uEarthRotation;
 uniform vec3 uSun;
-uniform mat4 uAstro;
-uniform float uVisor;     // 0 = visor down, 1 = raised (her face shows)
-uniform float uVisorGlow; // 0..1 while the visor is pointed at
 
 attribute vec3 aGalaxy;
 attribute vec3 aEarth;
@@ -24,8 +20,6 @@ attribute vec3 aGround;
 attribute vec3 aGalaxyColor;
 attribute vec4 aSeed;     // x: stagger, y: size/twinkle, z/w: drift direction
 attribute vec2 aSurface;  // x: earth kind (0 ocean, 1 land, 2 Jordan, 3 air, 4 dust), y: ground light
-attribute vec4 aAstro;    // xyz: place on the astronaut, w: part (0 none, 1 suit, 2 visor, 3 lamp)
-attribute vec3 aAstroColor;
 
 varying vec3 vColor;
 
@@ -67,14 +61,6 @@ vec3 groundColor() {
     return mix(shade, sand, aSurface.y);
 }
 
-vec3 astroColor() {
-    if (aAstro.w > 1.5 && aAstro.w < 2.5) {
-        // The gold film brightens when pointed at and thins when raised.
-        return aAstroColor * (1.0 + uVisorGlow * 0.9) * mix(1.0, 0.16, uVisor);
-    }
-    return aAstroColor;
-}
-
 float earthSize() {
     float kind = aSurface.x;
     return kind > 3.5 ? 0.8 : (kind < 0.5 ? 0.42 : 0.55);
@@ -105,16 +91,9 @@ void main() {
         t = uStage - 1.0;
     } else {
         from = aGround; fromColor = groundColor(); fromSize = 1.0;
-        if (aAstro.w > 0.5) {
-            to = (uAstro * vec4(aAstro.xyz, 1.0)).xyz; toColor = astroColor() * 1.35; toSize = 1.5;
-        } else {
-            to = earthPosition(); toColor = earthColor(); toSize = earthSize();
-        }
+        to = earthPosition(); toColor = earthColor(); toSize = earthSize();
         t = uStage - 2.0;
     }
-    // Particles heading for the astronaut rise straight off the ground; the
-    // swirl around Earth's centre would fling them far out of frame.
-    float swirlAmount = uStage >= 2.0 && aAstro.w > 0.5 ? 0.0 : 1.0;
 
     float w = stagger(t);
     vec3 position = mix(from, to, w);
@@ -123,7 +102,7 @@ void main() {
     float flight = sin(w * PI);
     vec3 drift = normalize(vec3(cos(aSeed.z * 6.2832), aSeed.w - 0.5, sin(aSeed.z * 6.2832)));
     position += drift * flight * (0.35 + aSeed.x * 0.5);
-    float swirl = flight * (1.2 + aSeed.w) * swirlAmount;
+    float swirl = flight * (1.2 + aSeed.w);
     position.xz = mat2(cos(swirl), -sin(swirl), sin(swirl), cos(swirl)) * position.xz;
 
     vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);

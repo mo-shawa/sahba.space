@@ -52,16 +52,6 @@ const year = new Date().getFullYear()
 		</p>
 	</div>
 
-	<!-- Sits over the astronaut's helmet, positioned every frame. -->
-	<button
-		type="button"
-		class="visor"
-		aria-label="Look inside the astronaut's visor"
-		aria-pressed="false"
-		disabled
-		data-visor
-	></button>
-
 	<footer
 		class="footer small"
 		data-beat="0.64,1"
@@ -89,30 +79,6 @@ const year = new Date().getFullYear()
 </Chapter>
 
 <style>
-	.visor {
-		position: fixed;
-		left: 0;
-		top: 0;
-		z-index: 2;
-		border-radius: 50%;
-		cursor: pointer;
-		visibility: hidden;
-	}
-
-	.visor:not(:disabled) {
-		visibility: visible;
-	}
-
-	.visor:focus-visible {
-		outline: 1px solid var(--signal-night);
-		outline-offset: 4px;
-	}
-
-	:global(html.no-webgl) .visor,
-	:global(html:not(.js)) .visor {
-		display: none;
-	}
-
 	.vision {
 		grid-column: 1 / span 7;
 		align-self: center;
