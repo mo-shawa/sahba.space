@@ -10,9 +10,11 @@ interface Props {
 	length: number
 	id?: string
 	labelledby?: string
+	/** Where a link to this chapter lands, as chapter progress (0..1). */
+	arrive?: number
 }
 
-const { name, length, id, labelledby } = Astro.props
+const { name, length, id, labelledby, arrive } = Astro.props
 ---
 
 <section
@@ -20,6 +22,7 @@ const { name, length, id, labelledby } = Astro.props
 	data-chapter={name}
 	id={id}
 	aria-labelledby={labelledby}
+	data-arrive={arrive}
 	style={`--length: ${length}`}
 >
 	<div class="chapter__stage grid">

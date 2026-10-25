@@ -105,6 +105,50 @@ const structuredData = {
 				document.documentElement.classList.add('skip-intro')
 			}
 		</script>
+		<!--
+			The curtain, styled here rather than in the bundle so it is on screen
+			from the first paint: no fonts, scripts or images involved. It covers
+			the page while it loads, and again for in-page travel (see
+			src/scripts/page/curtain.ts). Without JavaScript it never shows; if the
+			script never arrives, the animation below lifts it after 4 seconds.
+		-->
+		<style is:inline>
+			html.js { background: #040506; }
+			.curtain { display: none; }
+			html.js .curtain {
+				display: block;
+				position: fixed;
+				inset: 0;
+				z-index: 60;
+				background: #040506;
+				color: #ecebe6;
+				--ink: #ecebe6;
+				--ink-soft: #9a9993;
+				pointer-events: auto;
+			}
+			html.js .curtain[data-state='intro'] { animation: curtain-failsafe 0.8s ease 4s forwards; }
+			html.js .curtain[data-state='open'] { visibility: hidden; pointer-events: none; }
+			html.skip-intro .curtain[data-state='intro'] { display: none; }
+			@keyframes curtain-failsafe { to { opacity: 0; visibility: hidden; } }
+			.curtain__star {
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				width: 6px;
+				height: 6px;
+				margin: -3px 0 0 -3px;
+				border-radius: 50%;
+				background: #fff6ea;
+				box-shadow: 0 0 10px 2px rgba(255, 226, 184, 0.6), 0 0 42px 12px rgba(255, 210, 150, 0.12);
+				animation: curtain-star 2.6s ease-in-out infinite;
+			}
+			@keyframes curtain-star {
+				0%, 100% { transform: scale(0.72); opacity: 0.55; }
+				50% { transform: scale(1); opacity: 1; }
+			}
+			@media (prefers-reduced-motion: reduce) { .curtain__star { animation: none; } }
+			.curtain__stage { position: absolute; inset: 0; }
+		</style>
 		<script
 			is:inline
 			type="application/ld+json"
@@ -112,6 +156,18 @@ const structuredData = {
 		/>
 	</head>
 	<body>
+		<div
+			class="curtain"
+			aria-hidden="true"
+			data-state="intro"
+			data-curtain
+		>
+			<div class="curtain__star"></div>
+			<div
+				class="curtain__stage"
+				data-curtain-stage
+			></div>
+		</div>
 		<a
 			class="skip-link"
 			href="#main">Skip to content</a

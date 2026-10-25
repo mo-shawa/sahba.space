@@ -1,31 +1,57 @@
 import type Lenis from 'lenis'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { travel, travelling } from './curtain'
 import { root } from './env'
 import { openList } from './lists'
+import { settleInView } from './reveal'
 
-/** In-page links scroll smoothly; the nav marks the section in view; the phone menu. */
+/** Where a link to `target` lands: a chapter's chosen moment, or the element's top (less its scroll margin). */
+function landing(target: HTMLElement) {
+	const top = target.getBoundingClientRect().top + window.scrollY
+	const arrive = Number(target.dataset.arrive ?? NaN)
+	let y = top - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0)
+	if (target.matches('[data-chapter]') && !Number.isNaN(arrive)) {
+		const stage = target.firstElementChild as HTMLElement | null
+		y = top + (target.offsetHeight - (stage?.offsetHeight ?? window.innerHeight)) * arrive
+	}
+	const max = document.documentElement.scrollHeight - window.innerHeight
+	return Math.round(Math.min(Math.max(y, 0), max))
+}
+
+/** In-page links travel under the curtain (no smooth scroll); the nav marks the section in view; the phone menu. */
 export function initializeNavigation(lenis: Lenis | null) {
-	const links = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
-	const scrollTo = (hash: string) => {
-		const target = hash === '#top' ? 0 : document.querySelector<HTMLElement>(hash)
-		if (target === null) return
-		const list = target && target.closest<HTMLElement>('[data-collapsible]')
-		if (list && target.closest('[data-extra]')) openList(list)
-		if (lenis) lenis.scrollTo(target, { duration: 1.6, force: true })
-		else if (target === 0) window.scrollTo({ top: 0 })
-		else target.scrollIntoView()
-		history.replaceState(null, '', hash === '#top' ? location.pathname : hash)
+	const go = (hash: string) => {
+		const target = document.querySelector<HTMLElement>(hash)
+		if (!target || travelling()) return
+		// A paper hidden in a collapsed list: open it first, so the landing is measured with it showing.
+		const list = target.closest<HTMLElement>('[data-collapsible]')
+		if (list && target.closest('[data-extra]')) openList(list, { animate: false })
+		const match = target.matches('[data-curtain-match]') ? target : target.querySelector<HTMLElement>('[data-curtain-match]')
+		travel({
+			y: landing(target),
+			match,
+			lenis,
+			beforeJump: () => setMenu(false),
+			afterJump: () => {
+				settleInView()
+				history.replaceState(null, '', hash === '#top' ? location.pathname : hash)
+			},
+		}).then(() => {
+			if (!target.hasAttribute('tabindex')) target.tabIndex = -1
+			target.focus({ preventScroll: true })
+		})
 	}
 
-	links.forEach((link) =>
+	document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
+		// The skip link keeps the browser's own instant jump and focus handling.
+		if (link.classList.contains('skip-link')) return
 		link.addEventListener('click', (event) => {
 			const hash = link.getAttribute('href')!
 			if (hash.length < 2) return
 			event.preventDefault()
-			setMenu(false)
-			scrollTo(hash)
+			go(hash)
 		})
-	)
+	})
 
 	// Mark the section in view.
 	const navLinks = document.querySelectorAll<HTMLAnchorElement>('.nav__link')

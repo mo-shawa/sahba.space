@@ -8,6 +8,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { createCosmos, type CosmosFrame } from './cosmos'
 import { placeBeats, readBeats, type Beat } from './page/beats'
+import { liftArrivalCurtain } from './page/curtain'
 import { reducedMotion, root } from './page/env'
 import { warmImages } from './page/images'
 import { layoutHeld, onRelayout } from './page/layout'
@@ -15,7 +16,7 @@ import { initializeDisclosures, initializeShowMore } from './page/lists'
 import { initializeNavigation } from './page/navigation'
 import { initializePreview } from './page/preview'
 import { initializeFilters, initializePublicationHover } from './page/publications'
-import { introduceName, revealOnScroll } from './page/reveal'
+import { introduceName, revealOnScroll, settleInView } from './page/reveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -135,6 +136,10 @@ function initializeHomePage() {
 	const lenis = reducedMotion ? null : new Lenis({ lerp: 0.1, smoothWheel: true })
 	lenis?.on('scroll', ScrollTrigger.update)
 
+	// The arrival curtain waits for the first frame to be drawn.
+	let firstFrameDrawn: (() => void) | null = null
+	const firstFrame = new Promise<void>((resolve) => (firstFrameDrawn = resolve))
+
 	let last = performance.now()
 	let y = window.scrollY
 	let lastY = y
@@ -165,11 +170,20 @@ function initializeHomePage() {
 		if (cosmos && chapterVisible(y)) {
 			cosmos.render(frame, delta, moving)
 		}
+		if (firstFrameDrawn) {
+			const drawn = firstFrameDrawn
+			firstFrameDrawn = null
+			requestAnimationFrame(() => drawn())
+		}
 	})
 	gsap.ticker.lagSmoothing(0)
 
-	introduceName()
 	revealOnScroll()
+	// At the top her name rises as the sky shows; arriving further down (a link
+	// to a section, a reload), what's on screen is simply there.
+	liftArrivalCurtain(Promise.all([document.fonts.ready, firstFrame]), lenis, () =>
+		window.scrollY > window.innerHeight * 0.5 ? settleInView() : introduceName()
+	)
 	warmImages()
 	initializeNavigation(lenis)
 	initializeShowMore()

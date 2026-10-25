@@ -12,6 +12,7 @@ const year = new Date().getFullYear()
 <Chapter
 	name="home"
 	length={3}
+	arrive={0.8}
 	id="contact"
 	labelledby="contact-title"
 >
@@ -44,6 +45,7 @@ const year = new Date().getFullYear()
 		<a
 			class="contact__email"
 			href={email.href}
+			data-curtain-match
 		>
 			<Words text={email.handle} />
 		</a>
