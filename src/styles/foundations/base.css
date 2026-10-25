@@ -133,6 +133,7 @@ p {
 .paper--ink {
 	--paper: #111210;
 	--paper-deep: #1d1e1b;
+	--paper-raised: #222320;
 	--ink: #eceae4;
 	--ink-soft: #a3a19a;
 	--rule: rgba(236, 234, 228, 0.16);

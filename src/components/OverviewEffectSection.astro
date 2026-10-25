@@ -39,7 +39,7 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 		}
 		{
 			earthContent.related.length > 0 && (
-				<ul class="now__papers small">
+				<ul class="now__papers medium">
 					{earthContent.related.map((paper) => (
 						// prettier-ignore
 						<li data-fade><a class="link" href={`#pub-${paper.id}`}>{paper.title} ({paper.venue.short} {paper.year})</a></li>
@@ -47,23 +47,6 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 				</ul>
 			)
 		}
-	</div>
-
-	<div
-		class="place place--west"
-		data-place-label="palestine"
-		aria-hidden="true"
-	>
-		<span class="place__label small">Palestine</span>
-		<span class="place__line"></span>
-	</div>
-	<div
-		class="place"
-		data-place-label="jordan"
-		aria-hidden="true"
-	>
-		<span class="place__line"></span>
-		<span class="place__label small">Jordan</span>
 	</div>
 </Chapter>
 
@@ -92,37 +75,12 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 
 	.now__papers {
 		display: grid;
-		gap: 0.6rem;
-		max-width: 30em;
+		gap: 0.85rem;
+		max-width: 26em;
 	}
 
 	.soft {
 		color: var(--night-ink-soft);
-	}
-
-	/* Track Palestine and Jordan on the globe; positioned every frame. */
-	.place {
-		position: fixed;
-		left: 0;
-		top: 0;
-		z-index: 1;
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		opacity: 0;
-		pointer-events: none;
-		will-change: transform, opacity;
-	}
-
-	.place__line {
-		width: 3rem;
-		height: 1px;
-		background: var(--signal-night);
-	}
-
-	.place__label {
-		color: var(--night-ink);
-		white-space: nowrap;
 	}
 
 	@media (max-width: 800px) {
@@ -130,10 +88,6 @@ const phd = education.find((entry) => entry.degree === 'PhD')
 		.now {
 			grid-column: 1 / -1;
 			align-self: end;
-		}
-
-		.place__line {
-			width: 1.75rem;
 		}
 	}
 </style>

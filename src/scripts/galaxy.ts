@@ -16,7 +16,7 @@ import {
 	Vector3,
 	WebGLRenderer,
 } from 'three'
-import { HIGHLIGHT, HIGHLIGHT_CENTRES, LAND } from '../data/earthMask'
+import { HIGHLIGHT, LAND } from '../data/earthMask'
 import fragmentShader from '../shaders/fragment.glsl?raw'
 import vertexShader from '../shaders/vertex.glsl?raw'
 import starsFragmentShader from '../shaders/stars.fragment.glsl?raw'
@@ -37,18 +37,9 @@ export interface CosmosFrame {
 	groundTravel: number
 }
 
-export interface ScreenPoint {
-	x: number
-	y: number
-	/** Facing the camera (not behind the globe) */
-	visible: boolean
-}
-
 export interface Cosmos {
 	render: (frame: CosmosFrame, delta: number) => void
 	resize: () => void
-	/** Where Palestine and Jordan are on screen after the last render, in CSS pixels. */
-	labels: { palestine: ScreenPoint; jordan: ScreenPoint }
 }
 
 // The palette is authored as display colours and written straight into
@@ -610,16 +601,6 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 	const facingJordan = new Quaternion().setFromEuler(
 		new Euler(MathUtils.degToRad(HOMELAND.lat * 0.75), -MathUtils.degToRad(HOMELAND.lon), 0, 'XYZ')
 	)
-	const anchors = {
-		palestine: fromLatLon(HIGHLIGHT_CENTRES.palestine.lat, HIGHLIGHT_CENTRES.palestine.lon, new Vector3()),
-		jordan: fromLatLon(HIGHLIGHT_CENTRES.jordan.lat, HIGHLIGHT_CENTRES.jordan.lon, new Vector3()),
-	}
-	const labels = {
-		palestine: { x: 0, y: 0, visible: false } as ScreenPoint,
-		jordan: { x: 0, y: 0, visible: false } as ScreenPoint,
-	}
-	const anchorWorld = new Vector3()
-	const toCamera = new Vector3()
 
 	function render(state: CosmosFrame, delta: number) {
 		if (!reducedMotion) elapsed += delta
@@ -713,20 +694,10 @@ export function createCosmos(canvas: HTMLCanvasElement): Cosmos | null {
 		stars.rotation.y = elapsed * 0.004
 
 		renderer.render(scene, camera)
-
-		for (const key of ['palestine', 'jordan'] as const) {
-			const label = labels[key]
-			anchorWorld.copy(anchors[key]).applyQuaternion(quaternion)
-			toCamera.copy(camera.position).sub(anchorWorld)
-			label.visible = anchorWorld.dot(toCamera) > 0 && stage > 0.5
-			anchorWorld.project(camera)
-			label.x = (anchorWorld.x * 0.5 + 0.5) * canvas.clientWidth
-			label.y = (-anchorWorld.y * 0.5 + 0.5) * canvas.clientHeight
-		}
 	}
 
 	window.addEventListener('resize', () => resize())
 	resize(true)
 
-	return { render, resize: () => resize(true), labels }
+	return { render, resize: () => resize(true) }
 }
