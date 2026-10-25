@@ -12,6 +12,8 @@
 	/* Day: the page is paper. Night: only where the particles are. */
 	--paper: #eceae4;
 	--paper-deep: #e2dfd7;
+	/* Resting buttons: a step lighter than the page, so they sit on it. */
+	--paper-raised: #f6f5f1;
 	--ink: #111210;
 	--ink-soft: #5b5a54;
 	--rule: rgba(17, 18, 16, 0.15);

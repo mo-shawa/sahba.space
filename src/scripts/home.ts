@@ -123,14 +123,9 @@ function initializeHomePage() {
 
 	/** The whole scene as a pure function of scroll position. */
 	const frame: CosmosFrame = { intro: 0, stage: 0, earthTurn: 0, groundTravel: 0, moonTurn: 0 }
-	const earthChapter = byName('earth')
-	const placeLabels = {
-		palestine: document.querySelector<HTMLElement>('[data-place-label="palestine"]'),
-		jordan: document.querySelector<HTMLElement>('[data-place-label="jordan"]'),
-	}
 
 	function compose(y: number) {
-		const earth = earthChapter
+		const earth = byName('earth')
 		const ground = byName('ground')
 		const home = byName('home')
 		const pEarth = progress(earth, y)
@@ -163,23 +158,6 @@ function initializeHomePage() {
 			'on-paper',
 			!chapters.some((c) => probe >= c.start && probe < c.start + c.height)
 		)
-	}
-
-	/** Labels track Palestine (pointing left) and Jordan (pointing right) on the globe. */
-	function positionPlaceLabels(y: number) {
-		if (!cosmos || !earthChapter) return
-		const p = progress(earthChapter, y)
-		const pinned = y >= earthChapter.start && y <= earthChapter.start + earthChapter.length
-		for (const key of ['palestine', 'jordan'] as const) {
-			const element = placeLabels[key]
-			const point = cosmos.labels[key]
-			if (!element) continue
-			const opacity = pinned && point.visible ? span(p, 0.8, 0.9) : 0
-			element.style.opacity = String(opacity)
-			if (opacity === 0) continue
-			const shift = key === 'palestine' ? 'translateX(-100%) translateX(-6px)' : 'translateX(6px)'
-			element.style.transform = `translate3d(${point.x}px, ${point.y}px, 0) ${shift} translateY(-50%)`
-		}
 	}
 
 	/** Only draw while some chapter is on screen; paper sections cover the rest. */
@@ -222,7 +200,6 @@ function initializeHomePage() {
 		compose(y)
 		if (cosmos && chapterVisible(y)) {
 			cosmos.render(frame, delta)
-			positionPlaceLabels(y)
 		}
 	})
 	gsap.ticker.lagSmoothing(0)
