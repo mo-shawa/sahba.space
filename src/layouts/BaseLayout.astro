@@ -5,6 +5,12 @@ import 'lenis/dist/lenis.css'
 import '../styles/site.css'
 import { education, person, siteMeta, socialLinks } from '../data/siteContent'
 
+// The curtain is styled inline in the head rather than in the bundle, so it is
+// on screen from the first paint: no fonts, scripts or images involved. It
+// covers the page while it loads, and again for in-page travel (see
+// src/scripts/page/curtain.ts). Without JavaScript it never shows; if the
+// script never arrives, its failsafe animation lifts it after 4 seconds.
+
 interface Props {
 	title?: string
 	description?: string
@@ -105,13 +111,6 @@ const structuredData = {
 				document.documentElement.classList.add('skip-intro')
 			}
 		</script>
-		<!--
-			The curtain, styled here rather than in the bundle so it is on screen
-			from the first paint: no fonts, scripts or images involved. It covers
-			the page while it loads, and again for in-page travel (see
-			src/scripts/page/curtain.ts). Without JavaScript it never shows; if the
-			script never arrives, the animation below lifts it after 4 seconds.
-		-->
 		<style is:inline>
 			html.js { background: #040506; }
 			.curtain { display: none; }
@@ -161,7 +160,7 @@ const structuredData = {
 				50% { transform: scale(1); opacity: 1; }
 			}
 			@media (prefers-reduced-motion: reduce) { .curtain__star { animation: none; } }
-			.curtain__stage { position: absolute; left: 0; right: 0; top: 0; height: 100vh; }
+			.curtain__stage { position: absolute; left: 0; right: 0; top: 0; }
 		</style>
 		<script
 			is:inline

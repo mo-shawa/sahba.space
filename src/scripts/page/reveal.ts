@@ -29,11 +29,8 @@ export function introduceName() {
 
 const rises = new Map<HTMLElement, ScrollTrigger>()
 
-/**
- * Puts a heading straight into place, skipping its rise: used when the curtain
- * has already shown it, so the real one is waiting underneath.
- */
-export function settleRise(element: HTMLElement) {
+/** Puts a heading straight into place, skipping its rise. */
+function settleRise(element: HTMLElement) {
 	rises.get(element)?.kill()
 	rises.delete(element)
 	const words = element.querySelectorAll('.w > span')

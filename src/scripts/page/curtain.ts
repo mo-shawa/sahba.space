@@ -125,6 +125,7 @@ interface Journey {
 function shield(top: number) {
 	const block = document.createElement('div')
 	block.className = 'curtain-shield'
+	// With room to spare for a phone's toolbar sliding away.
 	const height = Math.min(window.innerHeight + 160, document.documentElement.scrollHeight - top)
 	block.style.cssText = `top: ${top}px; height: ${height}px;`
 	document.body.append(block)
@@ -190,7 +191,7 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 	root.classList.add('curtain-jump')
 	const shields = [shield(window.scrollY), shield(y)]
 	beforeJump?.()
-	lenis?.stop()
+	lenis?.stop() // closing the menu restarts it
 	if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
 	else window.scrollTo(0, y)
 	afterJump?.()
