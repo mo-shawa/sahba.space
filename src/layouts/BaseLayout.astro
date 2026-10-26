@@ -134,7 +134,18 @@ const structuredData = {
 			html.js .curtain[data-state='intro'] { animation: curtain-failsafe 0.8s ease 4s forwards; }
 			html.js .curtain[data-state='open'] { visibility: hidden; pointer-events: none; }
 			html.skip-intro .curtain[data-state='intro'] { display: none; }
-			html.curtain-jump body > :not(.curtain):not(.cosmos) { visibility: hidden !important; }
+			html.curtain-jump body > :not(.curtain):not(.curtain-shield) { visibility: hidden !important; }
+			.curtain-shield {
+				position: absolute;
+				left: 0;
+				right: 0;
+				z-index: 59;
+				background: #040506;
+				color: #ecebe6;
+				--ink: #ecebe6;
+				--ink-soft: #9a9993;
+				pointer-events: none;
+			}
 			@keyframes curtain-failsafe { to { opacity: 0; visibility: hidden; } }
 			.curtain__star {
 				position: absolute;

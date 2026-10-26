@@ -136,13 +136,18 @@ function predictTop(element: HTMLElement, y: number) {
 }
 
 /**
- * Pins the curtain to the page at scroll position `top`, covering the
- * viewport there. A fixed layer is repositioned separately from the scroll in
- * Safari and can lag a frame behind a long jump, uncovering the page; a layer
- * that is part of the page moves with it in the same frame.
+ * A plain sheet of night laid into the page itself, covering the viewport as
+ * it is when the page is scrolled to `top`, with its own copy of the heading
+ * at the same place on screen. See the jump in `travel`.
  */
-function anchor(top: number) {
-	Object.assign(curtain!.style, { position: 'absolute', top: `${top}px`, bottom: 'auto', height: `${window.innerHeight}px` })
+function shield(top: number, copy: HTMLElement | null) {
+	const block = document.createElement('div')
+	block.className = 'curtain-shield'
+	const height = Math.min(window.innerHeight + 160, document.documentElement.scrollHeight - top)
+	block.style.cssText = `top: ${top}px; height: ${height}px;`
+	if (copy) block.append(copy.cloneNode(true))
+	document.body.append(block)
+	return block
 }
 
 /** A copy of `source` placed on the curtain at the given viewport position. */
@@ -161,7 +166,6 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 	if (!curtain || !sheet || !stage || busy) return
 	busy = true
 	lenis?.stop()
-	anchor(window.scrollY)
 
 	// The heading, where it will be once the page has jumped (if that's on screen).
 	let copy: HTMLElement | null = null
@@ -200,37 +204,45 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 		// The heading rises from its masks on the night, word by word.
 		copy?.querySelectorAll('.w > span').forEach((word, index) =>
 			move(word, [{ transform: 'translate3d(0, 130%, 0)' }, { transform: 'translate3d(0, 0, 0)' }], {
-				duration: 700,
-				delay: 250 + index * 30,
+				duration: 650,
+				delay: 200 + index * 30,
 				easing: EASE_RISE,
 			})
 		)
 		copy?.querySelectorAll('.section-head__arabic').forEach((extra) =>
 			move(extra, [{ opacity: 0, transform: 'translate3d(0, 12px, 0)' }, { opacity: 1, transform: 'translate3d(0, 0, 0)' }], {
-				duration: 500,
-				delay: 380,
+				duration: 450,
+				delay: 320,
 				easing: 'ease-out',
 			})
 		)
 		await cover.finished
 	}
 
-	// Jump while covered. The curtain moves with the page in the same frame, and
-	// for the frames around the jump the page itself is hidden too, so whatever
-	// a browser draws in between, there is only night to see. Then the page
-	// comes back under the curtain at its new place, and the particle scene
-	// rests while nothing of it can be seen.
+	// Let the heading finish rising; while the page is hidden, rest the particle scene.
+	covered = true
+	if (copy) await Promise.all(copy.getAnimations({ subtree: true }).map((animation) => animation.finished))
+	covered = false
+
+	// The jump. Safari doesn't move the screen and the page's layers in the same
+	// frame on a long programmatic scroll: for a moment it can show the old
+	// position, the new one, or the fixed curtain out of place. So for the frames
+	// around the jump the page is hidden, and two plain sheets of night are laid
+	// into the page itself, one where the screen is and one where it's going,
+	// each with the same heading at the same place on screen. Whatever a frame
+	// shows, it looks exactly like the curtain. Then the page comes back under
+	// the curtain, at its new place.
 	root.classList.add('curtain-jump')
+	const shields = [shield(window.scrollY, copy), shield(y, copy)]
 	beforeJump?.()
 	lenis?.stop()
-	anchor(y)
 	if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
 	else window.scrollTo(0, y)
 	afterJump?.()
-	await nextFrames(2)
+	await nextFrames(8)
+	shields.forEach((block) => block.remove())
 	root.classList.remove('curtain-jump')
 	await nextFrames(2)
-	covered = true
 
 	// The real heading should be exactly under the copy; nudge it if not.
 	if (copy && match) {
@@ -239,14 +251,11 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 		const dx = box.left - placed.left
 		const dy = box.top - placed.top
 		if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
-			move(copy, [{ translate: '0 0' }, { translate: `${dx}px ${dy}px` }], { duration: 250, easing: 'ease-out' })
+			await move(copy, [{ translate: '0 0' }, { translate: `${dx}px ${dy}px` }], { duration: 250, easing: 'ease-out' }).finished
 		}
 	}
-	// Let the heading finish rising before the reveal.
-	if (copy) await Promise.all(copy.getAnimations({ subtree: true }).map((animation) => animation.finished))
-	else await wait(120)
+	if (!copy) await wait(120)
 
-	covered = false
 	if (reducedMotion) {
 		await move(curtain, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: 'ease-in' }).finished
 	} else {
