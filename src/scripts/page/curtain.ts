@@ -1,4 +1,3 @@
-import { gsap } from 'gsap'
 import type Lenis from 'lenis'
 import { reducedMotion, root } from './env'
 
@@ -8,16 +7,28 @@ import { reducedMotion, root } from './env'
  *
  * - On arrival it holds a single breathing star while the page gets ready,
  *   then the sky fades in behind it.
- * - For an in-page link, night rises from the bottom and covers the page, the
- *   destination's heading rises on it exactly where the real heading will be,
- *   the page jumps there underneath, and the night lifts off the top. The copy
- *   stays put as the edge passes, so it reads as the same heading throughout.
+ * - For an in-page link, the sheet slides up from the bottom and covers the
+ *   page, the destination's heading rises on it exactly where the real heading
+ *   will be, the page jumps there underneath, and the sheet slides off the top.
+ *   The copy is counter-moved inside the sheet so it never moves on screen, and
+ *   the sheet's soft edges fade it into the real heading as they pass.
+ *
+ * Everything moves with transforms and opacity through the Web Animations API,
+ * so the browser runs it off the main thread: nothing the page does (the jump,
+ * the particle scene) can make it stutter, and it is just as smooth in Safari.
  */
 
 const curtain = document.querySelector<HTMLElement>('[data-curtain]')
+const sheet = curtain?.querySelector<HTMLElement>('.curtain__sheet')
 const stage = curtain?.querySelector<HTMLElement>('[data-curtain-stage]')
 const star = curtain?.querySelector<HTMLElement>('.curtain__star')
 let busy = true
+let covered = false
+
+// The curves the site's GSAP motion uses (power3.inOut, expo.out, power2.inOut).
+const EASE_SWEEP = 'cubic-bezier(0.65, 0, 0.35, 1)'
+const EASE_RISE = 'cubic-bezier(0.16, 1, 0.3, 1)'
+const EASE_FADE = 'cubic-bezier(0.45, 0, 0.55, 1)'
 
 const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 const nextFrames = (count = 2) =>
@@ -25,14 +36,23 @@ const nextFrames = (count = 2) =>
 		const step = () => (--count <= 0 ? resolve() : requestAnimationFrame(step))
 		requestAnimationFrame(step)
 	})
-const settle = (animation: gsap.core.Animation) => new Promise<void>((resolve) => animation.eventCallback('onComplete', () => resolve()))
+const move = (element: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) =>
+	element.animate(keyframes, { fill: 'both', ...options })
+
+/** True while the page is completely hidden, so the particle scene can skip drawing. */
+export const curtainCovered = () => covered
+export const travelling = () => busy
 
 function open() {
 	if (!curtain) return
 	star?.remove() // only ever part of the arrival
-	curtain.dataset.state = 'open'
-	gsap.set(curtain, { clearProps: 'clipPath,opacity,visibility' })
+	for (const element of [curtain, sheet, stage]) {
+		element?.getAnimations().forEach((animation) => animation.cancel())
+		element?.removeAttribute('style')
+	}
 	stage?.replaceChildren()
+	curtain.dataset.state = 'open'
+	covered = false
 	busy = false
 }
 
@@ -46,13 +66,8 @@ function open() {
  * device still gets in). `onLift` runs as the sky starts to show.
  */
 export async function liftArrivalCurtain(ready: Promise<unknown>, lenis: Lenis | null, onLift: () => void) {
-	if (!curtain || root.classList.contains('skip-intro')) {
-		open()
-		onLift()
-		return
-	}
-	// If the script arrived after the CSS failsafe already lifted it, leave it be.
-	if (getComputedStyle(curtain).visibility === 'hidden') {
+	// Skipped (?skipIntro), missing, or already lifted by the CSS failsafe.
+	if (!curtain || root.classList.contains('skip-intro') || getComputedStyle(curtain).visibility === 'hidden') {
 		open()
 		onLift()
 		return
@@ -60,25 +75,31 @@ export async function liftArrivalCurtain(ready: Promise<unknown>, lenis: Lenis |
 	lenis?.stop()
 	await Promise.race([ready, wait(Math.max(0, 3000 - performance.now()))])
 	await wait(Math.max(0, 600 - performance.now()))
-	// From here the script owns it; cancel the failsafe without a jump.
-	gsap.set(curtain, { opacity: getComputedStyle(curtain).opacity })
-	curtain.style.animation = 'none'
 
-	const fade = reducedMotion ? 0.25 : 1.1
-	const lift = gsap.timeline({ onComplete: open })
+	// From here the script owns it: stop the CSS failsafe and the star's
+	// breathing where they are, then fade.
+	const opacity = getComputedStyle(curtain).opacity
+	curtain.style.animation = 'none'
+	curtain.style.opacity = opacity
+	const fade = reducedMotion ? 250 : 1100
 	if (star) {
-		// Its breathing is a CSS animation, which would override the fade.
-		gsap.set(star, { opacity: getComputedStyle(star).opacity, scale: new DOMMatrix(getComputedStyle(star).transform).a })
+		const { opacity: starOpacity, transform } = getComputedStyle(star)
 		star.style.animation = 'none'
-		lift.to(star, { opacity: 0, scale: 2.4, duration: fade * 0.6, ease: 'power2.out' }, 0)
+		move(star, [{ opacity: starOpacity, transform }, { opacity: 0, transform: 'scale(2.4)' }], {
+			duration: fade * 0.6,
+			easing: 'ease-out',
+		})
 	}
-	lift.to(curtain, { opacity: 0, duration: fade, ease: 'power2.inOut' }, reducedMotion ? 0 : 0.15)
-	// At the very start, so anything onLift hides (her name, about to rise) is
-	// hidden before the night thins.
-	lift.call(() => {
-		lenis?.start()
-		onLift()
-	}, [], 0)
+	// Anything onLift hides (her name, about to rise) is hidden before the night thins.
+	lenis?.start()
+	onLift()
+	const lift = move(curtain, [{ opacity }, { opacity: 0 }], {
+		duration: fade,
+		delay: reducedMotion ? 0 : 150,
+		easing: EASE_FADE,
+	})
+	await lift.finished
+	open()
 }
 
 /* -------------------------------------------------------------------------- */
@@ -93,7 +114,7 @@ interface Journey {
 	lenis: Lenis | null
 	/** Runs under the curtain, just before the jump (e.g. closing the menu). */
 	beforeJump?: () => void
-	/** Runs under the curtain, right after the jump (e.g. settling the heading). */
+	/** Runs under the curtain, right after the jump (e.g. settling what's on screen). */
 	afterJump?: () => void
 }
 
@@ -104,12 +125,12 @@ interface Journey {
  */
 function predictTop(element: HTMLElement, y: number) {
 	const box = element.getBoundingClientRect()
-	const stage = element.closest<HTMLElement>('.chapter__stage')
-	const chapter = stage?.parentElement
-	if (stage && chapter) {
+	const pinned = element.closest<HTMLElement>('.chapter__stage')
+	const chapter = pinned?.parentElement
+	if (pinned && chapter) {
 		const start = chapter.getBoundingClientRect().top + window.scrollY
-		const end = start + chapter.offsetHeight - stage.offsetHeight
-		if (y >= start && y <= end) return box.top - stage.getBoundingClientRect().top
+		const end = start + chapter.offsetHeight - pinned.offsetHeight
+		if (y >= start && y <= end) return box.top - pinned.getBoundingClientRect().top
 	}
 	return box.top + window.scrollY - y
 }
@@ -119,17 +140,15 @@ function mirror(source: HTMLElement, left: number, top: number, width: number) {
 	const copy = source.cloneNode(true) as HTMLElement
 	copy.removeAttribute('id')
 	copy.querySelectorAll('[id]').forEach((element) => element.removeAttribute('id'))
-	copy.style.cssText = `position: absolute; left: ${left}px; top: ${top}px; width: ${width}px; margin: 0;`
 	// The source may be mid-animation or not yet revealed; the copy starts clean.
 	copy.querySelectorAll<HTMLElement>('[style]').forEach((element) => element.removeAttribute('style'))
+	copy.style.cssText = `position: absolute; left: ${left}px; top: ${top}px; width: ${width}px; margin: 0;`
 	stage!.replaceChildren(copy)
 	return copy
 }
 
-export const travelling = () => busy
-
 export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey) {
-	if (!curtain || !stage || busy) return
+	if (!curtain || !sheet || !stage || busy) return
 	busy = true
 	lenis?.stop()
 
@@ -140,49 +159,85 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 		const top = predictTop(match, y)
 		if (top >= 0 && top + box.height <= window.innerHeight) copy = mirror(match, box.left, top, box.width)
 	}
-	const words = copy ? Array.from(copy.querySelectorAll<HTMLElement>('.w > span')) : []
-	const extras = copy ? Array.from(copy.querySelectorAll<HTMLElement>('.section-head__arabic')) : []
 
-	// Cover: night rises from the bottom; the heading rises from its masks on it.
-	if (reducedMotion) gsap.set(curtain, { opacity: 0 })
-	else gsap.set(curtain, { clipPath: 'inset(100% 0% 0% 0%)' })
-	gsap.set(words, { yPercent: 130 })
-	gsap.set(extras, { opacity: 0, y: 12 })
-	curtain.dataset.state = 'travel'
+	// The sheet is the viewport plus a soft edge above and below; the stage sits
+	// one edge down inside it, so at rest it lines up with the screen.
+	const height = window.innerHeight
+	const edge = Math.round(Math.min(Math.max(height * 0.12, 64), 140))
+	const distance = height + edge * 2
 
-	const cover = reducedMotion
-		? gsap.to(curtain, { opacity: 1, duration: 0.15, ease: 'power1.out' })
-		: gsap.to(curtain, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.5, ease: 'power3.inOut' })
-	const heading = gsap
-		.timeline()
-		.to(words, { yPercent: 0, duration: 0.7, stagger: 0.03, ease: 'expo.out' }, 0.25)
-		.to(extras, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.38)
-	await settle(cover)
+	if (reducedMotion) {
+		curtain.dataset.state = 'travel'
+		await move(curtain, [{ opacity: 0 }, { opacity: 1 }], { duration: 150, easing: 'ease-out' }).finished
+	} else {
+		const soft = `linear-gradient(to bottom, transparent 0, #000 ${edge}px, #000 calc(100% - ${edge}px), transparent 100%)`
+		Object.assign(sheet.style, {
+			inset: 'auto',
+			left: '0',
+			right: '0',
+			top: `${-edge}px`,
+			height: `${distance}px`,
+			maskImage: soft,
+			webkitMaskImage: soft,
+		})
+		stage.style.top = `${edge}px`
+		curtain.dataset.state = 'travel'
 
-	// Jump while covered, then let the page draw itself at the new place.
+		const sweep = { duration: 520, easing: EASE_SWEEP }
+		const cover = move(sheet, [{ transform: `translate3d(0, ${distance}px, 0)` }, { transform: 'translate3d(0, 0, 0)' }], sweep)
+		move(stage, [{ transform: `translate3d(0, ${-distance}px, 0)` }, { transform: 'translate3d(0, 0, 0)' }], sweep)
+		// The heading rises from its masks on the night, word by word.
+		copy?.querySelectorAll('.w > span').forEach((word, index) =>
+			move(word, [{ transform: 'translate3d(0, 130%, 0)' }, { transform: 'translate3d(0, 0, 0)' }], {
+				duration: 700,
+				delay: 250 + index * 30,
+				easing: EASE_RISE,
+			})
+		)
+		copy?.querySelectorAll('.section-head__arabic').forEach((extra) =>
+			move(extra, [{ opacity: 0, transform: 'translate3d(0, 12px, 0)' }, { opacity: 1, transform: 'translate3d(0, 0, 0)' }], {
+				duration: 500,
+				delay: 380,
+				easing: 'ease-out',
+			})
+		)
+		await cover.finished
+	}
+
+	// Jump while covered, let the page draw itself at the new place, then rest
+	// the particle scene while nothing of it can be seen.
 	beforeJump?.()
 	lenis?.stop()
 	if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
 	else window.scrollTo(0, y)
 	afterJump?.()
 	await nextFrames(2)
+	covered = true
 
-	// The real heading should be exactly under the copy; correct any drift quietly.
+	// The real heading should be exactly under the copy; nudge it if not.
 	if (copy && match) {
 		const box = match.getBoundingClientRect()
 		const placed = copy.getBoundingClientRect()
-		if (Math.abs(box.top - placed.top) > 0.5 || Math.abs(box.left - placed.left) > 0.5) {
-			gsap.to(copy, { left: box.left, top: box.top, duration: 0.25, ease: 'power2.out' })
+		const dx = box.left - placed.left
+		const dy = box.top - placed.top
+		if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+			move(copy, [{ translate: '0 0' }, { translate: `${dx}px ${dy}px` }], { duration: 250, easing: 'ease-out' })
 		}
 	}
-	if (heading.progress() < 1) await settle(heading)
+	// Let the heading finish rising before the reveal.
+	if (copy) await Promise.all(copy.getAnimations({ subtree: true }).map((animation) => animation.finished))
 	else await wait(120)
 
-	// Reveal: the night lifts off the top; the copy stays as the edge passes it.
-	const reveal = reducedMotion
-		? gsap.to(curtain, { opacity: 0, duration: 0.25, ease: 'power1.in' })
-		: gsap.to(curtain, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.7, ease: 'power3.inOut' })
-	await settle(reveal)
+	covered = false
+	if (reducedMotion) {
+		await move(curtain, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: 'ease-in' }).finished
+	} else {
+		// Off the top; the copy holds still and fades into the page through the soft edge.
+		const sweep = { duration: 720, easing: EASE_SWEEP }
+		const reveal = move(sheet, [{ transform: 'translate3d(0, 0, 0)' }, { transform: `translate3d(0, ${-distance}px, 0)` }], sweep)
+		move(stage, [{ transform: 'translate3d(0, 0, 0)' }, { transform: `translate3d(0, ${distance}px, 0)` }], sweep)
+		await reveal.finished
+	}
 	open()
 	lenis?.start()
 }

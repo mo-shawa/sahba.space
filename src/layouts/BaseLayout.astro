@@ -120,11 +120,16 @@ const structuredData = {
 				position: fixed;
 				inset: 0;
 				z-index: 60;
-				background: #040506;
+				overflow: hidden;
 				color: #ecebe6;
 				--ink: #ecebe6;
 				--ink-soft: #9a9993;
 				pointer-events: auto;
+			}
+			.curtain__sheet {
+				position: absolute;
+				inset: 0;
+				background: #040506;
 			}
 			html.js .curtain[data-state='intro'] { animation: curtain-failsafe 0.8s ease 4s forwards; }
 			html.js .curtain[data-state='open'] { visibility: hidden; pointer-events: none; }
@@ -147,7 +152,7 @@ const structuredData = {
 				50% { transform: scale(1); opacity: 1; }
 			}
 			@media (prefers-reduced-motion: reduce) { .curtain__star { animation: none; } }
-			.curtain__stage { position: absolute; inset: 0; }
+			.curtain__stage { position: absolute; left: 0; right: 0; top: 0; height: 100vh; }
 		</style>
 		<script
 			is:inline
@@ -162,11 +167,13 @@ const structuredData = {
 			data-state="intro"
 			data-curtain
 		>
-			<div class="curtain__star"></div>
-			<div
-				class="curtain__stage"
-				data-curtain-stage
-			></div>
+			<div class="curtain__sheet">
+				<div class="curtain__star"></div>
+				<div
+					class="curtain__stage"
+					data-curtain-stage
+				></div>
+			</div>
 		</div>
 		<a
 			class="skip-link"

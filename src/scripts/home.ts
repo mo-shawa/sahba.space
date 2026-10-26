@@ -8,7 +8,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { createCosmos, type CosmosFrame } from './cosmos'
 import { placeBeats, readBeats, type Beat } from './page/beats'
-import { liftArrivalCurtain } from './page/curtain'
+import { curtainCovered, liftArrivalCurtain } from './page/curtain'
 import { reducedMotion, root } from './page/env'
 import { warmImages } from './page/images'
 import { layoutHeld, onRelayout } from './page/layout'
@@ -167,7 +167,7 @@ function initializeHomePage() {
 		const moving = y !== lastY
 		lastY = y
 		compose(y)
-		if (cosmos && chapterVisible(y)) {
+		if (cosmos && chapterVisible(y) && !curtainCovered()) {
 			cosmos.render(frame, delta, moving)
 		}
 		if (firstFrameDrawn) {
