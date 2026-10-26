@@ -8,10 +8,10 @@ import { reducedMotion, root } from './env'
  * - On arrival it holds a single breathing star while the page gets ready,
  *   then the sky fades in behind it.
  * - For an in-page link, the sheet slides up from the bottom and covers the
- *   page, the destination's heading rises on it exactly where the real heading
- *   will be, the page jumps there underneath, and the sheet slides off the top.
- *   The copy is counter-moved inside the sheet so it never moves on screen, and
- *   the sheet's soft edges fade it into the real heading as they pass.
+ *   page, the page jumps underneath, the destination's heading rises on the
+ *   night exactly over the real one, and the sheet slides off the top. The copy
+ *   is counter-moved inside the sheet so it never moves on screen, and the
+ *   sheet's soft edges fade it into the real heading as they pass.
  *
  * Everything moves with transforms and opacity through the Web Animations API,
  * so the browser runs it off the main thread: nothing the page does (the jump,
@@ -109,7 +109,7 @@ export async function liftArrivalCurtain(ready: Promise<unknown>, lenis: Lenis |
 interface Journey {
 	/** The scroll position to land on. */
 	y: number
-	/** Shown on the curtain where it will be after the jump, if it lands in view. */
+	/** Rises on the curtain over itself after the jump, if it lands in view. */
 	match: HTMLElement | null
 	lenis: Lenis | null
 	/** Runs under the curtain, just before the jump (e.g. closing the menu). */
@@ -119,33 +119,14 @@ interface Journey {
 }
 
 /**
- * Where `element`'s top will be in the viewport once the page has scrolled to
- * `y`. Inside a chapter's sticky stage that lands within the chapter's pinned
- * stretch, the stage will be held at the top of the screen.
- */
-function predictTop(element: HTMLElement, y: number) {
-	const box = element.getBoundingClientRect()
-	const pinned = element.closest<HTMLElement>('.chapter__stage')
-	const chapter = pinned?.parentElement
-	if (pinned && chapter) {
-		const start = chapter.getBoundingClientRect().top + window.scrollY
-		const end = start + chapter.offsetHeight - pinned.offsetHeight
-		if (y >= start && y <= end) return box.top - pinned.getBoundingClientRect().top
-	}
-	return box.top + window.scrollY - y
-}
-
-/**
  * A plain sheet of night laid into the page itself, covering the viewport as
- * it is when the page is scrolled to `top`, with its own copy of the heading
- * at the same place on screen. See the jump in `travel`.
+ * it is when the page is scrolled to `top`. See the jump in `travel`.
  */
-function shield(top: number, copy: HTMLElement | null) {
+function shield(top: number) {
 	const block = document.createElement('div')
 	block.className = 'curtain-shield'
 	const height = Math.min(window.innerHeight + 160, document.documentElement.scrollHeight - top)
 	block.style.cssText = `top: ${top}px; height: ${height}px;`
-	if (copy) block.append(copy.cloneNode(true))
 	document.body.append(block)
 	return block
 }
@@ -166,14 +147,6 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 	if (!curtain || !sheet || !stage || busy) return
 	busy = true
 	lenis?.stop()
-
-	// The heading, where it will be once the page has jumped (if that's on screen).
-	let copy: HTMLElement | null = null
-	if (match && !reducedMotion) {
-		const box = match.getBoundingClientRect()
-		const top = predictTop(match, y)
-		if (top >= 0 && top + box.height <= window.innerHeight) copy = mirror(match, box.left, top, box.width)
-	}
 
 	// The sheet is the viewport plus a soft edge above and below; the stage sits
 	// one edge down inside it, so at rest it lines up with the screen.
@@ -201,60 +174,62 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 		const sweep = { duration: 520, easing: EASE_SWEEP }
 		const cover = move(sheet, [{ transform: `translate3d(0, ${distance}px, 0)` }, { transform: 'translate3d(0, 0, 0)' }], sweep)
 		move(stage, [{ transform: `translate3d(0, ${-distance}px, 0)` }, { transform: 'translate3d(0, 0, 0)' }], sweep)
-		// The heading rises from its masks on the night, word by word.
-		copy?.querySelectorAll('.w > span').forEach((word, index) =>
-			move(word, [{ transform: 'translate3d(0, 130%, 0)' }, { transform: 'translate3d(0, 0, 0)' }], {
-				duration: 650,
-				delay: 200 + index * 30,
-				easing: EASE_RISE,
-			})
-		)
-		copy?.querySelectorAll('.section-head__arabic').forEach((extra) =>
-			move(extra, [{ opacity: 0, transform: 'translate3d(0, 12px, 0)' }, { opacity: 1, transform: 'translate3d(0, 0, 0)' }], {
-				duration: 450,
-				delay: 320,
-				easing: 'ease-out',
-			})
-		)
 		await cover.finished
 	}
-
-	// Let the heading finish rising; while the page is hidden, rest the particle scene.
+	// While the page is hidden, rest the particle scene.
 	covered = true
-	if (copy) await Promise.all(copy.getAnimations({ subtree: true }).map((animation) => animation.finished))
-	covered = false
 
-	// The jump. Safari doesn't move the screen and the page's layers in the same
-	// frame on a long programmatic scroll: for a moment it can show the old
-	// position, the new one, or the fixed curtain out of place. So for the frames
-	// around the jump the page is hidden, and two plain sheets of night are laid
-	// into the page itself, one where the screen is and one where it's going,
-	// each with the same heading at the same place on screen. Whatever a frame
-	// shows, it looks exactly like the curtain. Then the page comes back under
-	// the curtain, at its new place.
+	// The jump, on plain night. WebKit doesn't move the screen and the page's
+	// layers in the same frame on a long programmatic scroll: for a moment it can
+	// show the old position, the new one, or the fixed curtain out of place, and
+	// anything drawn on the curtain can drop out for a frame. So nothing is on
+	// the curtain yet, the page is hidden, and two plain sheets of night are laid
+	// into the page itself, one where the screen is and one where it's going.
+	// Whatever a frame shows, it is night. Then the page comes back under the
+	// curtain, at its new place.
 	root.classList.add('curtain-jump')
-	const shields = [shield(window.scrollY, copy), shield(y, copy)]
+	const shields = [shield(window.scrollY), shield(y)]
 	beforeJump?.()
 	lenis?.stop()
 	if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
 	else window.scrollTo(0, y)
 	afterJump?.()
-	await nextFrames(8)
+	await Promise.all([nextFrames(8), wait(140)])
 	shields.forEach((block) => block.remove())
 	root.classList.remove('curtain-jump')
 	await nextFrames(2)
 
-	// The real heading should be exactly under the copy; nudge it if not.
-	if (copy && match) {
-		const box = match.getBoundingClientRect()
-		const placed = copy.getBoundingClientRect()
-		const dx = box.left - placed.left
-		const dy = box.top - placed.top
-		if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
-			await move(copy, [{ translate: '0 0' }, { translate: `${dx}px ${dy}px` }], { duration: 250, easing: 'ease-out' }).finished
-		}
+	// The heading rises from its masks on the night, word by word, measured from
+	// the real one now that it's in place, so the two line up exactly.
+	const box = match && !reducedMotion ? match.getBoundingClientRect() : null
+	if (match && box && box.top >= 0 && box.bottom <= window.innerHeight) {
+		const copy = mirror(match, box.left, box.top, box.width)
+		const rise = [
+			...Array.from(copy.querySelectorAll('.w > span'), (word, index) =>
+				move(word, [{ transform: 'translate3d(0, 130%, 0)' }, { transform: 'translate3d(0, 0, 0)' }], {
+					duration: 650,
+					delay: index * 30,
+					easing: EASE_RISE,
+				})
+			),
+			...Array.from(copy.querySelectorAll('.section-head__arabic'), (extra) =>
+				move(extra, [{ opacity: 0, transform: 'translate3d(0, 12px, 0)' }, { opacity: 1, transform: 'translate3d(0, 0, 0)' }], {
+					duration: 450,
+					delay: 120,
+					easing: 'ease-out',
+				})
+			),
+		]
+		// The sheet starts to lift as the last word settles.
+		const end = Math.max(0, ...rise.map((animation) => Number(animation.effect?.getComputedTiming().endTime ?? 0)))
+		await wait(end - 200)
+	} else {
+		await wait(120)
 	}
-	if (!copy) await wait(120)
+
+	// The scene draws its new place before any of it shows.
+	covered = false
+	await nextFrames(2)
 
 	if (reducedMotion) {
 		await move(curtain, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: 'ease-in' }).finished
