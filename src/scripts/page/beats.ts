@@ -1,7 +1,10 @@
 /*
- * Chapter text. Each [data-beat="enter,exit"] rises in word by word from a
- * mask as the chapter's progress passes `enter`, and leaves upward at `exit`;
- * small print ([data-fade]) fades instead. Everything is a function of
+ * Chapter text. Each [data-beat="enter,exit"] is on screen only between those
+ * two points of the chapter's progress: it starts rising in, word by word from
+ * a mask, at `enter`, and its last word has left upward by `exit`; small print
+ * ([data-fade]) fades instead. However long the text (Sahba edits it), a beat
+ * whose `enter` is at or after the previous one's `exit` never shares the
+ * screen with it. Everything is a function of
  * progress, written only when it changes, and nothing carries a transform
  * unless it is moving: a resting word has none, and a hidden beat is hidden
  * as a whole. Hundreds of standing transforms inside sticky stages made every
@@ -13,13 +16,18 @@ export interface Beat {
 	exit: number
 	words: HTMLElement[]
 	fades: HTMLElement[]
+	/** The pause between one word leaving and the next, and how long the whole beat takes to leave. */
+	exitStagger: number
+	exitLength: number
 	/** Last written value per word (yPercent) and per fade (opacity), to skip repeats. */
 	wordState: Float32Array
 	fadeState: Float32Array
 	shown: boolean | null
 }
 
-const BEAT = { duration: 0.07, enterStagger: 0.004, exitStagger: 0.003, fadeStagger: 0.008 }
+// Words rise in one after another; they leave quicker and closer together, so a
+// long beat still clears the screen in a fixed stretch.
+const BEAT = { duration: 0.07, enterStagger: 0.004, exitDuration: 0.05, exitStagger: 0.003, exitSpread: 0.02, fadeStagger: 0.008 }
 // GSAP's curves, which the beats were tuned with: powerN is x^(N+1).
 const power3Out = (t: number) => 1 - (1 - t) ** 4
 const power3In = (t: number) => t ** 4
@@ -31,12 +39,15 @@ export function readBeats(chapter: HTMLElement): Beat[] {
 		const [enter, exit] = (element.dataset.beat ?? '0,1').split(',').map(Number)
 		const words = Array.from(element.querySelectorAll<HTMLElement>('.w > span'))
 		const fades = Array.from(element.querySelectorAll<HTMLElement>('[data-fade]'))
+		const exitStagger = words.length > 1 ? Math.min(BEAT.exitStagger, BEAT.exitSpread / (words.length - 1)) : 0
 		const beat: Beat = {
 			element,
 			enter,
 			exit,
 			words,
 			fades,
+			exitStagger,
+			exitLength: BEAT.exitDuration + exitStagger * Math.max(words.length - 1, 0),
 			wordState: new Float32Array(words.length).fill(NaN),
 			fadeState: new Float32Array(fades.length).fill(NaN),
 			shown: null,
@@ -56,25 +67,25 @@ function showBeat(beat: Beat, shown: boolean) {
 
 /** Where word `i` sits (yPercent) at chapter progress p: 130 below, 0 in place, -130 gone. */
 function wordAt(beat: Beat, i: number, p: number) {
-	const { duration, enterStagger, exitStagger } = BEAT
+	const { duration, enterStagger, exitDuration } = BEAT
 	if (beat.exit < 1) {
-		const leave = (p - (beat.exit - duration + i * exitStagger)) / duration
+		const leave = (p - (beat.exit - beat.exitLength + i * beat.exitStagger)) / exitDuration
 		if (leave > 0) return -130 * power3In(Math.min(leave, 1))
 	}
 	if (beat.enter <= 0) return 0
-	const arrive = (p - (beat.enter - duration + i * enterStagger)) / duration
+	const arrive = (p - (beat.enter + i * enterStagger)) / duration
 	return 130 * (1 - power3Out(Math.min(Math.max(arrive, 0), 1)))
 }
 
 /** Opacity of small print `i` at progress p (its lift follows the same curve). */
 function fadeAt(beat: Beat, i: number, p: number) {
-	const { duration, fadeStagger } = BEAT
+	const { duration, exitDuration, fadeStagger } = BEAT
 	if (beat.exit < 1) {
-		const leave = (p - (beat.exit - duration)) / duration
+		const leave = (p - (beat.exit - exitDuration)) / exitDuration
 		if (leave > 0) return -power2In(Math.min(leave, 1))
 	}
 	if (beat.enter <= 0) return 1
-	const arrive = (p - (beat.enter - duration * 0.5 + i * fadeStagger)) / duration
+	const arrive = (p - (beat.enter + duration * 0.5 + i * fadeStagger)) / duration
 	return power2Out(Math.min(Math.max(arrive, 0), 1))
 }
 
