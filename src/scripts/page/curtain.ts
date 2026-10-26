@@ -135,6 +135,16 @@ function predictTop(element: HTMLElement, y: number) {
 	return box.top + window.scrollY - y
 }
 
+/**
+ * Pins the curtain to the page at scroll position `top`, covering the
+ * viewport there. A fixed layer is repositioned separately from the scroll in
+ * Safari and can lag a frame behind a long jump, uncovering the page; a layer
+ * that is part of the page moves with it in the same frame.
+ */
+function anchor(top: number) {
+	Object.assign(curtain!.style, { position: 'absolute', top: `${top}px`, bottom: 'auto', height: `${window.innerHeight}px` })
+}
+
 /** A copy of `source` placed on the curtain at the given viewport position. */
 function mirror(source: HTMLElement, left: number, top: number, width: number) {
 	const copy = source.cloneNode(true) as HTMLElement
@@ -151,6 +161,7 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 	if (!curtain || !sheet || !stage || busy) return
 	busy = true
 	lenis?.stop()
+	anchor(window.scrollY)
 
 	// The heading, where it will be once the page has jumped (if that's on screen).
 	let copy: HTMLElement | null = null
@@ -204,13 +215,20 @@ export async function travel({ y, match, lenis, beforeJump, afterJump }: Journey
 		await cover.finished
 	}
 
-	// Jump while covered, let the page draw itself at the new place, then rest
-	// the particle scene while nothing of it can be seen.
+	// Jump while covered. The curtain moves with the page in the same frame, and
+	// for the frames around the jump the page itself is hidden too, so whatever
+	// a browser draws in between, there is only night to see. Then the page
+	// comes back under the curtain at its new place, and the particle scene
+	// rests while nothing of it can be seen.
+	root.classList.add('curtain-jump')
 	beforeJump?.()
 	lenis?.stop()
+	anchor(y)
 	if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
 	else window.scrollTo(0, y)
 	afterJump?.()
+	await nextFrames(2)
+	root.classList.remove('curtain-jump')
 	await nextFrames(2)
 	covered = true
 

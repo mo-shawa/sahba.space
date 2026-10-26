@@ -134,6 +134,7 @@ const structuredData = {
 			html.js .curtain[data-state='intro'] { animation: curtain-failsafe 0.8s ease 4s forwards; }
 			html.js .curtain[data-state='open'] { visibility: hidden; pointer-events: none; }
 			html.skip-intro .curtain[data-state='intro'] { display: none; }
+			html.curtain-jump body > :not(.curtain):not(.cosmos) { visibility: hidden !important; }
 			@keyframes curtain-failsafe { to { opacity: 0; visibility: hidden; } }
 			.curtain__star {
 				position: absolute;
