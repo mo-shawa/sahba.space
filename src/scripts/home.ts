@@ -13,7 +13,7 @@ import { reducedMotion, root } from './page/env'
 import { warmImages } from './page/images'
 import { layoutHeld, onRelayout } from './page/layout'
 import { initializeDisclosures, initializeShowMore } from './page/lists'
-import { initializeNavigation } from './page/navigation'
+import { initializeNavigation, landOnArrival } from './page/navigation'
 import { initializePreview } from './page/preview'
 import { initializeFilters, initializePublicationHover } from './page/publications'
 import { introduceName, revealOnScroll, settleInView } from './page/reveal'
@@ -181,9 +181,11 @@ function initializeHomePage() {
 	revealOnScroll()
 	// At the top her name rises as the sky shows; arriving further down (a link
 	// to a section, a reload), what's on screen is simply there.
-	liftArrivalCurtain(Promise.all([document.fonts.ready, firstFrame]), lenis, () =>
-		window.scrollY > window.innerHeight * 0.5 ? settleInView() : introduceName()
-	)
+	liftArrivalCurtain(Promise.all([document.fonts.ready, firstFrame]), lenis, () => {
+		landOnArrival(lenis)
+		if (window.scrollY > window.innerHeight * 0.5) settleInView()
+		else introduceName()
+	})
 	warmImages()
 	initializeNavigation(lenis)
 	initializeShowMore()

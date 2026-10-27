@@ -18,6 +18,22 @@ function landing(target: HTMLElement) {
 	return Math.round(Math.min(Math.max(y, 0), max))
 }
 
+/**
+ * Arriving on a link to a section (sahba.space/#contact, or an old page that
+ * redirects to one): land where clicking that link would, not at the browser's
+ * own spot, the element's top, which for a chapter is night before any words.
+ * A reload or a step back keeps the place the browser restores.
+ */
+export function landOnArrival(lenis: Lenis | null) {
+	const [entry] = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[]
+	if (entry && entry.type !== 'navigate') return
+	const target = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null
+	if (!target) return
+	const y = landing(target)
+	if (lenis) lenis.scrollTo(y, { immediate: true, force: true })
+	else window.scrollTo(0, y)
+}
+
 /** In-page links travel under the curtain (no smooth scroll); the nav marks the section in view; the phone menu. */
 export function initializeNavigation(lenis: Lenis | null) {
 	const go = (hash: string) => {
