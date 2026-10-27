@@ -1,0 +1,9 @@
+# Cloudflare static asset redirects (https://developers.cloudflare.com/workers/static-assets/redirects/).
+# The pages of Sahba's old Google Site, so links people saved still land on the matching chapter.
+/home          /               301
+/leadership    /#leadership    301
+/research      /#research      301
+/lectures      /#lectures      301
+/interviews    /#interviews    301
+/testimonials  /#testimonials  301
+/contact       /#contact       301

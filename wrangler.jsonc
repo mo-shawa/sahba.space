@@ -5,6 +5,8 @@
 	"compatibility_date": "2026-04-11",
 	"workers_dev": true,
 	"preview_urls": true,
+	// www.sahba.space redirects here through a rule in the Cloudflare zone.
+	"routes": [{ "pattern": "sahba.space", "custom_domain": true }],
 	"assets": {
 		"directory": "./dist"
 	}
